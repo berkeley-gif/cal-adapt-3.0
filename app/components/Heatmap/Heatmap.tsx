@@ -38,6 +38,10 @@ export default function Heatmap({ width, height, data }: HeatmapProps) {
     // alternative color for colorblind people
     const [useAltColor, setUseAltColor] = useState(false)
 
+    if (!data) {
+        return null;
+    }
+
     // Flatten data and filter out undefined values
     const flatData: number[] = data.data.flat().filter((d: number | undefined): d is number => d !== undefined)
     const min = d3.min(flatData) as number | null
