@@ -36,7 +36,8 @@ export default function GeocoderControl(props: GeocoderControlProps) {
       const ctrl = new MapboxGeocoder({
         ...props,
         marker: false,
-        accessToken: props.mapboxAccessToken
+        accessToken: props.mapboxAccessToken,
+        bbox: [-124.482, 32.528, -114.131, 42.009] // California bounding box
       });
       ctrl.on('loading', noop);
       ctrl.on('results', noop);
