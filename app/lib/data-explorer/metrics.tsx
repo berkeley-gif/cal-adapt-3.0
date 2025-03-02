@@ -5,8 +5,8 @@ export const metricsList = [
         "variable": 'TX99p',
         "description": 'Mean annual change in extreme heat days',
         "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/TX99p/d02/TX99p.zarr',
-        "rescale": '1.18,35.19',
-        "colormap": 'oranges'
+        "rescale": '-30,30',
+        "colormap": 'RdBu_r',
     },
     {
         "id": 1, 
@@ -14,8 +14,8 @@ export const metricsList = [
         "variable": 'R99p',
         "description": 'Absolute change in 99th percentile 1-day accumulated precipitation',
         "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/R99p/d02/R99p.zarr',
-        "rescale": '-4.866,39.417',
-        "colormap": 'blues'
+        "rescale": '-20,20',
+        "colormap": 'BrBg',
     },
     {
         "id": 2, 
@@ -23,7 +23,7 @@ export const metricsList = [
         "variable": 'ffwige50',
         "description": 'Change in median annual number of days with (FFWI) value greater than 50',
         "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/ffwige50/d02/ffwige50.zarr',
-        "rescale": '-197.96,92.158',
-        "colormap": 'reds'
+        "rescale": '-60,60',
+        "colormap": 'PuOr_r',
     }
 ]

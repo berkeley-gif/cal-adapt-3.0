@@ -131,7 +131,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 datetime: currentGwl,
                 rescale: currentVariableData.rescale,
                 // TEMP: Change for color wheel options. Set to currentColorMap.toLowerCase()
-                colormap_name: colormap
+                colormap_name: colormap,
             }
 
             console.log('fetchTileJson called with params', params)
