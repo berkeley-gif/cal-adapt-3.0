@@ -23,13 +23,8 @@ const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
 type MapUIProps = {
-    isColorRev: boolean;
-    setIsColorRev: (isColorRev: boolean) => void;
     metricSelected: number;
     gwlSelected: number;
-    customColorRamp: string;
-    customColorRampList: string[];
-    setCustomColorRamp: (color: string) => void;
     setMetricSelected: (metric: number) => void;
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
@@ -55,7 +50,7 @@ const MenuProps: any = {
 }
 
 
-export default function MapUI({ metricSelected, gwlSelected, customColorRamp, customColorRampList, setCustomColorRamp, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics, isColorRev, setIsColorRev }: MapUIProps) {
+export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics}: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
 
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
@@ -153,49 +148,6 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
                                         </FormControl>
 
 
-                                    </div>
-                                </div>
-                                <div className="container container--transparent">
-                                    <div className="option-group option-group--vertical">
-                                        <div className="option-group__title">
-                                            <Typography variant="body2">Custom Color Ramp</Typography>
-                                            <HtmlTooltip
-                                                textFragment={
-                                                    <React.Fragment>
-                                                        <p>The color ramp you would like to see</p>
-                                                    </React.Fragment>
-                                                }
-                                                iconFragment={<InfoOutlinedIcon />}
-                                                TransitionComponent={Fade}
-                                                TransitionProps={{ timeout: 600 }}
-                                                placement="right-end"
-                                            />
-                                        </div>
-
-                                        <FormControl>
-                                            <Select
-                                                value={customColorRamp}
-                                                onChange={(event: any) => {
-                                                    setCustomColorRamp(event.target.value as string)
-                                                }}
-                                                MenuProps={MenuProps}
-                                                sx={{ mt: '15px', width: '220px' }}
-                                            >
-                                                {customColorRampList.map((colorRamp) => (
-                                                    <MenuItem key={colorRamp} value={colorRamp}>
-                                                        <ListItemText primary={colorRamp} />
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="container container--transparent">
-                                    <div className="option-group ">
-                                        <div className="option-group__title">
-                                            <Typography variant="body2">Reverse Color Ramp</Typography>
-                                        </div>
-                                        <Switch checked={isColorRev} onChange={() => setIsColorRev(!isColorRev)} />
                                     </div>
                                 </div>
                             </div>

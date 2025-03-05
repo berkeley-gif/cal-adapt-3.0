@@ -1,6 +1,8 @@
 'use client'
 
 import * as d3 from 'd3'
+import { scaleSequential, scaleQuantize, scaleLinear } from 'd3-scale';
+import * as d3Chromatic from 'd3-scale-chromatic'
 import React, { useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -13,7 +15,6 @@ type MapLegendProps = {
     width?: number
     height?: number
     title?: string
-    isColorRev: boolean
 }
 
 const LEGEND_MARGIN = { top: 20, right: 0, bottom: 20, left: 0 }
@@ -26,8 +27,9 @@ export const MapLegend = ({
     width = 520, // adjust this value to make more space for the legend label
     height = 124,
     title,
-    isColorRev
 }: MapLegendProps) => {
+    const colormapName = colormap.endsWith('_r') ? colormap.slice(0, -2) : colormap
+    console.log('colormapName', colormapName)
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     const boundsWidth = width - LEGEND_MARGIN.right - LEGEND_MARGIN.left - (2 * LABEL_MARGIN)
@@ -37,14 +39,32 @@ export const MapLegend = ({
         .range([LABEL_MARGIN, boundsWidth + LABEL_MARGIN])
         .domain([min, max])
 
-    const interpolatorKey = `interpolate${colormap.charAt(0).toUpperCase() + colormap.slice(1)}` as keyof typeof d3
-    const interpolator = (d3[interpolatorKey] as (t: number) => string) || d3.interpolateInferno
+    const interpolatorKey = `interpolate${colormapName}` as keyof typeof d3Chromatic
+    console.log('interpolatorKey', interpolatorKey)
+    let interpolator = (d3Chromatic[interpolatorKey] as (t: number) => string) || undefined
+
+    if (!interpolator) {
+        console.error(`Interpolator for ${colormapName} not found in d3`)
+        interpolator = d3.interpolateInferno // Fallback to a default interpolator
+    }
+
+    // Reverse the interpolator manually if colormap ends with "_r"
+    if (colormap.endsWith('_r')) {
+        const originalInterpolator = interpolator
+        interpolator = (t: number) => {
+            return originalInterpolator(1 - t)
+        }
+    }
+
     const colorScale = d3.scaleSequential<string>()
         .domain([min, max])
-        .interpolator(isColorRev ? (t) => interpolator(1-t): interpolator)
+        .interpolator(interpolator)
 
     const ticks = [min, ...xScale.ticks(4), max]
     const allTicks = ticks.map((tick, idx) => {
+        const isMin = tick === min
+        const isMax = tick === max
+        const tickLabel = isMin ? `Below ${tick}` : isMax ? `Above ${tick}` : `${tick}`
         return (
             <React.Fragment key={`tick-${idx}`}>
                 <line
@@ -61,7 +81,7 @@ export const MapLegend = ({
                     textAnchor="middle"
                     dx={0}
                 >
-                    {tick}
+                    {tickLabel}
                 </text>
             </React.Fragment>
         )
@@ -80,7 +100,7 @@ export const MapLegend = ({
     }, [width, height, colorScale, min, max, boundsWidth, boundsHeight])
 
     return (
-        <Paper sx={{ 
+        <Paper sx={{
             backgroundColor: 'white',
             padding: 2,
             boxShadow: 0,

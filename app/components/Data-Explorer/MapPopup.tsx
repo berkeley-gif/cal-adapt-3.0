@@ -21,11 +21,11 @@ export const MapPopup = ({ longitude, latitude, value, min, max }: MapPopupProps
             className="map-popup"
         >
             <div className="map-popup_container">
-
-                <Typography variant="body2">
-                    Min: {min?.toFixed(2)}
-                </Typography>
-
+                {(min >= 0) &&
+                    <Typography variant="body2">
+                        Min: {min?.toFixed(2)}
+                    </Typography>
+                }
                 <Typography variant="body2">
                     Value: {value.toFixed(2)}
                 </Typography>

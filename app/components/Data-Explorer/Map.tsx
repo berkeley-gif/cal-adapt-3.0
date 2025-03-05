@@ -31,10 +31,8 @@ const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as con
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
 type MapProps = {
-    isColorRev: boolean
     metricSelected: number
     gwlSelected: number
-    customColorRamp: string
     globalWarmingLevels: { id: number; value: string }[]
     metrics: { id: number; title: string; variable: string; description: string; path: string; min_path: string; max_path: string; rescale: string; colormap: string }[]
 }
@@ -128,7 +126,7 @@ const throttledFetchPoint = throttle(async (
 })
 
 const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
-    ({ isColorRev, metricSelected, gwlSelected, customColorRamp, globalWarmingLevels, metrics }, ref) => {
+    ({ metricSelected, gwlSelected, globalWarmingLevels, metrics }, ref) => {
         // Refs
         const mapRef = useRef<MapRef | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
@@ -136,9 +134,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Forward the internal ref to the parent
         useImperativeHandle(ref, () => mapRef.current || undefined)
-
-        // TEMP: To try out different color maps
-        const [currentColorMap, setCurrentColorMap] = useState<string>('')
 
         // State
         const [mounted, setMounted] = useState(false)
@@ -167,16 +162,12 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Fetch tiles function
         const fetchTileJson = async () => {
-
-            // TEMP: For color wheel options
-            let colormap = isColorRev ? currentColorMap.toLowerCase() + '_r' : currentColorMap.toLowerCase()
-
+            let colormap = currentVariableData.colormap.toLowerCase()
             const params = {
                 url: currentVariableData.path,
                 variable: currentVariable,
                 datetime: currentGwl,
                 rescale: currentVariableData.rescale,
-                // TEMP: Change for color wheel options. Set to currentColorMap.toLowerCase()
                 colormap_name: colormap,
             }
 
@@ -209,13 +200,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setMounted(true)
         }, [])
 
-        // TEMP: For custom color ramp selector
-        useEffect(() => {
-            if (customColorRamp.length > 0 && customColorRamp !== currentVariableData.colormap) {
-                setCurrentColorMap(customColorRamp)
-            }
-
-        }, [customColorRamp])
 
         useEffect(() => {
             if (initialLoadRef.current) {
@@ -224,11 +208,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
 
             fetchTileJson()
-        }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl, currentColorMap, isColorRev])
-
-        useEffect(() => {
-            setCurrentColorMap(currentVariableData.colormap)
-        }, [metricSelected])
+        }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
         useEffect(() => {
             if (mapRef.current) {
@@ -292,14 +272,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             )
         }
 
-        // Cleanup throttledFetchPoint
-        useEffect(() => {
-            console.log('currentColorMap changed to: ', currentColorMap)
-        }, [currentColorMap])
 
         // Cleanup throttledFetchPoint
         useEffect(() => {
-            setCurrentColorMap(currentVariableData.colormap)
             return () => {
                 throttledFetchPoint.cancel()
             }
@@ -436,12 +411,11 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             zIndex: 2
                         }}>
                             <MapLegend
-                                colormap={currentColorMap}
+                                colormap={currentVariableData.colormap}
                                 min={parseFloat(currentVariableData.rescale.split(',')[0])}
                                 max={parseFloat(currentVariableData.rescale.split(',')[1])}
                                 title={currentVariableData.description}
-                                aria-label="Map legend"
-                                isColorRev={isColorRev}
+                                aria-label="Map legend" 
                             />
                         </div>
                     </div>
