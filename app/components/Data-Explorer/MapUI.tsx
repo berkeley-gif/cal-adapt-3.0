@@ -33,7 +33,7 @@ type MapUIProps = {
     setMetricSelected: (metric: number) => void;
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
-    metrics: { id: number; title: string; variable: string; description: string; path: string; rescale: string; colormap: string }[];
+    metrics: { id: number; title: string; variable: string; description: string; path: string; min_path?: string, max_path?: string, rescale: string; colormap: string }[];
 }
 
 const MenuProps: any = {

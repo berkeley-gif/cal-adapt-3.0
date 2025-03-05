@@ -36,7 +36,7 @@ type MapProps = {
     gwlSelected: number
     customColorRamp: string
     globalWarmingLevels: { id: number; value: string }[]
-    metrics: { id: number; title: string; variable: string; description: string; path: string; rescale: string; colormap: string }[]
+    metrics: { id: number; title: string; variable: string; description: string; path: string; min_path: string; max_path: string; rescale: string; colormap: string }[]
 }
 
 type TileJson = {
@@ -55,12 +55,24 @@ type GeocoderResult = {
 const throttledFetchPoint = throttle(async (
     lng: number,
     lat: number,
+    min_path: string,
+    max_path: string,
     path: string,
     variable: string,
     gwl: string,
     globalWarmingLevels: { id: number; value: string }[],
-    callback: (value: number | null) => void
+    callback: (values: { min: number | null, max: number | null, value: number | null }) => void
 ) => {
+    const results: {
+        min: number | null; max: number | null; value: number | null
+    } = {
+        min: null,
+        max: null,
+        value: null
+    }
+
+    const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
+
     try {
         const response = await fetch(
             `${BASE_URL}/point/${lng},${lat}?` +
@@ -70,14 +82,46 @@ const throttledFetchPoint = throttle(async (
 
         if (response.ok) {
             const data = await response.json()
-            const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
-            const value = data.data[gwlIndex]
-            callback(value ?? null)
+            results.value = data.data[gwlIndex]
         }
     } catch (error) {
         console.error('Error fetching point data:', error)
-        callback(null)
     }
+    if (min_path) {
+        try {
+            const minResponse = await fetch(
+                `${BASE_URL}/point/${lng},${lat}?` +
+                `url=${encodeURIComponent(min_path)}&` +
+                `variable=${variable}`
+            )
+
+            if (minResponse.ok) {
+                const data = await minResponse.json()
+                results.min = data.data[gwlIndex]
+                
+            }
+        } catch (error) {
+            console.error('Error fetching point data:', error)
+        }
+    }
+    if (max_path) {
+        try {
+            const maxResponse = await fetch(
+                `${BASE_URL}/point/${lng},${lat}?` +
+                `url=${encodeURIComponent(max_path)}&` +
+                `variable=${variable}`
+            )
+
+            if (maxResponse.ok) {
+                const data = await maxResponse.json()
+                results.max = data.data[gwlIndex]
+            }
+        } catch (error) {
+            console.error('Error fetching point data:', error)
+        }
+    }
+    console.log('results', results)
+    callback(results)
 }, THROTTLE_DELAY, {
     leading: true,  // Execute on the leading edge (immediate first call)
     trailing: true  // Execute on the trailing edge (final call)
@@ -103,6 +147,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const [hoverInfo, setHoverInfo] = useState<{
             longitude: number
             latitude: number
+            min: number | null
+            max: number | null
             value: number | null
         } | null>(null)
 
@@ -224,15 +270,19 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             throttledFetchPoint(
                 lng,
                 lat,
+                currentVariableData.min_path,
+                currentVariableData.max_path,
                 currentVariableData.path,
                 currentVariable,
                 currentGwl,
                 globalWarmingLevels,
-                (value) => {
+                ({ min, max, value }) => {
                     if (value !== null) {
                         setHoverInfo({
                             longitude: lng,
                             latitude: lat,
+                            min,
+                            max,
                             value
                         })
                     } else {
@@ -372,6 +422,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                 <MapPopup
                                     longitude={hoverInfo.longitude}
                                     latitude={hoverInfo.latitude}
+                                    min={hoverInfo.min}
+                                    max={hoverInfo.max}
                                     value={hoverInfo.value || 0}
                                     aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
                                 />
