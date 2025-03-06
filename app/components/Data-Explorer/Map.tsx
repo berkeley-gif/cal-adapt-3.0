@@ -71,6 +71,7 @@ const throttledFetchPoint = throttle(async (
 
     const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
 
+    // Retrieve value at point
     try {
         const response = await fetch(
             `${BASE_URL}/point/${lng},${lat}?` +
@@ -85,6 +86,7 @@ const throttledFetchPoint = throttle(async (
     } catch (error) {
         console.error('Error fetching point data:', error)
     }
+    // Retrieve min value at point
     if (min_path) {
         try {
             const minResponse = await fetch(
@@ -95,6 +97,8 @@ const throttledFetchPoint = throttle(async (
 
             if (minResponse.ok) {
                 const data = await minResponse.json()
+                console.log(data)
+                console.log('gwlIndex', gwlIndex)
                 results.min = data.data[gwlIndex]
                 
             }
@@ -102,6 +106,7 @@ const throttledFetchPoint = throttle(async (
             console.error('Error fetching point data:', error)
         }
     }
+    // Retrieve max value at point
     if (max_path) {
         try {
             const maxResponse = await fetch(
@@ -292,6 +297,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             if (!e.target) return
             mapRef.current = e.target as unknown as MapRef
             setMapLoaded(true)
+
+            e.target.getCanvas().style.cursor = 'pointer'
 
             const mapContainer = document.getElementById('map')
 

@@ -29,7 +29,6 @@ export const MapLegend = ({
     title,
 }: MapLegendProps) => {
     const colormapName = colormap.endsWith('_r') ? colormap.slice(0, -2) : colormap
-    console.log('colormapName', colormapName)
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     const boundsWidth = width - LEGEND_MARGIN.right - LEGEND_MARGIN.left - (2 * LABEL_MARGIN)
@@ -40,7 +39,6 @@ export const MapLegend = ({
         .domain([min, max])
 
     const interpolatorKey = `interpolate${colormapName}` as keyof typeof d3Chromatic
-    console.log('interpolatorKey', interpolatorKey)
     let interpolator = (d3Chromatic[interpolatorKey] as (t: number) => string) || undefined
 
     if (!interpolator) {
