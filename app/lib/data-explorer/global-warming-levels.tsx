@@ -1,4 +1,8 @@
 export const globalWarmingLevelsList = [
+    /**{
+        "id": 0,
+        "value": '0.8'
+    },**/
     {
         "id": 0,
         "value": '1.5'
