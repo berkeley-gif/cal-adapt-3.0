@@ -14,12 +14,25 @@ type DataExplorerProps = {
     data: any;
 }
 
+export type Metric = {
+    id: number
+    title: string
+    variable: string
+    description: string
+    short_desc: string
+    path: string
+    min_path?: string
+    max_path?: string
+    rescale: string
+    colormap: string
+}
+
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
 
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [metricSelected, setMetricSelected] = useState<number>(0)
-   
+
     // Temp: For reverse color options switch
     const switchLabel = { inputProps: { 'aria-label': 'Switch color options' } }
 

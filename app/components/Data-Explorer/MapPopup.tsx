@@ -2,7 +2,9 @@
 
 import { Popup } from 'react-map-gl'
 import Typography from '@mui/material/Typography'
+
 import '@/app/styles/dashboard/mapbox-map.scss'
+
 
 type MapPopupProps = {
     longitude: number
@@ -12,7 +14,7 @@ type MapPopupProps = {
     max: number | null
 }
 
-export const MapPopup = ({ longitude, latitude, value, min, max }: MapPopupProps) => {
+export const MapPopup = ({ longitude, latitude, value, min, max, metric }: MapPopupProps) => {
     return (
         <Popup
             longitude={longitude}
@@ -24,7 +26,7 @@ export const MapPopup = ({ longitude, latitude, value, min, max }: MapPopupProps
             <div className="map-popup_container">
                 <div className="description">
                     <Typography variant="body2">
-                        Annual change in extreme heat days
+                        {metric}
                     </Typography>
                 </div>
 

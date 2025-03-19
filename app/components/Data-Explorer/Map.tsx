@@ -10,6 +10,7 @@ import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
 
+import type { Metric } from './DataExplorer'
 import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
@@ -34,7 +35,7 @@ type MapProps = {
     metricSelected: number
     gwlSelected: number
     globalWarmingLevels: { id: number; value: string }[]
-    metrics: { id: number; title: string; variable: string; description: string; path: string; min_path: string; max_path: string; rescale: string; colormap: string }[]
+    metrics: Metric []
 }
 
 type TileJson = {
@@ -151,7 +152,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         } | null>(null)
 
         // Derived state variables 
-        const currentVariableData = metrics[metricSelected]
+        const currentVariableData: Metric  = metrics[metricSelected]
 
         if (!currentVariableData) {
             console.error('Invalid metric selected:', metricSelected)
@@ -405,6 +406,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     min={hoverInfo.min}
                                     max={hoverInfo.max}
                                     value={hoverInfo.value || 0}
+                                    metric={currentVariableData['short_desc']}
                                     aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
                                 />
                             )}
