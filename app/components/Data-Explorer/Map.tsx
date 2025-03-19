@@ -353,6 +353,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onMouseMove={handleHover}
                             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                             initialViewState={INITIAL_VIEW_STATE}
+                            //mapStyle="mapbox://styles/mapbox/outdoors-v12"
                             mapStyle="mapbox://styles/mapbox/light-v11"
                             scrollZoom={false}
                             minZoom={3.5}
