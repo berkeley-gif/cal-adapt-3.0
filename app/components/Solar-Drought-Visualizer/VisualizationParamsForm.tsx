@@ -15,6 +15,8 @@ import FormLabel from '@mui/material/FormLabel'
 import HtmlTooltip from '../Global/HtmlTooltip'
 
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { tooltipsList } from '@/app/lib/tooltips'
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -82,7 +84,7 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
                             <HtmlTooltip
                                 textFragment={
                                     <React.Fragment>
-                                        <p>A &quot;global warming level&quot; refers to the increase in global-mean temperature with respect to preindustrial conditions.</p>
+                                        <p>{tooltipsList[0].long_text}</p>
                                     </React.Fragment>
                                 }
                                 iconFragment={<InfoOutlinedIcon />}

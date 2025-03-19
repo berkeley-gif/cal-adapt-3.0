@@ -19,6 +19,7 @@ import Switch from '@mui/material/Switch'
 import type { Metric } from './DataExplorer'
 
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
+import { tooltipsList } from '@/app/lib/tooltips'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -29,7 +30,7 @@ type MapUIProps = {
     setMetricSelected: (metric: number) => void;
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
-    metrics: Metric [];
+    metrics: Metric[];
 }
 
 const MenuProps: any = {
@@ -51,7 +52,7 @@ const MenuProps: any = {
 }
 
 
-export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics}: MapUIProps) {
+export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
 
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
@@ -86,7 +87,7 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
                                             <HtmlTooltip
                                                 textFragment={
                                                     <React.Fragment>
-                                                        <p>The global warming level you would like to see displayed</p>
+                                                        <p>{tooltipsList[0].long_text}</p>
                                                     </React.Fragment>
                                                 }
                                                 iconFragment={<InfoOutlinedIcon />}
@@ -188,7 +189,8 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
                                 }}
                             >
                                 <Typography variant="body1">
-                                    Explore climate trends, visualize environmental data, and make informed decisions about California&#x27s future. Here&#x27s a quick guide to help you navigate the tool:
+                                    <p>Explore climate trends, visualize environmental data, and make informed decisions about California’s future. </p>
+                                    <p>Here’s a quick guide to help you navigate the tool:</p>
                                 </Typography>
 
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
@@ -198,13 +200,16 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
                                 <Typography variant="body1">
                                     Use the dropdown menu to select a global warming scenario (e.g., 1.5°C, 2.0°C).
                                     This will adjust the data overlays to reflect projected changes under the selected warming level.
+                                    (<a href="https://climate.gov" target='_blank'><span className="underline">Climate.gov</span></a>  has more information)
+
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
                                     Metric Selector
                                 </Typography>
                                 <Typography variant="body1">
-                                    Choose a climate metric to display on the map (e.g., temperature, precipitation, sea level rise).
+                                    Choose a climate metric to display on the map (e.g., extreme temperature, extreme precipitation, fire weather index)
                                     Each metric provides a unique perspective on how climate change impacts various regions.
+                                    (A plain language description of metrics can be found <a href='https://docs.google.com/document/d/19UB672X38z21QlEkieWEwWLwZQWU_L7wMW5zq9bo7tc/edit?usp=sharing' target='_blank'><span className="underline">here</span></a>)
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
                                     Interactive Map Features
