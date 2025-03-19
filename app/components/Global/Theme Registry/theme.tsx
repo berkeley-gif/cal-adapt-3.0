@@ -87,6 +87,10 @@ let theme = createTheme({
     },
     body2: {
       color: "#6F6F6F"
+    },
+    caption: {
+      fontSize: '0.75rem',
+      color: "#6F6F6F"
     }
   },
   shape: {
