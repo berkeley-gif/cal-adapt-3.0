@@ -97,8 +97,6 @@ const throttledFetchPoint = throttle(async (
 
             if (minResponse.ok) {
                 const data = await minResponse.json()
-                console.log(data)
-                console.log('gwlIndex', gwlIndex)
                 results.min = data.data[gwlIndex]
                 
             }
