@@ -8,6 +8,13 @@
   max-width: 100%; 
   overflow: hidden;
 
+  &__value-type {
+    pointer-events: auto; 
+    &:hover {
+      z-index: 20;
+    }
+  }
+
   &__parameter-selection {
     display: flex;
     gap: 15px;

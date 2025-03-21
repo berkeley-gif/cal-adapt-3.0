@@ -200,6 +200,23 @@ theme = createTheme(theme, {
         },
       },
     },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          backgroundColor: theme.palette.primaryBlue.main,
+        }
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            color: theme.palette.primaryBlue.main,
+            fontWeight: "bold"
+          }
+        }
+      }
+    },
     MuiTooltip: {
       tooltip: {
         color: theme.palette.primaryBlue.main, // Default unselected state

@@ -60,6 +60,7 @@
 
 .map-popup {
   max-width: 400px !important;
+  z-index: 10;
   .values {
     display: flex;
     gap: 15px;
@@ -73,7 +74,6 @@
     align-items: center;
   }
   .title {
-    
     width: 100%;
     text-align: center;
   }

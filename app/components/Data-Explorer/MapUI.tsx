@@ -16,8 +16,11 @@ import Fade from '@mui/material/Fade'
 import Fab from '@mui/material/Fab'
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined'
 import Switch from '@mui/material/Switch'
-import type { Metric } from './DataExplorer'
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
+
+import type { Metric } from './DataExplorer'
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { tooltipsList } from '@/app/lib/tooltips'
 
@@ -57,6 +60,13 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
 
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
+    const [valueType, setValueType] = React.useState(0);
+
+    const handleValueTypeChange = (event: React.SyntheticEvent, newValue: number) => {
+        setValueType(newValue);
+    };
+
+
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setHelpAnchorEl(event.currentTarget);
     }
@@ -77,6 +87,18 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
                 <Grid container direction="column" sx={{ height: '100%' }}>
                     {/* Top Columns */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <div className="map-ui__value-type">
+                                <Box sx={{ width: '100%' }}>
+                                    <Tabs value={valueType} onChange={handleValueTypeChange} centered>
+                                        <Tab label="Delta" />
+                                        <Tab label="Absolute" />
+                                    </Tabs>
+                                </Box>
+                            </div>
+                        </Grid>
+                    </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={4}>
                             <div className='map-ui__parameter-selection'>
