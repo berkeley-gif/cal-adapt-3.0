@@ -12,9 +12,10 @@ type MapPopupProps = {
     value: number
     min: number | null
     max: number | null
+    title: string
 }
 
-export const MapPopup = ({ longitude, latitude, value, min, max, metric }: MapPopupProps) => {
+export const MapPopup = ({ longitude, latitude, value, min, max, title }: MapPopupProps) => {
     return (
         <Popup
             longitude={longitude}
@@ -26,7 +27,7 @@ export const MapPopup = ({ longitude, latitude, value, min, max, metric }: MapPo
             <div className="map-popup_container">
                 <div className="description">
                     <Typography variant="body2">
-                        {metric}
+                        {title}
                     </Typography>
                 </div>
 

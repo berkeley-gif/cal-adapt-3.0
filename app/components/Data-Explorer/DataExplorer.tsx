@@ -10,6 +10,8 @@ import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
 import { metricsList } from '@/app/lib/data-explorer/metrics'
 
+export type ValueType = 'abs' | 'del'
+
 type DataExplorerProps = {
     data: any;
 }
@@ -20,9 +22,20 @@ export type Metric = {
     variable: string
     description: string
     short_desc: string
-    path: string
-    min_path?: string
-    max_path?: string
+    abs: {
+        mean: string
+        min_path?: string
+        max_path?: string
+        description: string
+        short_desc: string
+    }
+    del: {
+        mean: string
+        min_path?: string
+        max_path?: string
+        description: string
+        short_desc: string
+    }
     rescale: string
     colormap: string
 }
@@ -32,6 +45,7 @@ export default function DataExplorer({ data }: DataExplorerProps) {
 
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [metricSelected, setMetricSelected] = useState<number>(0)
+    const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
 
     // Temp: For reverse color options switch
     const switchLabel = { inputProps: { 'aria-label': 'Switch color options' } }
@@ -53,12 +67,15 @@ export default function DataExplorer({ data }: DataExplorerProps) {
                 setGwlSelected={setGwlSelected}
                 globalWarmingLevels={globalWarmingLevelsList}
                 metrics={metricsList}
+                valueType={valueType}
+                setValueType={setValueType}
             />
             <MapboxMap
                 gwlSelected={gwlSelected}
                 metricSelected={metricSelected}
                 globalWarmingLevels={globalWarmingLevelsList}
                 metrics={metricsList}
+                valueType={valueType}
             />
         </Grid>
     )

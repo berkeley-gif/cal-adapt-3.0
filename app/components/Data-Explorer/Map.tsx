@@ -15,6 +15,7 @@ import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
 import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
+import type { ValueType } from './DataExplorer'
 
 const INITIAL_VIEW_STATE = {
     longitude: -120,
@@ -31,11 +32,13 @@ const THROTTLE_DELAY = 100 as const
 const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
+
 type MapProps = {
     metricSelected: number
     gwlSelected: number
     globalWarmingLevels: { id: number; value: string }[]
-    metrics: Metric []
+    metrics: Metric[]
+    valueType: ValueType
 }
 
 type TileJson = {
@@ -99,7 +102,7 @@ const throttledFetchPoint = throttle(async (
             if (minResponse.ok) {
                 const data = await minResponse.json()
                 results.min = data.data[gwlIndex]
-                
+
             }
         } catch (error) {
             console.error('Error fetching point data:', error)
@@ -130,7 +133,7 @@ const throttledFetchPoint = throttle(async (
 })
 
 const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
-    ({ metricSelected, gwlSelected, globalWarmingLevels, metrics }, ref) => {
+    ({ metricSelected, gwlSelected, globalWarmingLevels, metrics, valueType }, ref) => {
         // Refs
         const mapRef = useRef<MapRef | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
@@ -152,7 +155,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         } | null>(null)
 
         // Derived state variables 
-        const currentVariableData: Metric  = metrics[metricSelected]
+        const currentVariableData: Metric = metrics[metricSelected]
+        const paths = currentVariableData[`${valueType}`] as { mean: string; min_path?: string; max_path?: string; description: string; short_desc: string }
 
         if (!currentVariableData) {
             console.error('Invalid metric selected:', metricSelected)
@@ -168,7 +172,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const fetchTileJson = async () => {
             let colormap = currentVariableData.colormap.toLowerCase()
             const params = {
-                url: currentVariableData.path,
+                url: paths.mean,
                 variable: currentVariable,
                 datetime: currentGwl,
                 rescale: currentVariableData.rescale,
@@ -254,9 +258,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             throttledFetchPoint(
                 lng,
                 lat,
-                currentVariableData.min_path,
-                currentVariableData.max_path,
-                currentVariableData.path,
+                paths.min_path || '',
+                paths.max_path || '',
+                paths.mean,
                 currentVariable,
                 currentGwl,
                 globalWarmingLevels,
@@ -407,7 +411,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     min={hoverInfo.min}
                                     max={hoverInfo.max}
                                     value={hoverInfo.value || 0}
-                                    metric={currentVariableData['short_desc']}
+                                    title={paths.short_desc}
                                     aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
                                 />
                             )}
@@ -422,8 +426,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                 colormap={currentVariableData.colormap}
                                 min={parseFloat(currentVariableData.rescale.split(',')[0])}
                                 max={parseFloat(currentVariableData.rescale.split(',')[1])}
-                                title={currentVariableData.description}
-                                aria-label="Map legend" 
+                                title={paths.description}
+                                aria-label="Map legend"
                             />
                         </div>
                     </div>

@@ -23,6 +23,7 @@ import Tab from '@mui/material/Tab';
 import type { Metric } from './DataExplorer'
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { tooltipsList } from '@/app/lib/tooltips'
+import type { ValueType } from './DataExplorer'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -34,6 +35,8 @@ type MapUIProps = {
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
     metrics: Metric[];
+    valueType: ValueType;
+    setValueType: (valueType: ValueType) => void;
 }
 
 const MenuProps: any = {
@@ -55,20 +58,18 @@ const MenuProps: any = {
 }
 
 
-export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
+export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
 
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
-    const [valueType, setValueType] = React.useState(0);
-
-    const handleValueTypeChange = (event: React.SyntheticEvent, newValue: number) => {
-        setValueType(newValue);
-    };
+    const handleValueTypeChange = (event: React.SyntheticEvent, newValue: ValueType) => {
+        setValueType(newValue)
+    }
 
 
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setHelpAnchorEl(event.currentTarget);
+        setHelpAnchorEl(event.currentTarget)
     }
 
     const handleClose = () => {
@@ -92,8 +93,8 @@ export default function MapUI({ metricSelected, gwlSelected, setMetricSelected, 
                             <div className="map-ui__value-type">
                                 <Box sx={{ width: '100%' }}>
                                     <Tabs value={valueType} onChange={handleValueTypeChange} centered>
-                                        <Tab label="Delta" />
-                                        <Tab label="Absolute" />
+                                        <Tab value="abs" label="Absolute" />
+                                        <Tab value="del" label="Delta" />
                                     </Tabs>
                                 </Box>
                             </div>
