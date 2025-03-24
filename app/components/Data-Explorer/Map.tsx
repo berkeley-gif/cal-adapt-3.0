@@ -156,13 +156,13 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
-        const paths = currentVariableData[`${valueType}`] as { mean: string; min_path?: string; max_path?: string; description: string; short_desc: string }
+        const paths = currentVariableData[`${valueType}`] as { mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string }
 
         if (!currentVariableData) {
             console.error('Invalid metric selected:', metricSelected)
         }
 
-        const currentVariable = currentVariableData.variable
+        const currentVariable = paths.variable
 
         const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[0].value
 

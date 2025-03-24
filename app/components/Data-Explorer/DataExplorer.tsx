@@ -28,6 +28,7 @@ export type Metric = {
         max_path?: string
         description: string
         short_desc: string
+        variable: string
     }
     del: {
         mean: string
@@ -35,6 +36,7 @@ export type Metric = {
         max_path?: string
         description: string
         short_desc: string
+        variable: string
     }
     rescale: string
     colormap: string
