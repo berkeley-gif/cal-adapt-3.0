@@ -10,6 +10,7 @@
 
   &__value-type {
     pointer-events: auto; 
+    margin-bottom: 15px;
   }
 
   &__parameter-selection {
@@ -20,6 +21,7 @@
 
   &__help-button {
     pointer-events: auto;
+    margin-right: 0 !important;
   }
 }
 

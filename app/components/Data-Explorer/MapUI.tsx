@@ -60,13 +60,19 @@ const MenuProps: any = {
 
 export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
-
+    const mapUIWidth = open ? `calc(100% - ${drawerWidth})` : 'calc(100% - 72px)'
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
+    const fullWidthUIItem = open ? `100%` : `calc(100% - ${drawerWidth} - 72px)`
     const handleValueTypeChange = (event: React.SyntheticEvent, newValue: ValueType) => {
         setValueType(newValue)
     }
 
+    const [renderKey, setRenderKey] = useState(0)
+
+    useEffect(() => {
+        setRenderKey((prev) => prev + 1);
+    }, [open])
 
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setHelpAnchorEl(event.currentTarget)
@@ -79,10 +85,9 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
     const helpOpen = Boolean(helpAnchorEl);
     const id = helpOpen ? 'simple-popover' : undefined
 
-
     return (
         <div className="map-ui" style={{
-            width: open ? `calc(100% - ${drawerWidth}px + 72px)` : '100%',
+            width: mapUIWidth,
             transition: 'width 225ms cubic-bezier(0.4, 0, 0.6, 1)',
         }}>
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
@@ -91,7 +96,9 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <div className="map-ui__value-type">
-                                <Box sx={{ width: '100%' }}>
+                                <Box key={renderKey} sx={{
+                                    width: fullWidthUIItem,
+                                }}>
                                     <Tabs value={valueType} onChange={handleValueTypeChange} centered>
                                         <Tab value="abs" label="Absolute" />
                                         <Tab value="del" label="Delta" />
