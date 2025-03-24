@@ -16,32 +16,6 @@ type DataExplorerProps = {
     data: any;
 }
 
-export type Metric = {
-    id: number
-    title: string
-    variable: string
-    description: string
-    short_desc: string
-    abs: {
-        mean: string
-        min_path?: string
-        max_path?: string
-        description: string
-        short_desc: string
-        variable: string
-    }
-    del: {
-        mean: string
-        min_path?: string
-        max_path?: string
-        description: string
-        short_desc: string
-        variable: string
-    }
-    rescale: string
-    colormap: string
-}
-
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
 

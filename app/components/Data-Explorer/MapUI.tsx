@@ -20,7 +20,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 
-import type { Metric } from './DataExplorer'
+import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { tooltipsList } from '@/app/lib/tooltips'
 import type { ValueType } from './DataExplorer'
@@ -92,24 +92,19 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
         }}>
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
                 <Grid container direction="column" sx={{ height: '100%' }}>
-                    {/* Top Columns */}
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                        <Grid item xs={3}>
+                            <div className='map-ui__parameter-selection'>
                             <div className="map-ui__value-type">
                                 <Box key={renderKey} sx={{
                                     width: fullWidthUIItem,
                                 }}>
-                                    <Tabs value={valueType} onChange={handleValueTypeChange} centered>
+                                    <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
                                         <Tab value="abs" label="Absolute" />
                                         <Tab value="del" label="Delta" />
                                     </Tabs>
                                 </Box>
                             </div>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4}>
-                            <div className='map-ui__parameter-selection'>
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
@@ -184,7 +179,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                 </div>
                             </div>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={9}>
                         </Grid>
                     </Grid>
                     {/* Spacer */}

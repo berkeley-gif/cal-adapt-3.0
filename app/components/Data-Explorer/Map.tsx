@@ -10,7 +10,7 @@ import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
 
-import type { Metric } from './DataExplorer'
+import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
@@ -156,7 +156,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
-        const paths = currentVariableData[`${valueType}`] as { mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string }
+        const paths = currentVariableData[`${valueType}`] as { colormap: string, mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string, rescale: string }
 
         if (!currentVariableData) {
             console.error('Invalid metric selected:', metricSelected)
@@ -170,12 +170,12 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Fetch tiles function
         const fetchTileJson = async () => {
-            let colormap = currentVariableData.colormap.toLowerCase()
+            let colormap = paths.colormap.toLowerCase()
             const params = {
                 url: paths.mean,
                 variable: currentVariable,
                 datetime: currentGwl,
-                rescale: currentVariableData.rescale,
+                rescale: paths.rescale,
                 colormap_name: colormap,
             }
 
@@ -423,9 +423,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             zIndex: 2
                         }}>
                             <MapLegend
-                                colormap={currentVariableData.colormap}
-                                min={parseFloat(currentVariableData.rescale.split(',')[0])}
-                                max={parseFloat(currentVariableData.rescale.split(',')[1])}
+                                colormap={paths.colormap}
+                                min={parseFloat(paths.rescale.split(',')[0])}
+                                max={parseFloat(paths.rescale.split(',')[1])}
                                 title={paths.description}
                                 aria-label="Map legend"
                             />
