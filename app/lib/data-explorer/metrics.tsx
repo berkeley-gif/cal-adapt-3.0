@@ -84,7 +84,7 @@ export const metricsList: Metric[] = [
             "short_desc": 'Absolute median annual number of days with (FFWI) value greater than 50',
             "variable": 'ffwige50',
             "rescale": '0,3650',
-            "colormap": 'gist_heat',
+            "colormap": 'gist_heat_r',
         },
         "del": {
             "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/ffwige50/d03/ffwige50.zarr',

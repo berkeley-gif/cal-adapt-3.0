@@ -38,25 +38,43 @@ export const MapLegend = ({
         .range([LABEL_MARGIN, boundsWidth + LABEL_MARGIN])
         .domain([min, max])
 
-    const interpolatorKey = `interpolate${colormapName}` as keyof typeof d3Chromatic
-    let interpolator = (d3Chromatic[interpolatorKey] as (t: number) => string) || undefined
+    const gistHeatInterpolator = d3.scaleSequential(d3.interpolateRgbBasis([
+        "#000000", // Black
+        "#800000", // Dark red
+        "#FF4000", // Orange-red
+        "#FFFF00", // Yellow
+        "#FFFFFF"  // White
+    ])).domain([0, 1]); // Normalize the input domain from 0 to 1
 
-    if (!interpolator) {
-        console.error(`Interpolator for ${colormapName} not found in d3`)
-        interpolator = d3.interpolateInferno // Fallback to a default interpolator
-    }
+    let colorScale
 
-    // Reverse the interpolator manually if colormap ends with "_r"
-    if (colormap.endsWith('_r')) {
-        const originalInterpolator = interpolator
-        interpolator = (t: number) => {
-            return originalInterpolator(1 - t)
+
+    if (colormapName == 'gist_heat') {
+        colorScale = d3.scaleSequential<string>()
+        .domain([min, max])
+        .interpolator(gistHeatInterpolator)
+    } else {
+        const interpolatorKey = `interpolate${colormapName}` as keyof typeof d3Chromatic
+        let interpolator = (d3Chromatic[interpolatorKey] as (t: number) => string) || undefined
+    
+        if (!interpolator) {
+            console.error(`Interpolator for ${colormapName} not found in d3`)
+            interpolator = d3.interpolateInferno // Fallback to a default interpolator
         }
-    }
+    
+        // Reverse the interpolator manually if colormap ends with "_r"
+        if (colormap.endsWith('_r')) {
+            const originalInterpolator = interpolator
+            interpolator = (t: number) => {
+                return originalInterpolator(1 - t)
+            }
+        }
 
-    const colorScale = d3.scaleSequential<string>()
+        colorScale = d3.scaleSequential<string>()
         .domain([min, max])
         .interpolator(interpolator)
+    }
+
 
     const ticks = [min, ...xScale.ticks(4), max]
     const allTicks = ticks.map((tick, idx) => {
