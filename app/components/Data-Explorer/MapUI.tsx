@@ -16,24 +16,27 @@ import Fade from '@mui/material/Fade'
 import Fab from '@mui/material/Fab'
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined'
 import Switch from '@mui/material/Switch'
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
+
+import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
+import { tooltipsList } from '@/app/lib/tooltips'
+import type { ValueType } from './DataExplorer'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
 type MapUIProps = {
-    isColorRev: boolean;
-    setIsColorRev: (isColorRev: boolean) => void;
     metricSelected: number;
     gwlSelected: number;
-    customColorRamp: string;
-    customColorRampList: string[];
-    setCustomColorRamp: (color: string) => void;
     setMetricSelected: (metric: number) => void;
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
-    metrics: { id: number; title: string; variable: string; description: string; path: string; rescale: string; colormap: string }[];
+    metrics: Metric[];
+    valueType: ValueType;
+    setValueType: (valueType: ValueType) => void;
 }
 
 const MenuProps: any = {
@@ -55,13 +58,24 @@ const MenuProps: any = {
 }
 
 
-export default function MapUI({ metricSelected, gwlSelected, customColorRamp, customColorRampList, setCustomColorRamp, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics, isColorRev, setIsColorRev }: MapUIProps) {
+export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
-
+    const mapUIWidth = open ? `calc(100% - ${drawerWidth})` : 'calc(100% - 72px)'
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
+    const fullWidthUIItem = open ? `100%` : `calc(100% - ${drawerWidth} - 72px)`
+    const handleValueTypeChange = (event: React.SyntheticEvent, newValue: ValueType) => {
+        setValueType(newValue)
+    }
+
+    const [renderKey, setRenderKey] = useState(0)
+
+    useEffect(() => {
+        setRenderKey((prev) => prev + 1);
+    }, [open])
+
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setHelpAnchorEl(event.currentTarget);
+        setHelpAnchorEl(event.currentTarget)
     }
 
     const handleClose = () => {
@@ -71,18 +85,26 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
     const helpOpen = Boolean(helpAnchorEl);
     const id = helpOpen ? 'simple-popover' : undefined
 
-
     return (
         <div className="map-ui" style={{
-            width: open ? `calc(100% - ${drawerWidth}px + 72px)` : '100%',
+            width: mapUIWidth,
             transition: 'width 225ms cubic-bezier(0.4, 0, 0.6, 1)',
         }}>
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
                 <Grid container direction="column" sx={{ height: '100%' }}>
-                    {/* Top Columns */}
                     <Grid container spacing={2}>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                             <div className='map-ui__parameter-selection'>
+                            <div className="map-ui__value-type">
+                                <Box key={renderKey} sx={{
+                                    width: fullWidthUIItem,
+                                }}>
+                                    <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
+                                        <Tab value="abs" label="Absolute" />
+                                        <Tab value="del" label="Delta" />
+                                    </Tabs>
+                                </Box>
+                            </div>
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
@@ -90,7 +112,7 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
                                             <HtmlTooltip
                                                 textFragment={
                                                     <React.Fragment>
-                                                        <p>The global warming level you would like to see displayed</p>
+                                                        <p>{tooltipsList[0].long_text}</p>
                                                     </React.Fragment>
                                                 }
                                                 iconFragment={<InfoOutlinedIcon />}
@@ -155,52 +177,9 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
 
                                     </div>
                                 </div>
-                                <div className="container container--transparent">
-                                    <div className="option-group option-group--vertical">
-                                        <div className="option-group__title">
-                                            <Typography variant="body2">Custom Color Ramp</Typography>
-                                            <HtmlTooltip
-                                                textFragment={
-                                                    <React.Fragment>
-                                                        <p>The color ramp you would like to see</p>
-                                                    </React.Fragment>
-                                                }
-                                                iconFragment={<InfoOutlinedIcon />}
-                                                TransitionComponent={Fade}
-                                                TransitionProps={{ timeout: 600 }}
-                                                placement="right-end"
-                                            />
-                                        </div>
-
-                                        <FormControl>
-                                            <Select
-                                                value={customColorRamp}
-                                                onChange={(event: any) => {
-                                                    setCustomColorRamp(event.target.value as string)
-                                                }}
-                                                MenuProps={MenuProps}
-                                                sx={{ mt: '15px', width: '220px' }}
-                                            >
-                                                {customColorRampList.map((colorRamp) => (
-                                                    <MenuItem key={colorRamp} value={colorRamp}>
-                                                        <ListItemText primary={colorRamp} />
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                </div>
-                                <div className="container container--transparent">
-                                    <div className="option-group ">
-                                        <div className="option-group__title">
-                                            <Typography variant="body2">Reverse Color Ramp</Typography>
-                                        </div>
-                                        <Switch checked={isColorRev} onChange={() => setIsColorRev(!isColorRev)} />
-                                    </div>
-                                </div>
                             </div>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={9}>
                         </Grid>
                     </Grid>
                     {/* Spacer */}
@@ -235,7 +214,8 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
                                 }}
                             >
                                 <Typography variant="body1">
-                                    Explore climate trends, visualize environmental data, and make informed decisions about California&#x27s future. Here&#x27s a quick guide to help you navigate the tool:
+                                    <p>Explore climate trends, visualize environmental data, and make informed decisions about California’s future. </p>
+                                    <p>Here’s a quick guide to help you navigate the tool:</p>
                                 </Typography>
 
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
@@ -245,13 +225,16 @@ export default function MapUI({ metricSelected, gwlSelected, customColorRamp, cu
                                 <Typography variant="body1">
                                     Use the dropdown menu to select a global warming scenario (e.g., 1.5°C, 2.0°C).
                                     This will adjust the data overlays to reflect projected changes under the selected warming level.
+                                    (<a href="https://climate.gov" target='_blank'><span className="underline">Climate.gov</span></a>  has more information)
+
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
                                     Metric Selector
                                 </Typography>
                                 <Typography variant="body1">
-                                    Choose a climate metric to display on the map (e.g., temperature, precipitation, sea level rise).
+                                    Choose a climate metric to display on the map (e.g., extreme temperature, extreme precipitation, fire weather index)
                                     Each metric provides a unique perspective on how climate change impacts various regions.
+                                    (A plain language description of metrics can be found <a href='https://docs.google.com/document/d/19UB672X38z21QlEkieWEwWLwZQWU_L7wMW5zq9bo7tc/edit?usp=sharing' target='_blank'><span className="underline">here</span></a>)
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
                                     Interactive Map Features

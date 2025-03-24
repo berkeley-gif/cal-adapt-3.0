@@ -7,6 +7,7 @@
 
     #map {
       width: 100%;
+      cursor: pointer;
     }
 
     &__legend {
@@ -38,22 +39,47 @@
 }
 
 .mapboxgl-ctrl-geocoder.mapboxgl-ctrl {
-    // so geocoder component has same styling as no-data legend
-    width: 275px !important;
-    box-shadow: none !important;
+  // so geocoder component has same styling as no-data legend
+  width: 275px !important;
+  box-shadow: none !important;
 }
 
 .mapboxgl-popup.map-popup {
-    .mapboxgl-popup-content {
-        background-color: white;
-        border: 0;
-        border-radius: 4px;
-        padding: 10px 16px;
-        box-shadow: none;
-    }
+  .mapboxgl-popup-content {
+    background-color: white;
+    border: 0;
+    border-radius: 12px;
+    padding: 16px 40px;
+    box-shadow: none;
+  }
 
-    .mapboxgl-popup-tip {
-        border-top-color:  white;
-    }
+  .mapboxgl-popup-tip {
+    border-top-color: white;
+  }
 }
 
+.map-popup {
+  max-width: 400px !important;
+
+  .values {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 7px;
+    justify-content: center;
+    align-items: center;
+  }
+  .value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .title {
+    width: 100%;
+    text-align: center;
+  }
+  .description {
+    margin-bottom: 15px;
+    width: 100%;
+    text-align: center;
+  }
+}

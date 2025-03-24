@@ -10,10 +10,12 @@ import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
 
+import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
 import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
+import type { ValueType } from './DataExplorer'
 
 const INITIAL_VIEW_STATE = {
     longitude: -120,
@@ -30,13 +32,13 @@ const THROTTLE_DELAY = 100 as const
 const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
+
 type MapProps = {
-    isColorRev: boolean
     metricSelected: number
     gwlSelected: number
-    customColorRamp: string
     globalWarmingLevels: { id: number; value: string }[]
-    metrics: { id: number; title: string; variable: string; description: string; path: string; rescale: string; colormap: string }[]
+    metrics: Metric[]
+    valueType: ValueType
 }
 
 type TileJson = {
@@ -55,12 +57,25 @@ type GeocoderResult = {
 const throttledFetchPoint = throttle(async (
     lng: number,
     lat: number,
+    min_path: string,
+    max_path: string,
     path: string,
     variable: string,
     gwl: string,
     globalWarmingLevels: { id: number; value: string }[],
-    callback: (value: number | null) => void
+    callback: (values: { min: number | null, max: number | null, value: number | null }) => void
 ) => {
+    const results: {
+        min: number | null; max: number | null; value: number | null
+    } = {
+        min: null,
+        max: null,
+        value: null
+    }
+
+    const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
+
+    // Retrieve value at point
     try {
         const response = await fetch(
             `${BASE_URL}/point/${lng},${lat}?` +
@@ -70,21 +85,54 @@ const throttledFetchPoint = throttle(async (
 
         if (response.ok) {
             const data = await response.json()
-            const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
-            const value = data.data[gwlIndex]
-            callback(value ?? null)
+            results.value = data.data[gwlIndex]
         }
     } catch (error) {
         console.error('Error fetching point data:', error)
-        callback(null)
     }
+    // Retrieve min value at point
+    if (min_path) {
+        try {
+            const minResponse = await fetch(
+                `${BASE_URL}/point/${lng},${lat}?` +
+                `url=${encodeURIComponent(min_path)}&` +
+                `variable=${variable}`
+            )
+
+            if (minResponse.ok) {
+                const data = await minResponse.json()
+                results.min = data.data[gwlIndex]
+
+            }
+        } catch (error) {
+            console.error('Error fetching point data:', error)
+        }
+    }
+    // Retrieve max value at point
+    if (max_path) {
+        try {
+            const maxResponse = await fetch(
+                `${BASE_URL}/point/${lng},${lat}?` +
+                `url=${encodeURIComponent(max_path)}&` +
+                `variable=${variable}`
+            )
+
+            if (maxResponse.ok) {
+                const data = await maxResponse.json()
+                results.max = data.data[gwlIndex]
+            }
+        } catch (error) {
+            console.error('Error fetching point data:', error)
+        }
+    }
+    callback(results)
 }, THROTTLE_DELAY, {
     leading: true,  // Execute on the leading edge (immediate first call)
     trailing: true  // Execute on the trailing edge (final call)
 })
 
 const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
-    ({ isColorRev, metricSelected, gwlSelected, customColorRamp, globalWarmingLevels, metrics }, ref) => {
+    ({ metricSelected, gwlSelected, globalWarmingLevels, metrics, valueType }, ref) => {
         // Refs
         const mapRef = useRef<MapRef | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
@@ -93,9 +141,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         // Forward the internal ref to the parent
         useImperativeHandle(ref, () => mapRef.current || undefined)
 
-        // TEMP: To try out different color maps
-        const [currentColorMap, setCurrentColorMap] = useState<string>('')
-
         // State
         const [mounted, setMounted] = useState(false)
         const [mapLoaded, setMapLoaded] = useState(false)
@@ -103,17 +148,20 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const [hoverInfo, setHoverInfo] = useState<{
             longitude: number
             latitude: number
+            min: number | null
+            max: number | null
             value: number | null
         } | null>(null)
 
         // Derived state variables 
-        const currentVariableData = metrics[metricSelected]
+        const currentVariableData: Metric = metrics[metricSelected]
+        const paths = currentVariableData[`${valueType}`] as { colormap: string, mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string, rescale: string }
 
         if (!currentVariableData) {
             console.error('Invalid metric selected:', metricSelected)
         }
 
-        const currentVariable = currentVariableData.variable
+        const currentVariable = paths.variable
 
         const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[0].value
 
@@ -121,20 +169,16 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Fetch tiles function
         const fetchTileJson = async () => {
-
-            // TEMP: For color wheel options
-            let colormap = isColorRev ? currentColorMap.toLowerCase() + '_r' : currentColorMap.toLowerCase()
-
+            let colormap = paths.colormap.toLowerCase()
             const params = {
-                url: currentVariableData.path,
+                url: paths.mean,
                 variable: currentVariable,
                 datetime: currentGwl,
-                rescale: currentVariableData.rescale,
-                // TEMP: Change for color wheel options. Set to currentColorMap.toLowerCase()
+                rescale: paths.rescale,
                 colormap_name: colormap,
             }
 
-            console.log('fetchTileJson called with params', params)
+            
             const queryString = Object.entries(params)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')
@@ -143,6 +187,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
 
             // debug: log the request url
+            // console.log('fetchTileJson called with params', params)
             // console.log('Fetching TileJSON with url:', url)
 
             try {
@@ -163,13 +208,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setMounted(true)
         }, [])
 
-        // TEMP: For custom color ramp selector
-        useEffect(() => {
-            if (customColorRamp.length > 0 && customColorRamp !== currentVariableData.colormap) {
-                setCurrentColorMap(customColorRamp)
-            }
-
-        }, [customColorRamp])
 
         useEffect(() => {
             if (initialLoadRef.current) {
@@ -178,11 +216,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
 
             fetchTileJson()
-        }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl, currentColorMap, isColorRev])
-
-        useEffect(() => {
-            setCurrentColorMap(currentVariableData.colormap)
-        }, [metricSelected])
+        }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
         useEffect(() => {
             if (mapRef.current) {
@@ -224,15 +258,19 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             throttledFetchPoint(
                 lng,
                 lat,
-                currentVariableData.path,
+                paths.min_path || '',
+                paths.max_path || '',
+                paths.mean,
                 currentVariable,
                 currentGwl,
                 globalWarmingLevels,
-                (value) => {
+                ({ min, max, value }) => {
                     if (value !== null) {
                         setHoverInfo({
                             longitude: lng,
                             latitude: lat,
+                            min,
+                            max,
                             value
                         })
                     } else {
@@ -242,14 +280,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             )
         }
 
-        // Cleanup throttledFetchPoint
-        useEffect(() => {
-            console.log('currentColorMap changed to: ', currentColorMap)
-        }, [currentColorMap])
 
         // Cleanup throttledFetchPoint
         useEffect(() => {
-            setCurrentColorMap(currentVariableData.colormap)
             return () => {
                 throttledFetchPoint.cancel()
             }
@@ -267,6 +300,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             if (!e.target) return
             mapRef.current = e.target as unknown as MapRef
             setMapLoaded(true)
+
+            e.target.getCanvas().style.cursor = 'pointer'
 
             const mapContainer = document.getElementById('map')
 
@@ -322,6 +357,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onMouseMove={handleHover}
                             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                             initialViewState={INITIAL_VIEW_STATE}
+                            //mapStyle="mapbox://styles/mapbox/outdoors-v12"
                             mapStyle="mapbox://styles/mapbox/light-v11"
                             scrollZoom={false}
                             minZoom={3.5}
@@ -372,7 +408,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                 <MapPopup
                                     longitude={hoverInfo.longitude}
                                     latitude={hoverInfo.latitude}
+                                    min={hoverInfo.min}
+                                    max={hoverInfo.max}
                                     value={hoverInfo.value || 0}
+                                    title={paths.short_desc}
                                     aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
                                 />
                             )}
@@ -384,12 +423,11 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             zIndex: 2
                         }}>
                             <MapLegend
-                                colormap={currentColorMap}
-                                min={parseFloat(currentVariableData.rescale.split(',')[0])}
-                                max={parseFloat(currentVariableData.rescale.split(',')[1])}
-                                title={currentVariableData.description}
+                                colormap={paths.colormap}
+                                min={parseFloat(paths.rescale.split(',')[0])}
+                                max={parseFloat(paths.rescale.split(',')[1])}
+                                title={paths.description}
                                 aria-label="Map legend"
-                                isColorRev={isColorRev}
                             />
                         </div>
                     </div>

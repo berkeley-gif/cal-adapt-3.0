@@ -10,6 +10,8 @@ import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
 import { metricsList } from '@/app/lib/data-explorer/metrics'
 
+export type ValueType = 'abs' | 'del'
+
 type DataExplorerProps = {
     data: any;
 }
@@ -19,18 +21,10 @@ export default function DataExplorer({ data }: DataExplorerProps) {
 
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [metricSelected, setMetricSelected] = useState<number>(0)
-   
+    const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
+
     // Temp: For reverse color options switch
     const switchLabel = { inputProps: { 'aria-label': 'Switch color options' } }
-    const [isColorRev, setIsColorRev] = useState<boolean>(false)
-
-    // TEMP: for color ramp options
-    const [customColorRamp, setCustomColorRamp] = useState<string>('')
-
-    const customColorRampList: string[] = [
-        'Inferno', 'BuPu', 'Viridis', 'Cividis', 'Cool', 'Plasma', 'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
-        'RdYlBu', 'RdYlGn'
-    ]
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -45,23 +39,19 @@ export default function DataExplorer({ data }: DataExplorerProps) {
             <MapUI
                 metricSelected={metricSelected}
                 gwlSelected={gwlSelected}
-                customColorRamp={customColorRamp}
-                setCustomColorRamp={setCustomColorRamp}
                 setMetricSelected={setMetricSelected}
                 setGwlSelected={setGwlSelected}
                 globalWarmingLevels={globalWarmingLevelsList}
                 metrics={metricsList}
-                customColorRampList={customColorRampList}
-                isColorRev={isColorRev}
-                setIsColorRev={setIsColorRev}
+                valueType={valueType}
+                setValueType={setValueType}
             />
             <MapboxMap
                 gwlSelected={gwlSelected}
                 metricSelected={metricSelected}
-                customColorRamp={customColorRamp}
                 globalWarmingLevels={globalWarmingLevelsList}
                 metrics={metricsList}
-                isColorRev={isColorRev}
+                valueType={valueType}
             />
         </Grid>
     )

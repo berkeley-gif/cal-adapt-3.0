@@ -87,6 +87,10 @@ let theme = createTheme({
     },
     body2: {
       color: "#6F6F6F"
+    },
+    caption: {
+      fontSize: '0.75rem',
+      color: "#6F6F6F"
     }
   },
   shape: {
@@ -195,6 +199,23 @@ theme = createTheme(theme, {
           },
         },
       },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          backgroundColor: theme.palette.primaryBlue.main,
+        }
+      }
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            color: theme.palette.primaryBlue.main,
+            fontWeight: "bold"
+          }
+        }
+      }
     },
     MuiTooltip: {
       tooltip: {

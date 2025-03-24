@@ -1,29 +1,101 @@
-export const metricsList = [
+export type Metric = {
+    id: number
+    title: string
+    abs: {
+        mean: string
+        min_path?: string
+        max_path?: string
+        description: string
+        short_desc: string
+        variable: string
+        rescale: string
+        colormap: string
+    }
+    del: {
+        mean: string
+        min_path?: string
+        max_path?: string
+        description: string
+        short_desc: string
+        variable: string
+        rescale: string
+        colormap: string
+    }
+
+}
+
+export const metricsList: Metric[] = [
     {
-        "id": 0, 
+        "id": 0,
         "title": 'Extreme Heat',
-        "variable": 'TX99p',
-        "description": 'Mean annual change in extreme heat days',
-        "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/TX99p/d02/TX99p.zarr',
-        "rescale": '-30,30',
-        "colormap": 'RdBu_r',
+        "abs": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/TX99p/d03/TX99p.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/TX99p/d03/TX99p.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/TX99p/d03/TX99p.zarr',
+            "description": 'Mean absolute value of extreme heat days',
+            "short_desc": 'Mean absolute value of extreme heat days',
+            "variable": 'TX99p',
+            "rescale": '0,50',
+            "colormap": 'Reds',
+        },
+        "del": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/TX99pd/d03/TX99pd.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/TX99pd/d03/TX99pd.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/TX99pd/d03/TX99pd.zarr',
+            "description": 'Mean annual change in extreme heat days',
+            "short_desc": 'Mean annual change in extreme heat days',
+            "variable": 'TX99pd',
+            "rescale": '-30,30',
+            "colormap": 'RdBu_r',
+        },
     },
     {
-        "id": 1, 
+        "id": 1,
         "title": 'Extreme Precipitation',
-        "variable": 'R99p',
-        "description": 'Absolute change in 99th percentile 1-day accumulated precipitation',
-        "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/R99p/d02/R99p.zarr',
-        "rescale": '-20,20',
-        "colormap": 'BrBg',
+        "abs": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/R99p/d03/R99p.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/R99p/d03/R99p.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/R99p/d03/R99p.zarr',
+            "description": 'Absolute 99th percentile 1-day accumulated precipitation',
+            "short_desc": 'Absolute 99th percentile 1-day accumulated precipitation',
+            "variable": 'R99p',
+            "rescale": '0,170',
+            "colormap": 'Blues',
+        },
+        "del": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/R99pd/d03/R99pd.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/R99pd/d03/R99pd.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/R99pd/d03/R99pd.zarr',
+            "description": 'Absolute change in 99th percentile 1-day accumulated precipitation',
+            "short_desc": 'Absolute change in 99th percentile 1-day accumulated precipitation',
+            "variable": 'R99pd',
+            "rescale": '-20,20',
+            "colormap": 'BrBG',
+        },
     },
     {
-        "id": 2, 
+        "id": 2,
         "title": 'Fire Weather',
-        "variable": 'ffwige50',
-        "description": 'Change in median annual number of days with (FFWI) value greater than 50',
-        "path": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/yr/ffwige50/d02/ffwige50.zarr',
-        "rescale": '-60,60',
-        "colormap": 'PuOr_r',
+        "abs": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/ffwige50/d03/ffwige50.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/ffwige50/d03/ffwige50.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/ffwige50/d03/ffwige50.zarr',
+            "description": 'Absolute median annual number of days with (FFWI) value greater than 50',
+            "short_desc": 'Absolute median annual number of days with (FFWI) value greater than 50',
+            "variable": 'ffwige50',
+            "rescale": '0,3650',
+            "colormap": 'gist_heat_r',
+        },
+        "del": {
+            "mean": 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/ffwige50/d03/ffwige50.zarr',
+            "min_path": 's3://cadcat/tmp/era/wrf/cae/mm4min/ssp370/gwl/ffwige50d/d03/ffwige50d.zarr',
+            "max_path": 's3://cadcat/tmp/era/wrf/cae/mm4max/ssp370/gwl/ffwige50d/d03/ffwige50d.zarr',
+            "description": 'Change in median annual number of days with (FFWI) value greater than 50',
+            "short_desc": 'Change in median annual number of days with (FFWI) value greater than 50',
+            "variable": 'ffwige50',
+            "rescale": '-60,60',
+            "colormap": 'PuOr',
+        },
+        
     }
 ]
