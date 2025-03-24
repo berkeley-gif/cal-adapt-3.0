@@ -77,11 +77,13 @@ const throttledFetchPoint = throttle(async (
 
     // Retrieve value at point
     try {
+        console.log('Fetching data...')
         const response = await fetch(
             `${BASE_URL}/point/${lng},${lat}?` +
             `url=${encodeURIComponent(path)}&` +
             `variable=${variable}`
         )
+        console.log('Fetch completed:', response)
 
         if (response.ok) {
             const data = await response.json()
