@@ -125,7 +125,6 @@ const throttledFetchPoint = throttle(async (
             console.error('Error fetching point data:', error)
         }
     }
-    console.log('results', results)
     callback(results)
 }, THROTTLE_DELAY, {
     leading: true,  // Execute on the leading edge (immediate first call)
@@ -179,7 +178,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 colormap_name: colormap,
             }
 
-            console.log('fetchTileJson called with params', params)
+            
             const queryString = Object.entries(params)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')
@@ -188,6 +187,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
 
             // debug: log the request url
+            // console.log('fetchTileJson called with params', params)
             // console.log('Fetching TileJSON with url:', url)
 
             try {
