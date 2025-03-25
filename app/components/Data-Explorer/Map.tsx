@@ -210,18 +210,24 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setMounted(true)
         }, [])
 
+        useEffect(() => {
+            console.log('map mounted:' + mounted)
+        }, [mounted])
+
 
         useEffect(() => {
-            if (initialLoadRef.current) {
+            console.log('parameters set')
+/*             if (initialLoadRef.current) {
                 initialLoadRef.current = false
                 return // Skip the first execution
-            }
-
+            } */
+            console.log('about to enter fetch function')
             fetchTileJson()
         }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
         useEffect(() => {
             if (mapRef.current) {
+                console.log('maprefcurrent')
                 const map = mapRef.current.getMap()
 
                 const handleMapboxError = (e: any) => {
@@ -252,6 +258,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         // Map functions 
         const handleHover = (event: MapMouseEvent) => {
             if (!mapLoaded || !mapRef.current) {
+                console.log('map not loaded')
                 return
             }
 
