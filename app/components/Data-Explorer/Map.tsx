@@ -27,7 +27,7 @@ import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
 import Fab from '@mui/material/Fab'
-import InfoIcon from '@mui/icons-material/Info'
+import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 
 import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
@@ -137,7 +137,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         // Refs
         const mapRef = useRef<MapRef | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
-        const initialLoadRef = useRef(true)
 
         // Forward the internal ref to the parent
         useImperativeHandle(ref, () => mapRef.current || undefined)
@@ -214,10 +213,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setMounted(true)
         }, [])
 
-        useEffect(() => {
-            console.log('map mounted:' + mounted)
-        }, [mounted])
-
 
         useEffect(() => {
             console.log('parameters set')
@@ -262,9 +257,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         useEffect(() => {
             const map = mapRef.current
             if (!map) return
-          
+
             map.getCanvas().style.cursor = isHoveringPopup ? 'pointer' : 'default'
-          }, [infoFabPos])
+        }, [infoFabPos])
 
         useEffect(() => {
             if (!isHoveringPopup && showPopup) {
@@ -308,9 +303,25 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
             const { lngLat: { lng, lat }, point } = event
 
+            setHoverInfo({
+                longitude: lng,
+                latitude: lat,
+                min: null,
+                max: null,
+                value: null
+            })
+
+            setInfoFabPos({ x: point.x, y: point.y })
+        }
+
+        const handleFabClick = () => {
+            if (!hoverInfo) return
+
+            const { longitude, latitude } = hoverInfo
+
             throttledFetchPoint(
-                lng,
-                lat,
+                longitude,
+                latitude,
                 paths.min_path || '',
                 paths.max_path || '',
                 paths.mean,
@@ -320,13 +331,13 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 ({ min, max, value }) => {
                     if (value !== null) {
                         setHoverInfo({
-                            longitude: lng,
-                            latitude: lat,
+                            longitude,
+                            latitude,
                             min,
                             max,
                             value
                         })
-                        setInfoFabPos({ x: point.x, y: point.y })
+                        setShowPopup(true)
                     } else {
                         setHoverInfo(null)
                         setInfoFabPos(null)
@@ -460,7 +471,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             <ScaleControl position="bottom-right" maxWidth={100} unit="metric" aria-label="Scale control" />
                             {infoFabPos && hoverInfo && (
                                 <Fab
-                                    onClick={() => setShowPopup(true)}
+                                    onClick={handleFabClick}
                                     onMouseEnter={() => setIsHoveringPopup(true)}
                                     onMouseLeave={() => {
                                         setIsHoveringPopup(false)
@@ -480,7 +491,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     }}
                                     aria-label="Show more info"
                                 >
-                                    <InfoIcon />
+                                   <MoreHorizOutlinedIcon />
                                 </Fab>
                             )}
                             {showPopup && hoverInfo && (
