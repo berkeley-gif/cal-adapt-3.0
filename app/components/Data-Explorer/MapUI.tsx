@@ -188,7 +188,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container item justifyContent="center">
                         <Grid item xs={10}></Grid>
                         <Grid item xs={2}>
-                            <Fab className="map-ui__help-button" color="secondaryOnWhite" sx={{ float: 'right', mr: '50px' }} aria-label="Help toggle" size="medium" onClick={handleHelpClick}>
+                            <Fab className="map-ui__help-button" color="primary" sx={{ float: 'right', mr: '50px' }} aria-label="Help toggle" size="medium" onClick={handleHelpClick}>
                                 <QuestionMarkOutlinedIcon />
                             </Fab>
                             <Popover

@@ -26,6 +26,7 @@ declare module '@mui/material/styles' {
 declare module '@mui/material/Fab' {
   interface FabPropsColorOverrides {
     secondaryOnWhite: true;
+    primaryBlue: true;
   }
 }
 
@@ -34,10 +35,10 @@ let theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#D3F1F8',
-      dark: '#93a8ad',
-      light: '#dbf3f9',
-      contrastText: '#333538',
+      main: '#E8F4FB',
+      dark: '#A2AAAF',
+      light: '#ECF6FB',
+      contrastText: '#1C1C1C',
     },
     secondary: {
       main: '#95A8AF',
@@ -172,9 +173,9 @@ theme = createTheme(theme, {
     }),
     primaryBlue: theme.palette.augmentColor({
       color: {
-        main: '#57AEF3',
-        light: '#78BEF5',
-        dark: '#3C79AA'
+        main: '#4C8EB4',
+        light: '#6FA4C3',
+        dark: '#35637D'
       },
       name: 'primaryBlue',
     }),

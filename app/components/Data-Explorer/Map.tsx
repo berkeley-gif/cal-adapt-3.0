@@ -480,7 +480,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                         }, 200)
                                     }}
                                     ref={fabRef}
-                                    color="secondaryOnWhite"
+                                    color="primary"
                                     size="small"
                                     sx={{
                                         position: 'absolute',
