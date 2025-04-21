@@ -100,13 +100,13 @@ const throttledFetchPoint = throttle(async (
     // Retrieve value at point
     try {
         const fetchData = async (url: string) => {
-            console.log(`Fetching for lng: ${lng}, lat: ${lat}`)
             const res = await fetch(url)
             if (!res.ok) throw new Error(res.statusText)
             return res.json()
         }
 
-        const valueRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}&_t=${Date.now()}`)
+        const valueRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
+        console.log(`Fetching res for lng: ${lng}, lat: ${lat} at ${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
         results.value = valueRes.data[gwlIndex]
 
         console.log('valueRes', valueRes)
@@ -157,6 +157,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const popupRef = useRef<HTMLDivElement | null>(null)
         const fabRef = useRef<HTMLButtonElement | null>(null)
         const [isHoveringPopup, setIsHoveringPopup] = useState(false)
+        const [isPopupLoading, setIsPopupLoading] = useState(false)
 
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
@@ -263,10 +264,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         useEffect(() => {
             if (!isHoveringPopup && showPopup) {
-                const timeout = setTimeout(() => {
-                    setShowPopup(false)
-                }, 200)
-                return () => clearTimeout(timeout)
+                setShowPopup(false)
             }
         }, [isHoveringPopup, showPopup])
 
@@ -296,8 +294,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Map functions 
         const handleHover = (event: MapMouseEvent) => {
-            if (!mapLoaded || !mapRef.current) {
-                console.log('map not loaded')
+            if (!mapLoaded || !mapRef.current || isPopupLoading) {
                 return
             }
 
@@ -319,6 +316,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
             const { longitude, latitude } = hoverInfo
 
+            setIsPopupLoading(true)
+            setShowPopup(true)
+
             throttledFetchPoint(
                 longitude,
                 latitude,
@@ -329,6 +329,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 currentGwl,
                 globalWarmingLevels,
                 ({ min, max, value }) => {
+                    setIsPopupLoading(false)
                     if (value !== null) {
                         setHoverInfo({
                             longitude,
@@ -337,10 +338,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             max,
                             value
                         })
-                        setShowPopup(true)
                     } else {
                         setHoverInfo(null)
                         setInfoFabPos(null)
+                        setShowPopup(false)
                     }
                 }
             )
@@ -353,6 +354,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 throttledFetchPoint.cancel()
             }
         }, [])
+
+        useEffect(() => {
+            console.log('hoverinfo', hoverInfo)
+        }, [hoverInfo])
 
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
@@ -491,7 +496,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     }}
                                     aria-label="Show more info"
                                 >
-                                   <MoreHorizOutlinedIcon />
+                                    <MoreHorizOutlinedIcon />
                                 </Fab>
                             )}
                             {showPopup && hoverInfo && (
@@ -511,6 +516,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                         max={hoverInfo.max}
                                         value={hoverInfo.value || 0}
                                         title={paths.short_desc}
+                                        isPopupLoading={isPopupLoading}
                                         aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
                                     />
                                 </div>
