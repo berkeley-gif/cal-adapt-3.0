@@ -95,16 +95,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
                             <div className='map-ui__parameter-selection'>
-                            <div className="map-ui__value-type">
-                                <Box key={renderKey} sx={{
-                                    width: fullWidthUIItem,
-                                }}>
-                                    <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
-                                        <Tab value="abs" label="Absolute" />
-                                        <Tab value="del" label="Delta" />
-                                    </Tabs>
-                                </Box>
-                            </div>
+                                <div className="map-ui__value-type">
+                                    <Box key={renderKey} sx={{
+                                        width: fullWidthUIItem,
+                                    }}>
+                                        <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
+                                            <Tab value="abs" label="Absolute" />
+                                            <Tab value="del" label="Delta" />
+                                        </Tabs>
+                                    </Box>
+                                </div>
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
@@ -131,11 +131,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                                 MenuProps={MenuProps}
                                                 sx={{ mt: '15px', width: '200px' }}
                                             >
-                                                {globalWarmingLevels.map((gwl) => (
-                                                    <MenuItem key={gwl.id} value={gwl.id}>
-                                                        <ListItemText primary={`${gwl.value}°`} />
-                                                    </MenuItem>
-                                                ))}
+                                                {globalWarmingLevels.map((gwl) => {
+                                                    if (!(gwl.id === 0)) {
+                                                        return (
+                                                            <MenuItem key={gwl.id} value={gwl.id}>
+                                                                <ListItemText primary={`${gwl.value}°`} />
+                                                            </MenuItem>
+                                                        )
+                                                    }
+                                                }
+                                                )}
                                             </Select>
                                         </FormControl>
                                     </div>

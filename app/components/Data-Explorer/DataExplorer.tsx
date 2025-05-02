@@ -19,7 +19,7 @@ type DataExplorerProps = {
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
 
-    const [gwlSelected, setGwlSelected] = useState<number>(0)
+    const [gwlSelected, setGwlSelected] = useState<number>(1)
     const [metricSelected, setMetricSelected] = useState<number>(0)
     const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
 

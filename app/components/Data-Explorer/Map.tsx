@@ -77,7 +77,9 @@ const throttledFetchPoint = throttle(async (
 
     // Retrieve value at point
     try {
-        console.log('Fetching data...')
+        console.log('fetching ', `${BASE_URL}/point/${lng},${lat}?` +
+            `url=${encodeURIComponent(path)}&` +
+            `variable=${variable}`)
         const response = await fetch(
             `${BASE_URL}/point/${lng},${lat}?` +
             `url=${encodeURIComponent(path)}&` +
@@ -180,7 +182,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 colormap_name: colormap,
             }
 
-            
+
             const queryString = Object.entries(params)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')
@@ -210,24 +212,17 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setMounted(true)
         }, [])
 
-        useEffect(() => {
-            console.log('map mounted:' + mounted)
-        }, [mounted])
-
 
         useEffect(() => {
-            console.log('parameters set')
-/*             if (initialLoadRef.current) {
-                initialLoadRef.current = false
-                return // Skip the first execution
-            } */
-            console.log('about to enter fetch function')
+            /*             if (initialLoadRef.current) {
+                            initialLoadRef.current = false
+                            return // Skip the first execution
+                        } */
             fetchTileJson()
         }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
         useEffect(() => {
             if (mapRef.current) {
-                console.log('maprefcurrent')
                 const map = mapRef.current.getMap()
 
                 const handleMapboxError = (e: any) => {
