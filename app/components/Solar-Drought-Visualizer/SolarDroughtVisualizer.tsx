@@ -117,7 +117,7 @@ export default function SolarDroughtViz() {
     const [accordionExpanded, setAccordionExpanded] = useState(true)
 
     // TEMP: for color ramp options
-    const [currentColorMap, setCurrentColorMap] = useState<string>('Oranges')
+    const [currentColorMap, setCurrentColorMap] = useState<string>('PuBuGn')
 
     const customColorMapList: string[] = [
         'Oranges', 'Purples', 'Reds', 'Turbo', 'Viridis', 'Inferno', 'Magma', 'Cividis', 'Warm', 'Cool', 'CubehelixDefault', 'BuGn',
