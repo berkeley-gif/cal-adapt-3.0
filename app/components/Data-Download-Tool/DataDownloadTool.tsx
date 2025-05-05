@@ -400,12 +400,12 @@ export default function DataDownload({ data }: DataDownloadProps) {
         <div className="tool-container tool-container--padded">
             {/** Alerts */}
             <div className="alerts alerts-50">
-                <Alert variant="filled" severity="info" color="info" aria-label="Where to go for full LOCA2 scientific data">Looking for the full LOCA2 scientific data at daily resolution for the entire state of California?
+                <Alert variant="filled" severity="info" color="primaryBlue" aria-label="Where to go for full LOCA2 scientific data">Looking for the full LOCA2 scientific data at daily resolution for the entire state of California?
                     <div className="cta">
-                        <Button variant="contained" target="_blank" href="https://docs.google.com/document/d/1HRISAkRb0TafiCSCOq773iqt2TtT2A9adZqDTAShvhE/edit?usp=sharing">Click Here for the How-To-Guide</Button>
+                        <Button variant="contained" color="primary" target="_blank" href="https://docs.google.com/document/d/1HRISAkRb0TafiCSCOq773iqt2TtT2A9adZqDTAShvhE/edit?usp=sharing">Click Here for the How-To-Guide</Button>
                     </div>
                 </Alert>
-                <Alert variant="grey" severity="info">The Cal-Adapt data download tool is a beta tool. Feedback or questions are always welcome.
+                <Alert variant="filled" severity="info" color="infoYellow">The Cal-Adapt data download tool is a beta tool. Feedback or questions are always welcome.
                     <div className="cta">
                         <Tooltip
                             TransitionComponent={Fade}
@@ -413,13 +413,13 @@ export default function DataDownload({ data }: DataDownloadProps) {
                             title="Email support@cal-adapt.org"
                             placement="right-end"
                         >
-                            <Button variant="contained" href="mailto:support@cal-adapt.org">Contact Us</Button>
+                            <Button variant="contained" color="primary" href="mailto:support@cal-adapt.org">Contact Us</Button>
                         </Tooltip>
                     </div>
                 </Alert>
             </div>
 
-            <Alert className="alerts alerts-100" sx={{ mb: "26px" }} variant="standard" severity="info">The size of data packages might be very large. In that case, you may be asked for an email address to notify you when your package is ready for download. </Alert>
+            <Alert className="alerts alerts-100" sx={{ mb: "26px" }} variant="filled" severity="info" color="secondaryReversed">The size of data packages might be very large. In that case, you may be asked for an email address to notify you when your package is ready for download. </Alert>
 
             {/** Packages container */}
             <div className="container container--full">
@@ -461,7 +461,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
                                     title="This data package preset is not available"
                                 >
                                     <span>
-                                        <Button disabled={pkg.disabled} variant="contained" >Customize and download</Button>
+                                        <Button disabled={pkg.disabled} variant="contained" color="secondary">Customize and download</Button>
                                     </span>
                                 </Tooltip>
                             )}
@@ -472,7 +472,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
                                     title="Continue with this data package preset"
                                 >
                                     <span>
-                                        <Button onClick={() => selectPackageToSave(parseInt(pkg.id))} variant="contained">Customize and download</Button>
+                                        <Button onClick={() => selectPackageToSave(parseInt(pkg.id))} variant="contained" color="secondary">Customize and download</Button>
                                     </span>
                                 </Tooltip>
                             )}
@@ -506,8 +506,8 @@ export default function DataDownload({ data }: DataDownloadProps) {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant="contained" onClick={() => handleOverwriteDialog(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={() => handleOverwriteDialog(true)} autoFocus>
+                    <Button variant="contained" color="secondary" onClick={() => handleOverwriteDialog(false)}>Cancel</Button>
+                    <Button variant="contained"color="secondary" onClick={() => handleOverwriteDialog(true)} autoFocus>
                         Confirm
                     </Button>
                 </DialogActions>

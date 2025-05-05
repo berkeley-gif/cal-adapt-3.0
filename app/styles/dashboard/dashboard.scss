@@ -1,3 +1,5 @@
+@import './../main/variables';
+
 // Drawer Toolbar
 .toolbar-main {
   background-color: white;
@@ -21,16 +23,17 @@
 }
 
 .container {
-  background-color: #f7f9fb;
+  background-color: $background-paper;
   border-radius: 16px;
   padding: 30px;
 
   &--full {
     width: 100%;
+    max-width: 1200px;
   }
 
   &--package {
-    background-color: #eef3f9;
+    background-color: white;
     border-radius: 16px;
     padding: 25px;
   }

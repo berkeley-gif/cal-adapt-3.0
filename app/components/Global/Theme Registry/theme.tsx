@@ -4,31 +4,41 @@ import { IconButtonProps } from '@mui/material/IconButton'
 
 const { palette } = createTheme();
 
-// Define your custom variant type
-type CustomIconButtonProps = IconButtonProps & {
-  variant?: 'customVariant';
-}
-
 // Augment the palette to include a second palette color
 declare module '@mui/material/styles' {
   interface Palette {
     primaryBlue: Palette['primary'];
-    secondaryOnWhite: Palette['secondary'];
+    secondaryReversed: Palette['secondary'];
+    infoYellow: Palette['info'];
   }
 
   interface PaletteOptions {
     primaryBlue?: PaletteOptions['primary'];
-    secondaryOnWhite?: PaletteOptions['secondary'];
+    secondaryReversed?: PaletteOptions['secondary'];
+    infoYellow?: PaletteOptions['info'];
   }
 }
 
 // Update the Button's color options to include an ochre option
 declare module '@mui/material/Fab' {
   interface FabPropsColorOverrides {
-    secondaryOnWhite: true;
+    secondaryReversed: true;
     primaryBlue: true;
   }
 }
+
+declare module '@mui/material/Alert' {
+  interface AlertPropsColorOverrides {
+    infoYellow: true;
+    secondaryReversed: true;
+    primaryBlue: true;
+  }
+}
+
+const BODY_TEXT_COLOR = '#1C1C1C'
+const BODY_TEXT_COLOR_LIGHT = '#FFF'
+const BG_DEFAULT = '#FFF'
+const BG_PAPER = '#FFF'
 
 
 let theme = createTheme({
@@ -36,22 +46,29 @@ let theme = createTheme({
     mode: 'light',
     primary: {
       main: '#E8F4FB',
-      dark: '#A2AAAF',
-      light: '#ECF6FB',
-      contrastText: '#1C1C1C',
+      dark: '#C9DDE9',
+      light: '#FAFDFF',
+      contrastText: BODY_TEXT_COLOR,
     },
     secondary: {
-      main: '#95A8AF',
-      dark: '#68757a',
-      light: '#aab9bf',
+      main: '#333538',
+      dark: '#232527',
+      light: '#5B5D5F',
+      contrastText: BODY_TEXT_COLOR_LIGHT
     },
     success: {
-      main: '#76cba9',
-      dark: '#528e76',
-      light: '#91d5ba'
+      main: '#7EC09F',
+      dark: '#58866F',
+      light: '#97CCB2',
+      contrastText: BODY_TEXT_COLOR
     },
     info: {
-      main: '#C6C7F8',
+      main: '#59A1C1',
+      contrastText: BODY_TEXT_COLOR_LIGHT
+    },
+    background: {
+      default: BG_DEFAULT,
+      paper: BG_PAPER
     },
 
   },
@@ -99,18 +116,9 @@ let theme = createTheme({
   },
   components: {
     MuiAlert: {
-      variants: [
-        {
-          props: { variant: 'grey' },
-          style: {
-            backgroundColor: '#E5ECF6', // Customize the background color
-          },
-        }
-      ],
       styleOverrides: {
         root: {
           borderRadius: 8,
-          color: 'inherit',
           padding: '25px'
         },
       },
@@ -135,6 +143,12 @@ let theme = createTheme({
             textTransform: 'capitalize',
             borderRadius: '8px'
           }),
+          ...(ownerState.variant === 'contained' &&
+            ownerState.color === 'secondary' && {
+            boxShadow: 'none',
+            textTransform: 'capitalize',
+            borderRadius: '8px'
+          }),
         }),
       },
     },
@@ -149,7 +163,7 @@ let theme = createTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#FFF',
           boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.25)',
           color: '#000000',
           borderRadius: '6px',
@@ -164,12 +178,14 @@ let theme = createTheme({
 // Create custom palettes
 theme = createTheme(theme, {
   palette: {
-    secondaryOnWhite: theme.palette.augmentColor({
+    secondaryReversed: theme.palette.augmentColor({
       color: {
-        main: '#fff',
-        contrastText: '#000000'
+        main: BODY_TEXT_COLOR_LIGHT,
+        light: BODY_TEXT_COLOR_LIGHT,
+        dark: BODY_TEXT_COLOR_LIGHT,
+        contrastText: BODY_TEXT_COLOR
       },
-      name: 'secondaryOnWhite',
+      name: 'secondaryReversed',
     }),
     primaryBlue: theme.palette.augmentColor({
       color: {
@@ -179,11 +195,14 @@ theme = createTheme(theme, {
       },
       name: 'primaryBlue',
     }),
-    surfaceGray: theme.palette.augmentColor({
+    infoYellow: theme.palette.augmentColor({
       color: {
-        main: '#F7F9FB',
+        main: '#EBC699',
+        light: '#EFD1AD',
+        dark: '#A48A6B',
+        contrastText: BODY_TEXT_COLOR
       },
-      name: 'surfaceGray',
+      name: 'infoYellow',
     }),
   },
 })
@@ -237,14 +256,20 @@ theme = createTheme(theme, {
     },
     MuiAlert: {
       styleOverrides: {
-        standardInfo: {
-          backgroundColor: theme.palette.primary.main
+        filledInfo: {
+          backgroundColor: theme.palette.info.main,
+          color: theme.palette.info.contrastText, // ✅ force contrast color
+          '& .MuiAlert-icon': {
+            color: theme.palette.info.contrastText, // ✅ icon contrast too
+          },
         },
-        icon: {
-          "&.MuiAlert-icon": {
-            color: theme.palette.primaryBlue.main
-          }
-        }
+        filledSecondaryReversed: {
+          backgroundColor: theme.palette.secondaryReversed.main,
+          color: theme.palette.secondaryReversed.contrastText, // ✅ force contrast color
+          '& .MuiAlert-icon': {
+            color: theme.palette.secondaryReversed.contrastText, // ✅ icon contrast too
+          },
+        },
       },
     },
   }

@@ -714,7 +714,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
                         <div className="cta">
                             <Button onClick={() => {
                                 handleSubmit()
-                            }} variant="contained">Download your data</Button>
+                            }} variant="contained" color="secondary">Download your data</Button>
                         </div>
                     </div>
                 </form>
