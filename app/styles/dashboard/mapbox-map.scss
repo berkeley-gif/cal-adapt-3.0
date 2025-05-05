@@ -44,6 +44,11 @@
   box-shadow: none !important;
 }
 
+.mapboxgl-ctrl-geocoder--input {
+  background-color: #E8F4FB;
+  border-radius: 8px;
+}
+
 .mapboxgl-popup.map-popup {
   .mapboxgl-popup-content {
     background-color: white;

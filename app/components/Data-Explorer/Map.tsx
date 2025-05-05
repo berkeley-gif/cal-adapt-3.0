@@ -4,11 +4,30 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
 import '@/app/styles/dashboard/data-explorer.scss'
 import '@/app/styles/dashboard/mapbox-map.scss'
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
-import { Map, MapRef, Layer, Source, MapMouseEvent, NavigationControl, ScaleControl, LngLatBoundsLike, ErrorEvent } from 'react-map-gl'
+
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    forwardRef,
+    useImperativeHandle
+} from 'react'
+import {
+    Map,
+    MapRef,
+    Layer,
+    Source,
+    MapMouseEvent,
+    NavigationControl,
+    ScaleControl,
+    LngLatBoundsLike,
+    ErrorEvent
+} from 'react-map-gl'
 import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
+import Fab from '@mui/material/Fab'
+import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 
 import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
@@ -17,6 +36,7 @@ import LoadingSpinner from '../Global/LoadingSpinner'
 import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
 import type { ValueType } from './DataExplorer'
 
+// Constants 
 const INITIAL_VIEW_STATE = {
     longitude: -120,
     latitude: 37.4,
@@ -33,6 +53,7 @@ const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as con
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
 
+// Types 
 type MapProps = {
     metricSelected: number
     gwlSelected: number
@@ -54,6 +75,7 @@ type GeocoderResult = {
     }
 }
 
+// Throttled function to fetch point data
 const throttledFetchPoint = throttle(async (
     lng: number,
     lat: number,
@@ -75,61 +97,45 @@ const throttledFetchPoint = throttle(async (
 
     const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
 
+    const fetchData = async (url: string) => {
+        const res = await fetch(url)
+        if (!res.ok) {
+            throw new Error(res.statusText)
+        } else {
+            return res.json()
+        }
+    }
+
     // Retrieve value at point
     try {
-        console.log('fetching ', `${BASE_URL}/point/${lng},${lat}?` +
-            `url=${encodeURIComponent(path)}&` +
-            `variable=${variable}`)
-        const response = await fetch(
-            `${BASE_URL}/point/${lng},${lat}?` +
-            `url=${encodeURIComponent(path)}&` +
-            `variable=${variable}`
-        )
-        console.log('Fetch completed:', response)
+        const valueRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
+        //console.log(`Fetching mean res for lng: ${lng}, lat: ${lat} at ${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
+        results.value = valueRes.data[gwlIndex]
 
-        if (response.ok) {
-            const data = await response.json()
-            results.value = data.data[gwlIndex]
+        //console.log('mean valueRes', valueRes)
+        console.log('valueres.data', valueRes.data)
+        console.log('gwlIndex', gwlIndex)
+        console.log('results.mean', results.value)
+
+        if (min_path) {
+            const minRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(min_path)}&variable=${variable}`)
+            results.min = minRes.data[gwlIndex]
+            //console.log('minRes', minRes)
+            console.log('results.min', results.min)
         }
-    } catch (error) {
-        console.error('Error fetching point data:', error)
-    }
-    // Retrieve min value at point
-    if (min_path) {
-        try {
-            const minResponse = await fetch(
-                `${BASE_URL}/point/${lng},${lat}?` +
-                `url=${encodeURIComponent(min_path)}&` +
-                `variable=${variable}`
-            )
-
-            if (minResponse.ok) {
-                const data = await minResponse.json()
-                results.min = data.data[gwlIndex]
-
-            }
-        } catch (error) {
-            console.error('Error fetching point data:', error)
+        if (max_path) {
+            const maxRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(max_path)}&variable=${variable}`)
+            results.max = maxRes.data[gwlIndex]
+            //console.log('maxRes', maxRes)
+            console.log('results.max', results.max)
         }
-    }
-    // Retrieve max value at point
-    if (max_path) {
-        try {
-            const maxResponse = await fetch(
-                `${BASE_URL}/point/${lng},${lat}?` +
-                `url=${encodeURIComponent(max_path)}&` +
-                `variable=${variable}`
-            )
 
-            if (maxResponse.ok) {
-                const data = await maxResponse.json()
-                results.max = data.data[gwlIndex]
-            }
-        } catch (error) {
-            console.error('Error fetching point data:', error)
-        }
+    } catch (err) {
+        console.error('Error fetching point data:', err)
     }
+
     callback(results)
+
 }, THROTTLE_DELAY, {
     leading: true,  // Execute on the leading edge (immediate first call)
     trailing: true  // Execute on the trailing edge (final call)
@@ -140,7 +146,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         // Refs
         const mapRef = useRef<MapRef | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
-        const initialLoadRef = useRef(true)
 
         // Forward the internal ref to the parent
         useImperativeHandle(ref, () => mapRef.current || undefined)
@@ -156,6 +161,12 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             max: number | null
             value: number | null
         } | null>(null)
+        const [showPopup, setShowPopup] = useState(false)
+        const [infoFabPos, setInfoFabPos] = useState<{ x: number; y: number } | null>(null)
+        const popupRef = useRef<HTMLDivElement | null>(null)
+        const fabRef = useRef<HTMLButtonElement | null>(null)
+        const [isHoveringPopup, setIsHoveringPopup] = useState(false)
+        const [isPopupLoading, setIsPopupLoading] = useState(false)
 
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
@@ -167,7 +178,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         const currentVariable = paths.variable
 
-        const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[0].value
+        const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[1].value
 
         const isLoading = !mounted || !tileJson
 
@@ -250,18 +261,73 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }, [mapRef])
 
+        useEffect(() => {
+            const map = mapRef.current
+            if (!map) return
+
+            map.getCanvas().style.cursor = isHoveringPopup ? 'pointer' : 'default'
+        }, [infoFabPos])
+
+        useEffect(() => {
+            if (!isHoveringPopup && showPopup) {
+                setShowPopup(false)
+            }
+        }, [isHoveringPopup, showPopup])
+
+        useEffect(() => {
+            const handleClickOutside = (event: MouseEvent) => {
+                const target = event.target as Node
+                if (
+                    popupRef.current &&
+                    !popupRef.current.contains(target) &&
+                    fabRef.current &&
+                    !fabRef.current.contains(target)
+                ) {
+                    setShowPopup(false)
+                }
+            }
+
+            if (showPopup) {
+                document.addEventListener('mousedown', handleClickOutside)
+            } else {
+                document.removeEventListener('mousedown', handleClickOutside)
+            }
+
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside)
+            }
+        }, [showPopup])
+
         // Map functions 
         const handleHover = (event: MapMouseEvent) => {
-            if (!mapLoaded || !mapRef.current) {
-                console.log('map not loaded')
+            if (!mapLoaded || !mapRef.current || isPopupLoading) {
                 return
             }
 
-            const { lngLat: { lng, lat } } = event
+            const { lngLat: { lng, lat }, point } = event
+
+            setHoverInfo({
+                longitude: lng,
+                latitude: lat,
+                min: null,
+                max: null,
+                value: null
+            })
+
+            setInfoFabPos({ x: point.x, y: point.y })
+        }
+
+        const handleFabClick = () => {
+            if (!hoverInfo) return
+
+            const { longitude, latitude } = hoverInfo
+
+            setIsPopupLoading(true)
+            setShowPopup(true)
 
             throttledFetchPoint(
-                lng,
-                lat,
+                longitude,
+                latitude,
                 paths.min_path || '',
                 paths.max_path || '',
                 paths.mean,
@@ -269,16 +335,19 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 currentGwl,
                 globalWarmingLevels,
                 ({ min, max, value }) => {
+                    setIsPopupLoading(false)
                     if (value !== null) {
                         setHoverInfo({
-                            longitude: lng,
-                            latitude: lat,
+                            longitude,
+                            latitude,
                             min,
                             max,
                             value
                         })
                     } else {
                         setHoverInfo(null)
+                        setInfoFabPos(null)
+                        setShowPopup(false)
                     }
                 }
             )
@@ -361,7 +430,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onMouseMove={handleHover}
                             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                             initialViewState={INITIAL_VIEW_STATE}
-                            //mapStyle="mapbox://styles/mapbox/outdoors-v12"
                             mapStyle="mapbox://styles/mapbox/light-v11"
                             scrollZoom={false}
                             minZoom={3.5}
@@ -408,16 +476,52 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             />
                             <NavigationControl position="top-right" aria-label="Navigation controls" />
                             <ScaleControl position="bottom-right" maxWidth={100} unit="metric" aria-label="Scale control" />
-                            {hoverInfo && (
-                                <MapPopup
-                                    longitude={hoverInfo.longitude}
-                                    latitude={hoverInfo.latitude}
-                                    min={hoverInfo.min}
-                                    max={hoverInfo.max}
-                                    value={hoverInfo.value || 0}
-                                    title={paths.short_desc}
-                                    aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
-                                />
+                            {infoFabPos && hoverInfo && (
+                                <Fab
+                                    onClick={handleFabClick}
+                                    onMouseEnter={() => setIsHoveringPopup(true)}
+                                    onMouseLeave={() => {
+                                        setIsHoveringPopup(false)
+                                        setTimeout(() => {
+                                            setShowPopup(false)
+                                        }, 200)
+                                    }}
+                                    ref={fabRef}
+                                    color="primary"
+                                    size="small"
+                                    sx={{
+                                        position: 'absolute',
+                                        left: infoFabPos.x,
+                                        top: infoFabPos.y,
+                                        transform: 'translate(-50%, -50%)',
+                                        zIndex: 10
+                                    }}
+                                    aria-label="Show more info"
+                                >
+                                    <MoreHorizOutlinedIcon />
+                                </Fab>
+                            )}
+                            {showPopup && hoverInfo && (
+                                <div
+                                    ref={popupRef}
+                                    onMouseEnter={() => setIsHoveringPopup(true)}
+                                    onMouseLeave={() => {
+                                        setIsHoveringPopup(false)
+                                        setTimeout(() => {
+                                            setShowPopup(false)
+                                        }, 200) // give user time to move between FAB and popup
+                                    }}>
+                                    <MapPopup
+                                        longitude={hoverInfo.longitude}
+                                        latitude={hoverInfo.latitude}
+                                        min={hoverInfo.min}
+                                        max={hoverInfo.max}
+                                        value={hoverInfo.value || 0}
+                                        title={paths.short_desc}
+                                        isPopupLoading={isPopupLoading}
+                                        aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
+                                    />
+                                </div>
                             )}
                         </Map>
                         <div style={{

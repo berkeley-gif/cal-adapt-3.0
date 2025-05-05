@@ -35,6 +35,7 @@ type MapUIProps = {
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
     metrics: Metric[];
+    
     valueType: ValueType;
     setValueType: (valueType: ValueType) => void;
 }
