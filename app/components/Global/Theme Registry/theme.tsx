@@ -16,6 +16,7 @@ declare module '@mui/material/styles' {
     primaryBlue?: PaletteOptions['primary'];
     secondaryReversed?: PaletteOptions['secondary'];
     infoYellow?: PaletteOptions['info'];
+    infoDark?: PaletteOptions['info'];
   }
 }
 
@@ -32,6 +33,7 @@ declare module '@mui/material/Alert' {
     infoYellow: true;
     secondaryReversed: true;
     primaryBlue: true;
+    infoDark: true;
   }
 }
 
@@ -203,6 +205,15 @@ theme = createTheme(theme, {
         contrastText: BODY_TEXT_COLOR
       },
       name: 'infoYellow',
+    }),
+    infoDark: theme.palette.augmentColor({
+      color: {
+        main: '#20333D',
+        light: '#4C5B63',
+        dark: '#16232A',
+        contrastText: BODY_TEXT_COLOR_LIGHT
+      },
+      name: 'infoDark',
     }),
   },
 })
