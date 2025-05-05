@@ -35,6 +35,7 @@ type MapUIProps = {
     setGwlSelected: (gwl: number) => void;
     globalWarmingLevels: { id: number; value: string }[];
     metrics: Metric[];
+    
     valueType: ValueType;
     setValueType: (valueType: ValueType) => void;
 }
@@ -95,16 +96,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
                             <div className='map-ui__parameter-selection'>
-                            <div className="map-ui__value-type">
-                                <Box key={renderKey} sx={{
-                                    width: fullWidthUIItem,
-                                }}>
-                                    <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
-                                        <Tab value="abs" label="Absolute" />
-                                        <Tab value="del" label="Delta" />
-                                    </Tabs>
-                                </Box>
-                            </div>
+                                <div className="map-ui__value-type">
+                                    <Box key={renderKey} sx={{
+                                        width: fullWidthUIItem,
+                                    }}>
+                                        <Tabs className="container container--transparent" value={valueType} onChange={handleValueTypeChange} centered>
+                                            <Tab value="abs" label="Absolute" />
+                                            <Tab value="del" label="Delta" />
+                                        </Tabs>
+                                    </Box>
+                                </div>
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
@@ -131,11 +132,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                                 MenuProps={MenuProps}
                                                 sx={{ mt: '15px', width: '200px' }}
                                             >
-                                                {globalWarmingLevels.map((gwl) => (
-                                                    <MenuItem key={gwl.id} value={gwl.id}>
-                                                        <ListItemText primary={`${gwl.value}°`} />
-                                                    </MenuItem>
-                                                ))}
+                                                {globalWarmingLevels.map((gwl) => {
+                                                    if (!(gwl.id === 0)) {
+                                                        return (
+                                                            <MenuItem key={gwl.id} value={gwl.id}>
+                                                                <ListItemText primary={`${gwl.value}°`} />
+                                                            </MenuItem>
+                                                        )
+                                                    }
+                                                }
+                                                )}
                                             </Select>
                                         </FormControl>
                                     </div>
@@ -188,7 +194,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container item justifyContent="center">
                         <Grid item xs={10}></Grid>
                         <Grid item xs={2}>
-                            <Fab className="map-ui__help-button" color="primary" sx={{ float: 'right', mr: '50px' }} aria-label="Help toggle" size="medium" onClick={handleHelpClick}>
+                            <Fab className="map-ui__help-button" color="secondaryOnWhite" sx={{ float: 'right', mr: '50px' }} aria-label="Help toggle" size="medium" onClick={handleHelpClick}>
                                 <QuestionMarkOutlinedIcon />
                             </Fab>
                             <Popover

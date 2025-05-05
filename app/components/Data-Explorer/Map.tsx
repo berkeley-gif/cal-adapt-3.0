@@ -97,28 +97,37 @@ const throttledFetchPoint = throttle(async (
 
     const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
 
-    // Retrieve value at point
-    try {
-        const fetchData = async (url: string) => {
-            const res = await fetch(url)
-            if (!res.ok) throw new Error(res.statusText)
+    const fetchData = async (url: string) => {
+        const res = await fetch(url)
+        if (!res.ok) {
+            throw new Error(res.statusText)
+        } else {
             return res.json()
         }
+    }
 
+    // Retrieve value at point
+    try {
         const valueRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
-        console.log(`Fetching res for lng: ${lng}, lat: ${lat} at ${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
+        //console.log(`Fetching mean res for lng: ${lng}, lat: ${lat} at ${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
         results.value = valueRes.data[gwlIndex]
 
-        console.log('valueRes', valueRes)
+        //console.log('mean valueRes', valueRes)
+        console.log('valueres.data', valueRes.data)
+        console.log('gwlIndex', gwlIndex)
+        console.log('results.mean', results.value)
 
         if (min_path) {
             const minRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(min_path)}&variable=${variable}`)
             results.min = minRes.data[gwlIndex]
+            //console.log('minRes', minRes)
+            console.log('results.min', results.min)
         }
         if (max_path) {
             const maxRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(max_path)}&variable=${variable}`)
             results.max = maxRes.data[gwlIndex]
-            console.log('maxRes', maxRes)
+            //console.log('maxRes', maxRes)
+            console.log('results.max', results.max)
         }
 
     } catch (err) {
@@ -169,7 +178,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         const currentVariable = paths.variable
 
-        const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[0].value
+        const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[1].value
 
         const isLoading = !mounted || !tileJson
 
@@ -216,18 +225,15 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
 
         useEffect(() => {
-            console.log('parameters set')
             /*             if (initialLoadRef.current) {
                             initialLoadRef.current = false
                             return // Skip the first execution
                         } */
-            console.log('about to enter fetch function')
             fetchTileJson()
         }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
         useEffect(() => {
             if (mapRef.current) {
-                console.log('maprefcurrent')
                 const map = mapRef.current.getMap()
 
                 const handleMapboxError = (e: any) => {
@@ -354,10 +360,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 throttledFetchPoint.cancel()
             }
         }, [])
-
-        useEffect(() => {
-            console.log('hoverinfo', hoverInfo)
-        }, [hoverInfo])
 
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
