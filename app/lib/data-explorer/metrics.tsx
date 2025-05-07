@@ -92,7 +92,7 @@ export const metricsList: Metric[] = [
             "max_path": 's3://cadcat/wrf/cae/mm4max/ssp370/gwl/ffwige50d/d03',
             "description": 'Change in median annual number of days with (FFWI) value greater than 50',
             "short_desc": 'Change in median annual number of days with (FFWI) value greater than 50',
-            "variable": 'ffwige50',
+            "variable": 'ffwige50d',
             "rescale": '-60,60',
             "colormap": 'PuOr',
         },

@@ -113,21 +113,25 @@ const throttledFetchPoint = throttle(async (
         results.value = valueRes.data[gwlIndex]
 
         //console.log('mean valueRes', valueRes)
-        console.log('valueres.data', valueRes.data)
-        console.log('gwlIndex', gwlIndex)
-        console.log('results.mean', results.value)
+        //console.log('valueres.data', valueRes.data)
+        //console.log('gwlIndex', gwlIndex)
+        //console.log('results.mean', results.value)
 
         if (min_path) {
             const minRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(min_path)}&variable=${variable}`)
             results.min = minRes.data[gwlIndex]
             //console.log('minRes', minRes)
-            console.log('results.min', results.min)
+            //console.log('results.min', results.min)
         }
         if (max_path) {
             const maxRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(max_path)}&variable=${variable}`)
             results.max = maxRes.data[gwlIndex]
             //console.log('maxRes', maxRes)
-            console.log('results.max', results.max)
+            //console.log('results.max', results.max)
+        }
+
+        if (results && (results.max && results.min) && (results.max < results.min)) {
+            console.log(`max is smaller than min at point: ${lng}, ${lat}`);
         }
 
     } catch (err) {
