@@ -13,11 +13,13 @@ import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-
 
 export type ValueType = 'abs' | 'del'
 
+
 type DataExplorerProps = {
     data: any;
 }
 
 const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+const DEF_GWL = 1.5
 
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
@@ -49,7 +51,7 @@ export default function DataExplorer({ data }: DataExplorerProps) {
                 const gwlData = data.dimensions.gwl.data
                 if (Array.isArray(gwlData) && gwlData.length > 0) {
                     setGlobalWarmingLevelsList(gwlData)
-                    const defaultGwlIndex = gwlData.indexOf(1.5)
+                    const defaultGwlIndex = gwlData.indexOf(DEF_GWL)
                     setGwlSelected(defaultGwlIndex)
                 }
             } catch (error) {
