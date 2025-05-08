@@ -21,7 +21,7 @@ const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as con
 
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
-    const [gwlSelected, setGwlSelected] = useState<number>(1)
+    const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [metricSelected, setMetricSelected] = useState<number>(0)
     const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
     const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
@@ -48,8 +48,9 @@ export default function DataExplorer({ data }: DataExplorerProps) {
                 const data = await response.json()
                 const gwlData = data.dimensions.gwl.data
                 if (Array.isArray(gwlData) && gwlData.length > 0) {
-                    setGlobalWarmingLevelsList(data.dimensions.gwl.data)
-                    setGwlSelected(0)
+                    setGlobalWarmingLevelsList(gwlData)
+                    const defaultGwlIndex = gwlData.indexOf(1.5)
+                    setGwlSelected(defaultGwlIndex)
                 }
             } catch (error) {
                 console.error('Failed to fetch GWL:', error)
