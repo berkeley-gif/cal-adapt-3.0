@@ -35,6 +35,7 @@ import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
 import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
 import type { ValueType } from './DataExplorer'
+import { ManOutlined } from '@mui/icons-material'
 
 // Constants 
 const INITIAL_VIEW_STATE = {
@@ -149,6 +150,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
     ({ metricSelected, gwlSelected, globalWarmingLevels, metrics, valueType }, ref) => {
         // Refs
         const mapRef = useRef<MapRef | null>(null)
+        const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
         const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
 
         // Forward the internal ref to the parent
@@ -371,13 +373,13 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const handleMouseDown = (e: mapboxgl.MapMouseEvent) => {
             setIsDragging(true)
             setShowPopup(false)
-          }
-          
-          const handleMouseUp = () => {
+        }
+
+        const handleMouseUp = () => {
             setTimeout(() => {
-              setIsDragging(false)
+                setIsDragging(false)
             }, 50) // short delay to distinguish drag vs click
-          }
+        }
 
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
@@ -389,10 +391,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         const handleMapLoad = (e: { target: import('mapbox-gl').Map }) => {
             if (!e.target) return
-            mapRef.current = e.target as unknown as MapRef
+            mapInstanceRef.current = e.target
             setMapLoaded(true)
 
-            e.target.getCanvas().style.cursor = 'pointer'
+            mapInstanceRef.current.getCanvas().style.cursor = 'pointer'
 
             const mapContainer = document.getElementById('map')
 
@@ -405,6 +407,82 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 resizeObserver.observe(mapContainer)
             }
         }
+
+        useEffect(() => {
+            if (!mapLoaded || !tileJson || !mapInstanceRef.current) return
+
+            const map = mapInstanceRef.current
+
+            // find first symbol layer (placenames)
+            const labelLayerId = map.getStyle()?.layers?.find(
+                layer => layer.type === 'symbol' && layer.layout?.['text-field']
+            )?.id
+
+            if (!labelLayerId) return
+
+            const referenceLayer = map.getStyle()?.layers?.find(
+                (layer) =>
+                    // Most Mapbox base layers are from 'composite' source
+                    layer.source === 'composite' &&
+                    (
+                        layer.type === 'line' || // borders, roads
+                        layer.type === 'symbol' // labels
+                    )
+            )?.id
+
+            const sourceId = 'raster-source'
+            const layerId = 'tile-layer'
+
+            if (map.getLayer(layerId)) {
+                map.removeLayer(layerId)
+            }
+
+            if (map.getSource(sourceId)) {
+                map.removeSource(sourceId)
+            }
+
+            // add raster layer below the labels
+            if (!map.getSource('raster-source')) {
+                const source = map.getSource('raster-source') as mapboxgl.RasterTileSource
+                if (source) {
+                    // Safely cast to RasterSource type and update tiles
+                    (map as any).getSource('raster-source').tiles = tileJson.tiles
+                    map.triggerRepaint()
+                } else {
+                    map.addSource('raster-source', {
+                        type: 'raster',
+                        tiles: tileJson.tiles,
+                        tileSize: tileJson.tileSize || 256
+                    })
+                }
+
+            }
+
+            if (referenceLayer) {
+                map.addLayer(
+                    {
+                        id: layerId,
+                        type: 'raster',
+                        source: sourceId,
+                        paint: {
+                            'raster-opacity': RASTER_TILE_LAYER_OPACITY
+                        }
+                    },
+                    referenceLayer
+                )
+            } else {
+                // fallback: add layer on top if no reference found
+                map.addLayer({
+                    id: layerId,
+                    type: 'raster',
+                    source: sourceId,
+                    paint: {
+                        'raster-opacity': RASTER_TILE_LAYER_OPACITY
+                    }
+                })
+            }
+
+        }, [mapLoaded, tileJson])
 
         // Loading spinner
         if (!mounted) {
@@ -448,7 +526,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onMouseMove={handleHover}
                             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                             initialViewState={INITIAL_VIEW_STATE}
-                            mapStyle="mapbox://styles/cal-adapt/cmabim5qv00m801s5g2xq5e4e"
+                            mapStyle="mapbox://styles/mapbox/light-v11"
                             scrollZoom={false}
                             minZoom={3.5}
                             maxBounds={MAP_BOUNDS}
@@ -460,7 +538,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onMouseUp={handleMouseUp}
                         >
 
-                            {mapLoaded && tileJson && (
+                            {/*                             {mapLoaded && tileJson && (
                                 <Source
                                     id="raster-source"
                                     type="raster"
@@ -473,7 +551,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                         paint={{ 'raster-opacity': RASTER_TILE_LAYER_OPACITY }}
                                     />
                                 </Source>
-                            )}
+                            )} */}
                             <GeocoderControl
                                 mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''}
                                 zoom={13}
