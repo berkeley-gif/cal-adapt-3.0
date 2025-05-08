@@ -25,6 +25,7 @@ import DataResultsTable from './DataResultsTable'
 import HtmlTooltip from '../Global/HtmlTooltip'
 import { variablesLookupTable, scenariosLookupTable, lookupValue } from '@/app/utils/lookupTables'
 import LoadingSpinner from '../Global/LoadingSpinner'
+import { tooltipsList } from '@/app/lib/tooltips'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -347,7 +348,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
                                                     </Tooltip>
                                                 </IconButton>
                                             }
-                                            <Typography variant="h5">Variables</Typography>
+                                            <Typography variant="h5">Metrics</Typography>
                                             {(item.vars.length > 0) && (
                                                 <DataResultsTable varsResData={item.vars} selectedVars={selectedVars}></DataResultsTable>
                                             )}
@@ -560,11 +561,11 @@ const PackageForm: React.FC<ChildFormProps> = ({
                         <div className="container container--white">
                             <div className="option-group">
                                 <div className="option-group__title">
-                                    <Typography variant="body2">Variables</Typography>
+                                    <Typography variant="body2">Metric(s)</Typography>
                                     <HtmlTooltip
                                         textFragment={
                                             <React.Fragment>
-                                                <p>Climate variables available</p>
+                                                <p>{tooltipsList[1].long_text}</p>
                                             </React.Fragment>
                                         }
                                         iconFragment={<InfoOutlinedIcon />}

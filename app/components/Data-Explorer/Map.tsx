@@ -156,6 +156,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // State
         const [mounted, setMounted] = useState(false)
+        const [isDragging, setIsDragging] = useState(false)
         const [mapLoaded, setMapLoaded] = useState(false)
         const [tileJson, setTileJson] = useState<TileJson | null>(null)
         const [hoverInfo, setHoverInfo] = useState<{
@@ -223,6 +224,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         }
 
         // Effects
+
+
         useEffect(() => {
             setMounted(true)
         }, [])
@@ -365,6 +368,17 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }, [])
 
+        const handleMouseDown = (e: mapboxgl.MapMouseEvent) => {
+            setIsDragging(true)
+            setShowPopup(false)
+          }
+          
+          const handleMouseUp = () => {
+            setTimeout(() => {
+              setIsDragging(false)
+            }, 50) // short delay to distinguish drag vs click
+          }
+
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
             if (error.status === 404 && error.url?.includes('WebMercatorQuad')) {
@@ -441,6 +455,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             style={{ width: '100%', height: "100%" }}
                             onError={handleMapError}
                             aria-label="Map"
+                            dragPan={true} // Keep drag enabled
+                            onMouseDown={handleMouseDown}
+                            onMouseUp={handleMouseUp}
                         >
 
                             {mapLoaded && tileJson && (
@@ -498,7 +515,9 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                         left: infoFabPos.x,
                                         top: infoFabPos.y,
                                         transform: 'translate(-50%, -50%)',
-                                        zIndex: 10
+                                        zIndex: 10,
+                                        opacity: 1,
+                                        pointerEvents: 'auto', // Always clickable
                                     }}
                                     aria-label="Show more info"
                                 >
@@ -532,7 +551,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             position: 'absolute',
                             bottom: 40,
                             left: 40,
-                            zIndex: 2
+                            zIndex: 2,
+                            maxWidth: 554
                         }}>
                             <MapLegend
                                 colormap={paths.colormap}

@@ -402,7 +402,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
             <div className="alerts alerts-50">
                 <Alert variant="filled" severity="info" color="primaryBlue" aria-label="Where to go for full LOCA2 scientific data">Looking for the full LOCA2 scientific data at daily resolution for the entire state of California?
                     <div className="cta">
-                        <Button variant="contained" color="primary" target="_blank" href="https://docs.google.com/document/d/1HRISAkRb0TafiCSCOq773iqt2TtT2A9adZqDTAShvhE/edit?usp=sharing">Click Here for the How-To-Guide</Button>
+                        <Button variant="contained" color="primary" target="_blank" href="https://analytics.cal-adapt.org/data/access/">Click Here for the How-To-Guide</Button>
                     </div>
                 </Alert>
                 <Alert variant="filled" severity="info" color="infoYellow">The Cal-Adapt data download tool is a beta tool. Feedback or questions are always welcome.

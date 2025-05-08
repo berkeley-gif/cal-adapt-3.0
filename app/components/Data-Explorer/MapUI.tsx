@@ -151,7 +151,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                             <HtmlTooltip
                                                 textFragment={
                                                     <React.Fragment>
-                                                        <p>The metric you would like to see displayed</p>
+                                                        <p>{tooltipsList[1].long_text}</p>
                                                     </React.Fragment>
                                                 }
                                                 iconFragment={<InfoOutlinedIcon />}
