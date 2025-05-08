@@ -7,8 +7,9 @@ import Grid from '@mui/material/Unstable_Grid2'
 import MapUI from './MapUI'
 
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
-import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
+//import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
 import { metricsList } from '@/app/lib/data-explorer/metrics'
+import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
 
 export type ValueType = 'abs' | 'del'
 
@@ -16,15 +17,49 @@ type DataExplorerProps = {
     data: any;
 }
 
+const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+
 export default function DataExplorer({ data }: DataExplorerProps) {
     const { toggleLeftDrawer } = useLeftDrawer()
-
     const [gwlSelected, setGwlSelected] = useState<number>(1)
     const [metricSelected, setMetricSelected] = useState<number>(0)
     const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
+    const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
 
-    // Temp: For reverse color options switch
-    const switchLabel = { inputProps: { 'aria-label': 'Switch color options' } }
+    async function fetchGWL() {
+        if (metricSelected >= 0) {
+            const variableConfig = metricsList[metricSelected][valueType]
+            const params = {
+                url: variableConfig.mean,
+                variable: variableConfig.variable,
+            }
+
+            const queryString = Object.entries(params)
+                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                .join('&')
+
+            const url = `${BASE_URL}/info?${queryString}`
+
+            try {
+                const response = await fetch(url)
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} ${response.statusText}`)
+                }
+                const data = await response.json()
+                const gwlData = data.dimensions.gwl.data
+                if (Array.isArray(gwlData) && gwlData.length > 0) {
+                    setGlobalWarmingLevelsList(data.dimensions.gwl.data)
+                    setGwlSelected(0)
+                }
+            } catch (error) {
+                console.error('Failed to fetch GWL:', error)
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchGWL()
+    }, [metricSelected, valueType])
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {

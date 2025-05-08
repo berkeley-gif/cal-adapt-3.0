@@ -57,7 +57,7 @@ const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 type MapProps = {
     metricSelected: number
     gwlSelected: number
-    globalWarmingLevels: { id: number; value: string }[]
+    globalWarmingLevels: string[]
     metrics: Metric[]
     valueType: ValueType
 }
@@ -84,7 +84,7 @@ const throttledFetchPoint = throttle(async (
     path: string,
     variable: string,
     gwl: string,
-    globalWarmingLevels: { id: number; value: string }[],
+    globalWarmingLevels: string[],
     callback: (values: { min: number | null, max: number | null, value: number | null }) => void
 ) => {
     const results: {
@@ -95,7 +95,7 @@ const throttledFetchPoint = throttle(async (
         value: null
     }
 
-    const gwlIndex = globalWarmingLevels.findIndex(level => level.value === gwl)
+    const gwlIndex = globalWarmingLevels.findIndex(level => level === gwl)
 
     const fetchData = async (url: string) => {
         const res = await fetch(url)
@@ -130,9 +130,9 @@ const throttledFetchPoint = throttle(async (
             //console.log('results.max', results.max)
         }
 
-        if (results && (results.max && results.min) && (results.max < results.min)) {
-            console.log(`max is smaller than min at point: ${lng}, ${lat}`);
-        }
+        /*  if (results && (results.max && results.min) && (results.max < results.min)) {
+             console.log(`max is smaller than min at point: ${lng}, ${lat}`);
+         } */
 
     } catch (err) {
         console.error('Error fetching point data:', err)
@@ -182,7 +182,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         const currentVariable = paths.variable
 
-        const currentGwl = globalWarmingLevels[gwlSelected]?.value || globalWarmingLevels[1].value
+        const currentGwl = globalWarmingLevels[gwlSelected] || globalWarmingLevels[0]
 
         const isLoading = !mounted || !tileJson
 

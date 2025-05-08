@@ -33,9 +33,9 @@ type MapUIProps = {
     gwlSelected: number;
     setMetricSelected: (metric: number) => void;
     setGwlSelected: (gwl: number) => void;
-    globalWarmingLevels: { id: number; value: string }[];
+    globalWarmingLevels: string[];
     metrics: Metric[];
-    
+
     valueType: ValueType;
     setValueType: (valueType: ValueType) => void;
 }
@@ -132,14 +132,12 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                                 MenuProps={MenuProps}
                                                 sx={{ mt: '15px', width: '200px' }}
                                             >
-                                                {globalWarmingLevels.map((gwl) => {
-                                                    if (!(gwl.id === 0)) {
-                                                        return (
-                                                            <MenuItem key={gwl.id} value={gwl.id}>
-                                                                <ListItemText primary={`${gwl.value}°`} />
-                                                            </MenuItem>
-                                                        )
-                                                    }
+                                                {globalWarmingLevels.map((gwl, i) => {
+                                                    return (
+                                                        <MenuItem key={gwl} value={i}>
+                                                            <ListItemText primary={`${gwl}°`} />
+                                                        </MenuItem>
+                                                    )
                                                 }
                                                 )}
                                             </Select>
