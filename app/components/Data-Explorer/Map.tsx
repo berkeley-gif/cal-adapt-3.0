@@ -168,6 +168,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             value: number | null
         } | null>(null)
         const [isPopupLoading, setIsPopupLoading] = useState(false)
+        const [isDataValid, setIsDataValid] = useState(false)
         const [showPopup, setShowPopup] = useState(false)
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
@@ -274,9 +275,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
             setClickCoords(newClick)
             setIsPopupLoading(true)
+
             setShowPopup(true)
-
-
             throttledFetchPoint(
                 lng,
                 lat,
@@ -287,8 +287,16 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 currentGwl,
                 globalWarmingLevels,
                 info => {
+                    const isValid = info.value !== null || info.min !== null || info.max !== null
+
+                    if (isValid) {
+                        setIsDataValid(true)
+                        setPopupInfo({ longitude: lng, latitude: lat, ...info })
+                    } else {
+                        setIsDataValid(false)
+                    }
+
                     setIsPopupLoading(false)
-                    setPopupInfo({ longitude: lng, latitude: lat, ...info })
                 }
             )
 
@@ -494,6 +502,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     value={popupInfo?.value || 0}
                                     title={paths.short_desc}
                                     isPopupLoading={isPopupLoading}
+                                    isDataValid={isDataValid}
                                     onClose={() => {
                                         setShowPopup(false)
                                         setPopupInfo(null)
