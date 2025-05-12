@@ -26,8 +26,8 @@ import {
 import { throttle } from 'lodash'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
-import Fab from '@mui/material/Fab'
-import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
+//import Fab from '@mui/material/Fab'
+//import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 
 import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
@@ -150,31 +150,25 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
     ({ metricSelected, gwlSelected, globalWarmingLevels, metrics, valueType }, ref) => {
         // Refs
         const mapRef = useRef<MapRef | null>(null)
-        const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
-        const mapContainerRef = useRef<HTMLDivElement | null>(null) // Reference to the map container
-
-        // Forward the internal ref to the parent
         useImperativeHandle(ref, () => mapRef.current || undefined)
+
+        const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
 
         // State
         const [mounted, setMounted] = useState(false)
         const [isDragging, setIsDragging] = useState(false)
         const [mapLoaded, setMapLoaded] = useState(false)
         const [tileJson, setTileJson] = useState<TileJson | null>(null)
-        const [hoverInfo, setHoverInfo] = useState<{
+        const [clickCoords, setClickCoords] = useState<{ lng: number; lat: number; key?: number } | null>(null)
+        const [popupInfo, setPopupInfo] = useState<{
             longitude: number
             latitude: number
             min: number | null
             max: number | null
             value: number | null
         } | null>(null)
-        const [showPopup, setShowPopup] = useState(false)
-        const [infoFabPos, setInfoFabPos] = useState<{ x: number; y: number } | null>(null)
-        const popupRef = useRef<HTMLDivElement | null>(null)
-        const fabRef = useRef<HTMLButtonElement | null>(null)
-        const [isHoveringPopup, setIsHoveringPopup] = useState(false)
         const [isPopupLoading, setIsPopupLoading] = useState(false)
-
+        const [showPopup, setShowPopup] = useState(false)
         // Derived state variables 
         const currentVariableData: Metric = metrics[metricSelected]
         const paths = currentVariableData[`${valueType}`] as { colormap: string, mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string, rescale: string }
@@ -227,7 +221,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         // Effects
 
-
         useEffect(() => {
             setMounted(true)
         }, [])
@@ -271,95 +264,39 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         }, [mapRef])
 
         useEffect(() => {
-            const map = mapRef.current
-            if (!map) return
+            console.log('popupInfo changed', popupInfo)
+        }, [popupInfo])
 
-            map.getCanvas().style.cursor = isHoveringPopup ? 'pointer' : 'default'
-        }, [infoFabPos])
-
-        useEffect(() => {
-            if (!isHoveringPopup && showPopup) {
-                setShowPopup(false)
-            }
-        }, [isHoveringPopup, showPopup])
-
-        useEffect(() => {
-            const handleClickOutside = (event: MouseEvent) => {
-                const target = event.target as Node
-                if (
-                    popupRef.current &&
-                    !popupRef.current.contains(target) &&
-                    fabRef.current &&
-                    !fabRef.current.contains(target)
-                ) {
-                    setShowPopup(false)
-                }
-            }
-
-            if (showPopup) {
-                document.addEventListener('mousedown', handleClickOutside)
-            } else {
-                document.removeEventListener('mousedown', handleClickOutside)
-            }
-
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutside)
-            }
-        }, [showPopup])
 
         // Map functions 
-        const handleHover = (event: MapMouseEvent) => {
-            if (!mapLoaded || !mapRef.current || isPopupLoading) {
-                return
-            }
+        const handleClick = (e: MapMouseEvent) => {
+            const { lng, lat } = e.lngLat
+            // Step 1: Hide current popup to trigger cleanup
+            setShowPopup(false)
+            setPopupInfo(null)
 
-            const { lngLat: { lng, lat }, point } = event
+            const newClick = { lng, lat, key: Date.now() }; // Add a key to ensure state update
 
-            setHoverInfo({
-                longitude: lng,
-                latitude: lat,
-                min: null,
-                max: null,
-                value: null
-            })
-
-            setInfoFabPos({ x: point.x, y: point.y })
-        }
-
-        const handleFabClick = () => {
-            if (!hoverInfo) return
-
-            const { longitude, latitude } = hoverInfo
-
+            setClickCoords(newClick)
             setIsPopupLoading(true)
             setShowPopup(true)
+            
 
             throttledFetchPoint(
-                longitude,
-                latitude,
+                lng,
+                lat,
                 paths.min_path || '',
                 paths.max_path || '',
                 paths.mean,
                 currentVariable,
                 currentGwl,
                 globalWarmingLevels,
-                ({ min, max, value }) => {
+                info => {
                     setIsPopupLoading(false)
-                    if (value !== null) {
-                        setHoverInfo({
-                            longitude,
-                            latitude,
-                            min,
-                            max,
-                            value
-                        })
-                    } else {
-                        setHoverInfo(null)
-                        setInfoFabPos(null)
-                        setShowPopup(false)
-                    }
+                    setPopupInfo({ longitude: lng, latitude: lat, ...info })
                 }
             )
+
         }
 
 
@@ -370,17 +307,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }, [])
 
-        const handleMouseDown = (e: mapboxgl.MapMouseEvent) => {
-            setIsDragging(true)
-            setShowPopup(false)
-        }
 
-        const handleMouseUp = () => {
-            setTimeout(() => {
-                setIsDragging(false)
-            }, 50) // short delay to distinguish drag vs click
-        }
-
+        useEffect(() => {
+            console.log('isPopupLoading', isPopupLoading)
+        }, [isPopupLoading])
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
             if (error.status === 404 && error.url?.includes('WebMercatorQuad')) {
@@ -482,6 +412,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 })
             }
 
+            map.on('click', handleClick)
+            return () => {
+                map.off('click', handleClick)
+            }
         }, [mapLoaded, tileJson])
 
         // Loading spinner
@@ -502,7 +436,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         return (
             <Grid container sx={{ height: '100%', flexDirection: "column", flexWrap: "nowrap", flexGrow: 1, position: 'relative' }}>
-                <Box sx={{ height: '100%', position: 'relative' }} id="map" aria-label="Interactive map showing climate data" ref={mapContainerRef} >
+                <Box sx={{ height: '100%', position: 'relative' }} id="map" aria-label="Interactive map showing climate data">
                     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                         {isLoading && (
                             <Box sx={{
@@ -523,7 +457,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                         <Map
                             ref={mapRef}
                             onLoad={handleMapLoad}
-                            onMouseMove={handleHover}
                             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                             initialViewState={INITIAL_VIEW_STATE}
                             mapStyle="mapbox://styles/mapbox/light-v11"
@@ -534,24 +467,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             onError={handleMapError}
                             aria-label="Map"
                             dragPan={true} // Keep drag enabled
-                            onMouseDown={handleMouseDown}
-                            onMouseUp={handleMouseUp}
                         >
 
-                            {/*                             {mapLoaded && tileJson && (
-                                <Source
-                                    id="raster-source"
-                                    type="raster"
-                                    tiles={tileJson.tiles}
-                                    tileSize={tileJson.tileSize || 256}
-                                >
-                                    <Layer
-                                        id="tile-layer"
-                                        type="raster"
-                                        paint={{ 'raster-opacity': RASTER_TILE_LAYER_OPACITY }}
-                                    />
-                                </Source>
-                            )} */}
                             <GeocoderControl
                                 mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''}
                                 zoom={13}
@@ -575,54 +492,17 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             />
                             <NavigationControl position="top-right" aria-label="Navigation controls" />
                             <ScaleControl position="bottom-right" maxWidth={100} unit="metric" aria-label="Scale control" />
-                            {infoFabPos && hoverInfo && (
-                                <Fab
-                                    onClick={handleFabClick}
-                                    onMouseEnter={() => setIsHoveringPopup(true)}
-                                    onMouseLeave={() => {
-                                        setIsHoveringPopup(false)
-                                        setTimeout(() => {
-                                            setShowPopup(false)
-                                        }, 200)
-                                    }}
-                                    ref={fabRef}
-                                    color="primary"
-                                    size="small"
-                                    sx={{
-                                        position: 'absolute',
-                                        left: infoFabPos.x,
-                                        top: infoFabPos.y,
-                                        transform: 'translate(-50%, -50%)',
-                                        zIndex: 10,
-                                        opacity: 1,
-                                        pointerEvents: 'auto', // Always clickable
-                                    }}
-                                    aria-label="Show more info"
-                                >
-                                    <MoreHorizOutlinedIcon />
-                                </Fab>
-                            )}
-                            {showPopup && hoverInfo && (
-                                <div
-                                    ref={popupRef}
-                                    onMouseEnter={() => setIsHoveringPopup(true)}
-                                    onMouseLeave={() => {
-                                        setIsHoveringPopup(false)
-                                        setTimeout(() => {
-                                            setShowPopup(false)
-                                        }, 200) // give user time to move between FAB and popup
-                                    }}>
-                                    <MapPopup
-                                        longitude={hoverInfo.longitude}
-                                        latitude={hoverInfo.latitude}
-                                        min={hoverInfo.min}
-                                        max={hoverInfo.max}
-                                        value={hoverInfo.value || 0}
-                                        title={paths.short_desc}
-                                        isPopupLoading={isPopupLoading}
-                                        aria-label={`Popup at longitude ${hoverInfo.longitude} and latitude ${hoverInfo.latitude}`}
-                                    />
-                                </div>
+                            {clickCoords && showPopup && (
+                                <MapPopup
+                                    longitude={clickCoords.lng}
+                                    latitude={clickCoords.lat}
+                                    min={popupInfo?.min || 0}
+                                    max={popupInfo?.max || 0}
+                                    value={popupInfo?.value || 0}
+                                    title={paths.short_desc}
+                                    isPopupLoading={isPopupLoading}
+                                    aria-label={`Popup at longitude ${clickCoords.lng} and latitude ${clickCoords.lat}`}
+                                />
                             )}
                         </Map>
                         <div style={{
