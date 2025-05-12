@@ -486,6 +486,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                             <ScaleControl position="bottom-right" maxWidth={100} unit="metric" aria-label="Scale control" />
                             {clickCoords && showPopup && (
                                 <MapPopup
+                                    key={clickCoords.key} // force rerender
                                     longitude={clickCoords.lng}
                                     latitude={clickCoords.lat}
                                     min={popupInfo?.min || 0}
