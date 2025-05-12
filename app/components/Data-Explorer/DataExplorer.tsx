@@ -64,14 +64,6 @@ export default function DataExplorer({ data }: DataExplorerProps) {
         fetchGWL()
     }, [metricSelected, valueType])
 
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            toggleLeftDrawer()
-        }, 100)
-
-        return () => clearTimeout(timeoutId)
-    }, [])
-
     return (
         <Grid container sx={{ height: '100%', flexDirection: "column", flexWrap: "nowrap", flexGrow: 1 }}>
             <MapUI

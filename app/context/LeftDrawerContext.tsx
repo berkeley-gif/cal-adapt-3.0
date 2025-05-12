@@ -4,20 +4,28 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 
 const DRAWER_WIDTH = 212
 
+type DrawerState = 'open' | 'closed'
+
 type LeftDrawerContextType = {
-    open: boolean;
-    toggleLeftDrawer: () => void;
-    drawerWidth: number;
+    open: boolean
+    toggleLeftDrawer: () => void
+    drawerWidth: number
 }
 
 const LeftDrawerContext = createContext<LeftDrawerContextType | undefined>(undefined)
 
 export const LeftDrawerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     const drawerWidth = DRAWER_WIDTH
 
-    const toggleLeftDrawer = () => {
-        setOpen(prev => !prev)
+    const toggleLeftDrawer = (state?: DrawerState) => {
+        if (state === 'open') {
+            setOpen(true)
+        } else if (state === 'closed') {
+            setOpen(false)
+        } else {
+            setOpen(prev => !prev)
+        }
     }
 
     return (
