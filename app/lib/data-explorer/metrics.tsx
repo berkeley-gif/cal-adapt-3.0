@@ -83,7 +83,7 @@ export const metricsList: Metric[] = [
             "description": 'Absolute median annual number of days with Fosberg Fire Weather Index (FFWI) value greater than 50',
             "short_desc": 'How often the weather is conducive for fires in this area',
             "variable": 'ffwige50',
-            "rescale": '0,100',
+            "rescale": '0,365',
             "colormap": 'gist_heat_r',
         },
         "del": {
@@ -93,7 +93,7 @@ export const metricsList: Metric[] = [
             "description": 'Change in median annual number of days with Fosberg Fire Weather Index (FFWI) value greater than 50',
             "short_desc": 'Change in how often the weather is conducive for fires in this area',
             "variable": 'ffwige50d',
-            "rescale": '-2,2',
+            "rescale": '-6,6',
             "colormap": 'PuOr',
         },
         
