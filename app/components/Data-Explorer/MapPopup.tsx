@@ -2,6 +2,8 @@
 
 import { Popup } from 'react-map-gl'
 import Typography from '@mui/material/Typography'
+import CloseIcon from '@mui/icons-material/Close'
+import IconButton from '@mui/material/IconButton'
 import LoadingSpinner from '../Global/LoadingSpinner'
 
 import '@/app/styles/dashboard/mapbox-map.scss'
@@ -15,9 +17,10 @@ type MapPopupProps = {
     max: number | null
     title: string
     isPopupLoading: boolean
+    onClose: () => void
 }
 
-export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupLoading }: MapPopupProps) => {
+export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupLoading, onClose }: MapPopupProps) => {
     return (
         <Popup
             longitude={longitude}
@@ -30,12 +33,18 @@ export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupL
                 {isPopupLoading ?
                     (<LoadingSpinner />) : (
                         <>
-                            <div className="description">
+                            <div className="description" >
                                 <Typography variant="body2">
                                     {title}
                                 </Typography>
                             </div>
-
+                            <div className="close" style={{
+                                position: 'absolute', float: 'right', top: '10px', right: '10px'
+                            }}>
+                                <IconButton size="small" onClick={onClose} aria-label="Close popup">
+                                    <CloseIcon fontSize="small" />
+                                </IconButton>
+                            </div>
                             <div className="values">
                                 {(min >= 0) &&
                                     <div className="value">

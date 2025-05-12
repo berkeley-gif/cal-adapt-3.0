@@ -263,11 +263,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }, [mapRef])
 
-        useEffect(() => {
-            console.log('popupInfo changed', popupInfo)
-        }, [popupInfo])
-
-
         // Map functions 
         const handleClick = (e: MapMouseEvent) => {
             const { lng, lat } = e.lngLat
@@ -280,7 +275,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             setClickCoords(newClick)
             setIsPopupLoading(true)
             setShowPopup(true)
-            
+
 
             throttledFetchPoint(
                 lng,
@@ -308,9 +303,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         }, [])
 
 
-        useEffect(() => {
-            console.log('isPopupLoading', isPopupLoading)
-        }, [isPopupLoading])
         const handleMapError = (e: ErrorEvent) => {
             const error = e.error as { status?: number; url?: string }
             if (error.status === 404 && error.url?.includes('WebMercatorQuad')) {
@@ -501,6 +493,10 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                                     value={popupInfo?.value || 0}
                                     title={paths.short_desc}
                                     isPopupLoading={isPopupLoading}
+                                    onClose={() => {
+                                        setShowPopup(false)
+                                        setPopupInfo(null)
+                                    }}
                                     aria-label={`Popup at longitude ${clickCoords.lng} and latitude ${clickCoords.lat}`}
                                 />
                             )}
