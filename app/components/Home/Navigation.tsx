@@ -45,7 +45,7 @@ function Navigation() {
     }
 
     return (
-        <AppBar style={{ position: 'absolute', zIndex: 3 }} position="static" color="transparent" elevation={0}>
+        <AppBar style={{ position: 'absolute', zIndex: 3, top: 0}} position="static" color="transparent" elevation={0}>
             <Container maxWidth={false} disableGutters>
                 <Toolbar disableGutters sx={{
                     position: 'relative',

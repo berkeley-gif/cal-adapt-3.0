@@ -3,14 +3,16 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
+  color: #fff !important;
 
   .layer {
     position: absolute;
     object-fit: cover;
+    width: 100%;
 
     &.joshua-hero {
       bottom: -100px;
-      width: 100%;
+      
       top: 0;
       left: 0;
       z-index: 1;
@@ -21,13 +23,37 @@
     &.rocks {
       bottom: 0; /* pin the container to the bottom */
       z-index: 2;
-
-      /* ensure the <img> inside covers the box and crops from the bottom */
-      overflow: hidden;
-      width: 100%;
       height: auto; /* let height grow beyond 40% */
       object-fit: cover; /* fill the width, keep aspect */
       object-position: top; /* align the top of the image → crop bottom */
+    }
+
+    &.text-container {
+      z-index: 3;
+      top: 10rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .intro-p {
+        width: 600px;
+        margin: 0 auto;
+      }
+
+      .scroll {
+        display: flex;
+        flex-direction: column;
+        margin: 20px 0;
+        span {
+          display: inline-block; // ← make the span rotatable
+          transform-origin: center; // ← rotate about its center
+          transform: rotate(-90deg);
+        }
+        .mouse {
+            margin: 20px auto;
+        }
+      }
     }
   }
 }

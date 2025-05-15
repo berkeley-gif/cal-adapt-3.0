@@ -7,6 +7,7 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <HeroMain /> 
+      <div style={{height: '1200px'}} />
       <Button variant="contained" href="/dashboard">Go to the dashboard</Button>
     </div>
   )
