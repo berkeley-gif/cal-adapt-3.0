@@ -1,0 +1,33 @@
+.homepage-hero {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+
+  .layer {
+    position: absolute;
+    object-fit: cover;
+
+    &.joshua-hero {
+      bottom: -100px;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      //object-position: calc(50% + 100px);
+      object-fit: cover;
+    }
+
+    &.rocks {
+      bottom: 0; /* pin the container to the bottom */
+      z-index: 2;
+
+      /* ensure the <img> inside covers the box and crops from the bottom */
+      overflow: hidden;
+      width: 100%;
+      height: auto; /* let height grow beyond 40% */
+      object-fit: cover; /* fill the width, keep aspect */
+      object-position: top; /* align the top of the image → crop bottom */
+    }
+  }
+}
