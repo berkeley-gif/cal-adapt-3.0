@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
 
-import logo from '@/public/img/logos/cal-adapt-data-download.png'
+import logo from '@/public/img/logos/cal-adapt-logo-white.svg'
 
 const leftMenuItems = [
     {

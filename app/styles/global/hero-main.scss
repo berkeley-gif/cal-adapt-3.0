@@ -6,42 +6,40 @@
   color: #fff !important;
 
   .layer {
-    position: absolute;
-    object-fit: cover;
+    //position: absolute;
     width: 100%;
+    height: 100%;
 
-    &.joshua-hero {
-      bottom: -100px;
-      
-      top: 0;
-      left: 0;
-      z-index: 1;
-      //object-position: calc(50% + 100px);
-      object-fit: cover;
+    .rocks-container {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      overflow: hidden; // 👈 Hides bottom portion initially
     }
 
     &.rocks {
-      bottom: 0; /* pin the container to the bottom */
-      z-index: 2;
-      height: auto; /* let height grow beyond 40% */
-      object-fit: cover; /* fill the width, keep aspect */
-      object-position: top; /* align the top of the image → crop bottom */
+      position: absolute;
+      bottom: -120px; // 👈 Start slightly hidden
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      object-position: bottom;
+      object-fit: cover;
     }
 
-    &.text-container {
-      z-index: 3;
-      top: 10rem;
+    .intro {
+      margin-top: 10rem;
       text-align: center;
       display: flex;
       flex-direction: column;
       gap: 20px;
 
-      .intro-p {
+      .intro__p {
         width: 600px;
         margin: 0 auto;
       }
 
-      .scroll {
+      .intro__scroll {
         display: flex;
         flex-direction: column;
         margin: 20px 0;
@@ -51,9 +49,18 @@
           transform: rotate(-90deg);
         }
         .mouse {
-            margin: 20px auto;
+          margin: 20px auto;
         }
       }
     }
+
+    .secondary {
+      margin-top: 100px;
+    }
   }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
 }
