@@ -72,3 +72,11 @@ a {
     text-decoration: underline;
   }
 }
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
+}
