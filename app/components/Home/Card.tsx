@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation'
 
 import Typography from '@mui/material/Typography'
@@ -30,6 +31,7 @@ export default function Card({ title, description, cta, img }: CardProps) {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
+
             <Typography className="card__title" style={{
                 textTransform: 'uppercase',
                 marginTop: '100px'
@@ -49,5 +51,6 @@ export default function Card({ title, description, cta, img }: CardProps) {
                 <ArrowForwardOutlinedIcon />
             </Fab>
         </div>
+
     )
 }
