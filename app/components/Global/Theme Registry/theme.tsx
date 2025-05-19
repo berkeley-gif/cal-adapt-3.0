@@ -18,6 +18,19 @@ declare module '@mui/material/styles' {
     infoYellow?: PaletteOptions['info'];
     infoDark?: PaletteOptions['info'];
   }
+
+    interface TypographyVariants {
+    body3: React.CSSProperties;
+  }
+
+  interface TypographyVariantsOptions {
+    body3?: React.CSSProperties;
+  }
+}
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    body3: true;
+  }
 }
 
 // Update the Button's color options to include an ochre option
@@ -89,7 +102,7 @@ let theme = createTheme({
       fontSize: '4.063rem'
     },
     h3: {
-      fontWeight: 400,
+      fontWeight: 700,
       fontSize: '2.5rem'
     },
     h4: {
@@ -107,6 +120,9 @@ let theme = createTheme({
     },
     body2: {
       color: "#6F6F6F"
+    },
+    body3: {
+      fontWeight: 700
     },
     caption: {
       fontSize: '0.75rem',

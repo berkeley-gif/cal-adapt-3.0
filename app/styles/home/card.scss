@@ -11,11 +11,12 @@
   color: #fff;
   border-radius: 16px;
   padding: 0 30px;
+  cursor: pointer;
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.4);
     background-blend-mode: overlay;
-    transition: all 0.5s;
+    transition: all 0.2s ease-in-out;
   }
 
   &__title {
