@@ -5,7 +5,7 @@ import { useEffect, useRef, useCallback } from 'react'
 
 import Typography from '@mui/material/Typography'
 
-import '@/app/styles/global/hero-main.scss'
+import '@/app/styles/home/hero-main.scss'
 import sky from '@/public/img/homepage-hero/sky.png'
 import rocks from '@/public/img/homepage-hero/rocks.png'
 import mouse from '@/public/img/homepage-hero/mouse.png'
