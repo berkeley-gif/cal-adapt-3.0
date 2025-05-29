@@ -50,17 +50,14 @@ export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupL
                             </IconButton>
                         </div>
                         <div className="values">
-                            {(min >= 0) &&
-                                <div className="value">
-                                    <Typography variant="h5">
-                                        {min?.toFixed(2)}
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        Min*
-                                    </Typography>
-                                </div>
-
-                            }
+                            <div className="value">
+                                <Typography variant="h5">
+                                    {min?.toFixed(2)}
+                                </Typography>
+                                <Typography variant="body2">
+                                    Min*
+                                </Typography>
+                            </div>
                             <div className="value">
                                 <Typography variant="h4">
                                     {value.toFixed(2)}
@@ -90,7 +87,7 @@ export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupL
                     </>)}
 
                 {!isPopupLoading && !isDataValid && (
-                    <Alert className="alerts alerts-100" style={{ marginBottom: '0'}} variant="filled" severity="info" color="secondaryReversed">No data is available for this location</Alert>
+                    <Alert className="alerts alerts-100" style={{ marginBottom: '0' }} variant="filled" severity="info" color="secondaryReversed">No data is available for this location</Alert>
                 )}
             </div >
         </Popup >
