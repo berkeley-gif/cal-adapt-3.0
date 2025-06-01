@@ -6,6 +6,8 @@ import 'aos/dist/aos.css'
 
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 
 import type { CarouselData } from './components/Home/ToolCarousel'
 import styles from './page.module.scss'
@@ -70,12 +72,22 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="blue">
-          <ToolCarousel data={genCarouselData} />
+        <section className="blue carousels" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+          <div className="content" style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+            <Typography variant="h2" style={{ marginBottom: '60px' }}>
+              Cal-Adapt's Tool Array
+            </Typography>
+            <Typography variant="h4" style={{ marginBottom: '20px' }}>
+              Climate Insights for Everyone
+            </Typography>
+            <div style={{ alignSelf: 'center' }}>
+              <ToolCarousel data={genCarouselData} />
+            </div>
+          </div>
         </section>
         <div style={{ height: '1200px' }} />
         <Button variant="contained" href="/dashboard">Go to the dashboard</Button>
       </div>
-    </ParallaxContext>
+    </ParallaxContext >
   )
 }
