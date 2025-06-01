@@ -62,7 +62,6 @@ const MenuProps: any = {
 
 export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
-    const mapUIWidth = open ? `calc(100% - ${drawerWidth})` : 'calc(100% - 72px)'
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
 
     const fullWidthUIItem = open ? `100%` : `calc(100% - ${drawerWidth} - 72px)`
@@ -138,7 +137,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
 
     return (
         <div className="map-ui" style={{
-            width: mapUIWidth,
+            width:  open ? 'calc(100% - 212px)' : 'calc(100% - 72px)',
             transition: 'width 225ms cubic-bezier(0.4, 0, 0.6, 1)',
         }}>
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
