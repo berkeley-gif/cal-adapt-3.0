@@ -1,23 +1,44 @@
 'use client'
 import * as React from 'react'
 import { useEffect, useState, useRef } from 'react'
+import Image from 'next/image'
+import { useRouter } from 'next/navigation'
+
+import Typography from '@mui/material/Typography'
+import Fab from '@mui/material/Fab'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import ArrowForwardOutlinedIcon from '@mui/icons-material/ArrowForwardOutlined'
 
 import '@/app/styles/home/tool-carousel.scss'
 
-const data = [
-    { id: 1, title: 'Extreme heat days', description: 'Preview for heat days 🔥', image: 'https://via.placeholder.com/400x200?text=Heat' },
-    { id: 2, title: 'Availability of renewable resources', description: 'Preview for renewables', image: 'https://via.placeholder.com/400x200?text=Renewables' },
-    { id: 3, title: 'Fire weather risk', description: 'Preview for fire weather risk', image: 'https://via.placeholder.com/400x200?text=Fire' },
-    { id: 4, title: 'Extreme precipitation', description: 'Preview for extreme precipitation', image: 'https://via.placeholder.com/400x200?text=Precipitation' },
-    { id: 5, title: 'CMIP6 data packages', description: 'Preview for data download', image: 'https://via.placeholder.com/400x200?text=Data download' },
-]
 
-function ToolCarousel() {
+export type CarouselData = {
+    id: number
+    title: string
+    description: string
+    image: string
+    imageAlt: string
+    link: string
+}
+
+type ToolCarouselProps = {
+    data: CarouselData[]
+}
+
+function ToolCarousel({ data }: ToolCarouselProps) {
     const listRef = useRef<HTMLDivElement>(null)
     const [activeIndex, setActiveIndex] = useState(0)
     const [thumbHeight, setThumbHeight] = useState('0px')
     const [thumbTop, setThumbTop] = useState('0px')
     const trackRef = useRef<HTMLDivElement>(null)
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        const path = event.currentTarget.getAttribute('data-path')
+        if (path) {
+            window.open(path, '_blank', 'noopener,noreferrer')
+        }
+    }
 
     const scrollToItem = (index: number) => {
         const el = listRef.current?.children[index] as HTMLElement
@@ -38,7 +59,7 @@ function ToolCarousel() {
 
         setThumbHeight(`${thumbH}px`)
         setThumbTop(`${thumbT}px`)
-    };
+    }
 
     useEffect(() => {
         updateScrollbar()
@@ -47,7 +68,9 @@ function ToolCarousel() {
     return (
         <div className="explore-container">
             <div className="left-panel">
-                <h2>Explore</h2>
+                <Typography className="left-panel__title" variant="h5">
+                    Explore
+                </Typography>
                 <div className="list-container">
                     <div className="scrollable-list" ref={listRef}>
                         {data.map((item, index) => (
@@ -75,7 +98,7 @@ function ToolCarousel() {
                                 }
                             }}
                         >
-                            ↑
+                            <KeyboardArrowUpIcon />
                         </button>
 
                         <div className="scrollbar-track" ref={trackRef}>
@@ -95,22 +118,36 @@ function ToolCarousel() {
                                 }
                             }}
                         >
-                            ↓
+                            <KeyboardArrowDownIcon />
                         </button>
                     </div>
                 </div>
             </div>
 
             <div className="right-panel">
-                <img src={data[activeIndex].image} alt={data[activeIndex].title} />
-                <div className="preview-box">
-                    <h3>{data[activeIndex].title}</h3>
-                    <p>{data[activeIndex].description}</p>
-                    <p>Here is a second sentence to add even more context</p>
-                    <div className="icon">→</div>
+                <div className="right-panel__image" style={{ position: "relative", width: '100%', height: '216px' }}>
+                    <Image
+                        src={data[activeIndex].image}
+                        alt={data[activeIndex].imageAlt}
+                        fill
+                    />
+                </div>
+
+                <div className="right-panel__preview-box">
+                    <div className="content">
+                        <Typography variant="h6">
+                            {data[activeIndex].title}
+                        </Typography>
+                        <Typography variant="body1">
+                            {data[activeIndex].description}
+                        </Typography>
+                    </div>
+                    <Fab className="link-button" data-path={data[activeIndex].link} color="primaryBlue" onClick={handleClick} sx={{ float: 'right' }} aria-label="Explore metric" size="medium" >
+                        <ArrowForwardOutlinedIcon />
+                    </Fab>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

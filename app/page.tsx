@@ -7,10 +7,12 @@ import 'aos/dist/aos.css'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
+import type { CarouselData } from './components/Home/ToolCarousel'
 import styles from './page.module.scss'
 import HeroMain from './components/Home/HeroMain'
 import Card from './components/Home/Card'
 import ToolCarousel from './components/Home/ToolCarousel'
+import { genCarouselData } from './lib/home/gen-carousel-data'
 
 import { ParallaxContext } from '@/app/context/Parallax'
 
@@ -69,7 +71,7 @@ export default function Home() {
           </div>
         </section>
         <section className="blue">
-          <ToolCarousel />
+          <ToolCarousel data={genCarouselData} />
         </section>
         <div style={{ height: '1200px' }} />
         <Button variant="contained" href="/dashboard">Go to the dashboard</Button>

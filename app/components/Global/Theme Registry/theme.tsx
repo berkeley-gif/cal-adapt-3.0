@@ -110,8 +110,8 @@ let theme = createTheme({
       fontSize: '1.563rem'
     },
     h5: {
-      fontWeight: 600,
-      fontSize: '1.125rem'
+      fontWeight: 800,
+      fontSize: '1.4rem'
     },
     h6: {
       fontWeight: 700,

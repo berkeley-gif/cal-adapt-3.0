@@ -11,8 +11,8 @@ const inter = Inter({
 })
 
 export const metadata = {
-  title: 'Cal-Adapt Dashboard',
-  description: '',
+  title: 'Cal-Adapt',
+  description: 'Climate Tools and Data',
 }
 interface RootLayoutProps {
   children: React.ReactNode;

@@ -1,18 +1,17 @@
+@import './../main/variables';
+
 .explore-container {
   display: flex;
   height: 100%;
   padding: 2rem;
-  font-family: sans-serif;
   align-items: flex-start;
 
   .left-panel {
     width: 280px;
     margin-right: 2rem;
 
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
+    &__title {
+      margin-bottom: 31px;
     }
 
     .list-container {
@@ -67,7 +66,7 @@
           .scrollbar-thumb {
             position: absolute;
             width: 100%;
-            background: #c14e4e;
+            background: $secondary;
             border-radius: 2px;
             transition: top 0.2s ease;
           }
@@ -78,38 +77,26 @@
 
   .right-panel {
     flex: 1;
-    max-width: 600px;
+    max-width: 465px;
+    height: 362px;
     background: #fff;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-    img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .preview-box {
+    &__preview-box {
+      display: flex;
       padding: 1.5rem;
+      height: 146px;
 
-      h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
+      .content {
+        width: 350px;
+
       }
 
-      p {
-        font-size: 0.95rem;
-        color: #444;
-        margin-bottom: 0.5rem;
-      }
-
-      .icon {
-        font-size: 1.5rem;
-        margin-top: 1rem;
-        color: #0070f3;
-        font-weight: bold;
+      .link-button {
+        align-self: center;
+        margin-left: 16px;
       }
     }
   }

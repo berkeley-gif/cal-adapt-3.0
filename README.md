@@ -26,6 +26,15 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
+## Tool management
+
+### Tool Carousel
+
+Located in ```components/home/ToolCarousel.tsx```
+
+Whenever a new metric within a tool or a tool is added, this component needs to be updated accordingly. Check for the data from where the instance of the tool is retrieving its data, and add the values accordingly. 
+
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
