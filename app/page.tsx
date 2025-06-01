@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import styles from './page.module.scss'
 import HeroMain from './components/Home/HeroMain'
 import Card from './components/Home/Card'
+import ToolCarousel from './components/Home/ToolCarousel'
 
 import { ParallaxContext } from '@/app/context/Parallax'
 
@@ -66,6 +67,9 @@ export default function Home() {
               />
             </div>
           </div>
+        </section>
+        <section className="blue">
+          <ToolCarousel />
         </section>
         <div style={{ height: '1200px' }} />
         <Button variant="contained" href="/dashboard">Go to the dashboard</Button>
