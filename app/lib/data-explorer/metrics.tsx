@@ -1,6 +1,7 @@
 export type Metric = {
     id: number
     title: string
+    slug: string
     abs: {
         mean: string
         min_path?: string
@@ -28,6 +29,7 @@ export const metricsList: Metric[] = [
     {
         "id": 0,
         "title": 'Extreme Heat',
+        "slug": 'extreme-heat',
         "abs": {
             "mean": 's3://cadcat/wrf/cae/mm4mean/ssp370/gwl/TX99p/d03',
             "min_path": 's3://cadcat/wrf/cae/mm4min/ssp370/gwl/TX99p/d03',
@@ -52,6 +54,7 @@ export const metricsList: Metric[] = [
     {
         "id": 1,
         "title": 'Extreme Precipitation',
+        "slug": 'extreme-precipitation',
         "abs": {
             "mean": 's3://cadcat/wrf/cae/mm4mean/ssp370/gwl/R99p/d03',
             "min_path": 's3://cadcat/wrf/cae/mm4min/ssp370/gwl/R99p/d03',
@@ -76,6 +79,7 @@ export const metricsList: Metric[] = [
     {
         "id": 2,
         "title": 'Fire Weather',
+        "slug": 'fire-weather',
         "abs": {
             "mean": 's3://cadcat/wrf/cae/mm4mean/ssp370/gwl/ffwige50/d03',
             "min_path": 's3://cadcat/wrf/cae/mm4min/ssp370/gwl/ffwige50/d03',
@@ -96,6 +100,6 @@ export const metricsList: Metric[] = [
             "rescale": '-2,2',
             "colormap": 'PuOr',
         },
-        
+
     }
 ]

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -69,11 +70,25 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
         setValueType(newValue)
     }
 
+    const router = useRouter()
+    const searchParams = useSearchParams()
+
     const [renderKey, setRenderKey] = useState(0)
 
-    useEffect(() => {
-        setRenderKey((prev) => prev + 1);
-    }, [open])
+    const handleMetricChange = (event: any) => {
+        console.log('handleMetricChange')
+        const newMetricId = event.target.value as number
+        setMetricSelected(newMetricId)
+
+        const selectedMetric = metrics.find(m => m.id === newMetricId)
+        if (selectedMetric) {
+            const params = new URLSearchParams(window.location.search)
+            params.set('metric', selectedMetric.slug)
+            router.push(`?${params.toString()}`)
+        }
+    }
+
+
 
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setHelpAnchorEl(event.currentTarget)
@@ -85,6 +100,41 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
 
     const helpOpen = Boolean(helpAnchorEl);
     const id = helpOpen ? 'simple-popover' : undefined
+
+    useEffect(() => {
+        setRenderKey((prev) => prev + 1);
+    }, [open])
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+
+        // set metric from URL if available
+        const metricSlug = params.get('metric')
+        if (metricSlug) {
+            const matchedMetric = metrics.find(m => m.slug === metricSlug)
+            if (matchedMetric) {
+                setMetricSelected(matchedMetric.id)
+            } else {
+                console.warn(`Unknown metric selected: ${metricSlug}`)
+                setMetricSelected(metrics[0].id)
+            }
+        } else {
+            setMetricSelected(metrics[0].id)
+        }
+
+        // GWL 
+        const gwlParam = params.get('gwl')
+        if (gwlParam) {
+            const gwlIndex = parseInt(gwlParam, 10)
+            if (!isNaN(gwlIndex)) setGwlSelected(gwlIndex)
+        }
+
+        // Value type
+        const valueParam = params.get('valueType')
+        if (valueParam === 'abs' || valueParam === 'del') {
+            setValueType(valueParam)
+        }
+    }, [])
 
     return (
         <div className="map-ui" style={{
@@ -164,9 +214,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                         <FormControl>
                                             <Select
                                                 value={metricSelected}
-                                                onChange={(event: any) => {
-                                                    setMetricSelected(event.target.value as number)
-                                                }}
+                                                onChange={handleMetricChange}
                                                 MenuProps={MenuProps}
                                                 sx={{ mt: '15px', width: '220px' }}
                                             >
