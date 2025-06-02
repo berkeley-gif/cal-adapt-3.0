@@ -63,6 +63,7 @@ const MenuProps: any = {
 export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
+    const helpButtonRef = useRef<HTMLButtonElement | null>(null)
 
     const fullWidthUIItem = open ? `100%` : `calc(100% - ${drawerWidth} - 72px)`
     const handleValueTypeChange = (event: React.SyntheticEvent, newValue: ValueType) => {
@@ -105,6 +106,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
     }, [open])
 
     useEffect(() => {
+        const timeout = setTimeout(() => {
+            if (helpButtonRef.current) {
+                setHelpAnchorEl(helpButtonRef.current);
+            }
+        }, 1000); // delay in milliseconds (e.g., 1000ms = 1 second)
+
+        return () => clearTimeout(timeout); // cleanup on unmount
+    }, [])
+
+    useEffect(() => {
         const params = new URLSearchParams(window.location.search)
 
         // set metric from URL if available
@@ -137,7 +148,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
 
     return (
         <div className="map-ui" style={{
-            width:  open ? 'calc(100% - 212px)' : 'calc(100% - 72px)',
+            width: open ? 'calc(100% - 212px)' : 'calc(100% - 72px)',
             transition: 'width 225ms cubic-bezier(0.4, 0, 0.6, 1)',
         }}>
             <Box sx={{ height: '80vh', display: 'flex', flexDirection: 'column' }}>
@@ -239,7 +250,14 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                     <Grid container item justifyContent="center">
                         <Grid item xs={10}></Grid>
                         <Grid item xs={2}>
-                            <Fab className="map-ui__help-button" color="secondary" sx={{ float: 'right', mr: '50px' }} aria-label="Help toggle" size="medium" onClick={handleHelpClick}>
+                            <Fab
+                                className="map-ui__help-button"
+                                color="secondary"
+                                sx={{ float: 'right', mr: '50px' }}
+                                aria-label="Help toggle"
+                                size="medium"
+                                onClick={handleHelpClick}
+                                ref={helpButtonRef}>
                                 <QuestionMarkOutlinedIcon />
                             </Fab>
                             <Popover
@@ -264,27 +282,47 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                     },
                                 }}
                             >
+                                <Typography variant="h5">
+                                    About the Data Explorer Tool
+                                </Typography>
                                 <Typography variant="body1">
-                                    <p>Explore climate trends, visualize environmental data, and make informed decisions about California’s future. </p>
-                                    <p>Here’s a quick guide to help you navigate the tool:</p>
+                                    <p>Showing the absolute and change in extreme weather across heat, precipitation, and fire weather over the potential futures in California allows individuals, planners, researchers, and interested parties to examine the general shape of climate projections.
+                                    </p>
                                 </Typography>
 
-                                <Typography variant="h6" sx={{ mt: '15px' }}>
-                                    Global Warming Level Selector
+                                <Typography variant="h6" style={{ marginTop: '15px' }}>Projections Type</Typography>
+                                <Typography variant="body1">
+                                    <p>
+                                        <strong>Absolute</strong>: show the average expected value for the chosen metric and at the selected Global Warming Level (GWL).
+
+                                    </p>
+                                    <p>
+                                        <strong>Delta</strong>: show the change between a 0.8° C world (roughly 2015-2020) and the selected GWL
+                                    </p>
                                 </Typography>
 
+                                <Typography variant="h6" style={{ marginTop: '15px' }}>Global Warming Level</Typography>
                                 <Typography variant="body1">
+                                    <p>
+                                        Show what different parts of California will look like when the world, as a whole, has increased average temperature compared to pre-industrial by the chosen amount.
+                                    </p>
+                                    <p>
+                                        For additional information go to: <a href="https://cal-adapt.org/blog/understanding-warming-levels" target='_blank'><span className="underline">Understanding Climate Futures through the lens of global Warming Levels</span></a>
+                                    </p>
+                                </Typography>
+                                <Typography variant="body1" style={{ marginTop: '15px' }}>
                                     Use the dropdown menu to select a global warming scenario (e.g., 1.5°C, 2.0°C).
                                     This will adjust the data overlays to reflect projected changes under the selected warming level.
                                     (<a href="https://climate.gov" target='_blank'><span className="underline">Climate.gov</span></a>  has more information)
-
                                 </Typography>
+
+
                                 <Typography variant="h6" sx={{ mt: '15px' }}>
-                                    Metric Selector
+                                    Metric
                                 </Typography>
                                 <Typography variant="body1">
-                                    Choose a climate metric to display on the map (e.g., extreme temperature, extreme precipitation, fire weather index)
-                                    Each metric provides a unique perspective on how climate change impacts various regions.
+                                    <p>Choose a climate metric to display on the map (e.g., extreme temperature, extreme precipitation, fire weather index)
+                                        Each metric provides a unique perspective on how climate change impacts various regions.</p>
                                     (A plain language description of metrics can be found <a href='https://docs.google.com/document/d/19UB672X38z21QlEkieWEwWLwZQWU_L7wMW5zq9bo7tc/edit?usp=sharing' target='_blank'><span className="underline">here</span></a>)
                                 </Typography>
                                 <Typography variant="h6" sx={{ mt: '15px' }}>

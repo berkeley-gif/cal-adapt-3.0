@@ -41,10 +41,10 @@ export default function Home() {
             textAlign: 'center',
             padding: '0 20vw',
             margin: '0 auto'
-          }} variant="body1" data-aos="fade-right">
+          }} variant="body1">
             The new Cal-Adapt has been revamped to offer a more modern and intuitive experience for exploring <nobr>peer-reviewed</nobr> CMIP6 climate data. Our platform provides interactive visualizations, downloadable datasets, the Analytics Engine and the Cal-Adapt API, helping you analyze how climate change may impact California at both state and local levels.
           </Typography>
-          <div data-aos="fade-right">
+          <div>
             <div className="cards" style={{
               display: 'flex',
               gap: '30px',
