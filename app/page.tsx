@@ -75,7 +75,7 @@ export default function Home() {
         <section className="blue carousels" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
           <div className="content" style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
             <Typography variant="h2" style={{ marginBottom: '60px' }}>
-              Cal-Adapt's Tool Array
+              Cal-Adapt Tool Array
             </Typography>
             <Typography variant="h4" style={{ marginBottom: '20px' }}>
               Climate Insights for Everyone

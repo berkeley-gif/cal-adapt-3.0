@@ -62,7 +62,7 @@ export const metricsList: Metric[] = [
             "description": 'Absolute 99th percentile 1-day accumulated precipitation',
             "short_desc": 'How much more precipitation will fall on really heavy precipitation days',
             "variable": 'R99p',
-            "rescale": '0,170',
+            "rescale": '0,265',
             "colormap": 'Blues',
         },
         "del": {
@@ -87,7 +87,7 @@ export const metricsList: Metric[] = [
             "description": 'Absolute median annual number of days with Fosberg Fire Weather Index (FFWI) value greater than 50',
             "short_desc": 'How often the weather is conducive for fires in this area',
             "variable": 'ffwige50',
-            "rescale": '0,100',
+            "rescale": '0,365',
             "colormap": 'gist_heat_r',
         },
         "del": {
