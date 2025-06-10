@@ -89,6 +89,7 @@ function Footer() {
                         id="panel1-header"
                         sx={{
                             justifyContent: 'left',
+                            minHeight: '25px',
                             paddingLeft: 0,
                             paddingRight: 0,
                             '&.Mui-expanded': {

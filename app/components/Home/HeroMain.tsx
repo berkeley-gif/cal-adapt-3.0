@@ -24,8 +24,9 @@ function HeroMain() {
         if (!secNode) return
 
         const scrollY = window.scrollY
+        console.log(scrollY)
 
-        if (scrollY > 300) {
+        if (scrollY > 119.5) {
             introNode.classList.add('hidden')
             secNode.classList.add('visible')
         } else {
@@ -43,10 +44,10 @@ function HeroMain() {
     return (
         <div className="homepage-hero">
             <ParallaxBanner style={{ height: '100vh' }}>
-                <ParallaxBannerLayer speed={-20} >
+                <ParallaxBannerLayer speed={-10} >
                     <img src={sky.src} className="layer joshua-hero" alt="sky hero" />
                 </ParallaxBannerLayer>
-                <ParallaxBannerLayer expanded={false} speed={35}>
+                <ParallaxBannerLayer expanded={false} speed={30}>
                     <div className="rocks-container">
                         <img src={rocks.src} className="layer rocks" alt="joshua tree hero" />
                     </div>
