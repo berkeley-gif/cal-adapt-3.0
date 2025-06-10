@@ -16,6 +16,7 @@ import HeroSecondary from './components/Home/HeroSecondary'
 import Card from './components/Home/Card'
 import ToolCarousel from './components/Home/ToolCarousel'
 import { genCarouselData } from './lib/home/gen-carousel-data'
+import { analyticsCarouselData } from './lib/home/analytics-carousel-data'
 
 import { ParallaxContext } from '@/app/context/Parallax'
 
@@ -83,6 +84,12 @@ export default function Home() {
             </Typography>
             <div style={{ alignSelf: 'center' }}>
               <ToolCarousel data={genCarouselData} />
+            </div>
+            <Typography variant="h4" style={{ marginBottom: '20px', marginTop: '40px' }}>
+              Analytics for Advanced Users
+            </Typography>
+            <div style={{ alignSelf: 'center' }}>
+              <ToolCarousel data={analyticsCarouselData} />
             </div>
           </div>
         </section>
