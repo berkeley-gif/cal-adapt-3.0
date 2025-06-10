@@ -1,0 +1,35 @@
+.footer {
+    color: #fff;
+    background-color: #000;
+    height: 419px;
+    padding: 90px 108px;
+    display: flex; 
+
+    ul {
+        list-style: none;
+        padding-left: 15px;
+    }
+
+
+    &__left {
+        border-right: 1px solid white;
+        padding-right: 100px;
+        flex-basis: 50%;
+
+        .logos {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            align-items: center;
+        }
+    }
+
+    &__right {
+        flex-basis: 50%;
+        padding-left: 100px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        font-size: 16px !important;
+    }
+}

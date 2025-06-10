@@ -10,6 +10,8 @@
   gap: 20px;
   color: #fff;
   border-radius: 16px;
+  background-color: rgba(0, 0, 0, 0.2);
+  background-blend-mode: overlay;
   padding: 0 30px;
   cursor: pointer;
 
@@ -17,6 +19,7 @@
     background-color: rgba(0, 0, 0, 0.4);
     background-blend-mode: overlay;
     transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   }
 
   &__title {

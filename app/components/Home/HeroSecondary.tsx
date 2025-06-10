@@ -1,7 +1,5 @@
 'use client'
 import * as React from 'react'
-import Image from 'next/image'
-import { useEffect, useRef, useCallback } from 'react'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'

@@ -4,18 +4,15 @@ import { useEffect } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 
-import type { CarouselData } from './components/Home/ToolCarousel'
 import styles from './page.module.scss'
 import HeroMain from './components/Home/HeroMain'
 import HeroSecondary from './components/Home/HeroSecondary'
 import Card from './components/Home/Card'
 import ImageText from './components/Home/ImageText'
 import ToolCarousel from './components/Home/ToolCarousel'
+import Footer from './components/Home/Footer'
 import { genCarouselData } from './lib/home/gen-carousel-data'
 import { analyticsCarouselData } from './lib/home/analytics-carousel-data'
 
@@ -100,8 +97,7 @@ export default function Home() {
         <section className="grants">
           <ImageText />
         </section>
-        <div style={{ height: '1200px' }} />
-        <Button variant="contained" href="/dashboard">Go to the dashboard</Button>
+        <Footer />
       </div>
     </ParallaxContext >
   )
