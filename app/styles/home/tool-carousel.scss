@@ -84,6 +84,10 @@
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
+    img {
+      object-fit: cover;
+    }
+
     &__preview-box {
       display: flex;
       padding: 1.5rem;
