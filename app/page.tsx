@@ -14,6 +14,7 @@ import styles from './page.module.scss'
 import HeroMain from './components/Home/HeroMain'
 import HeroSecondary from './components/Home/HeroSecondary'
 import Card from './components/Home/Card'
+import ImageText from './components/Home/ImageText'
 import ToolCarousel from './components/Home/ToolCarousel'
 import { genCarouselData } from './lib/home/gen-carousel-data'
 import { analyticsCarouselData } from './lib/home/analytics-carousel-data'
@@ -95,6 +96,9 @@ export default function Home() {
         </section>
         <section className="secondary-hero marginless">
           <HeroSecondary />
+        </section>
+        <section className="grants">
+          <ImageText />
         </section>
         <div style={{ height: '1200px' }} />
         <Button variant="contained" href="/dashboard">Go to the dashboard</Button>
