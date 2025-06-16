@@ -126,7 +126,7 @@ let theme = createTheme({
     },
     caption: {
       fontSize: '0.75rem',
-      textTransform: 'uppercase'
+      textTransform: 'uppercase'  
     }
   },
   shape: {

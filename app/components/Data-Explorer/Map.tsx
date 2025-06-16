@@ -324,6 +324,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             mapInstanceRef.current = e.target
             setMapLoaded(true)
 
+
             mapInstanceRef.current.getCanvas().style.cursor = 'pointer'
 
             const mapContainer = document.getElementById('map')
@@ -337,86 +338,58 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 resizeObserver.observe(mapContainer)
             }
         }
-
         useEffect(() => {
-            if (!mapLoaded || !tileJson || !mapInstanceRef.current) return
+            if (!mapLoaded || !tileJson || !mapInstanceRef.current) return;
 
-            const map = mapInstanceRef.current
+            const map = mapInstanceRef.current;
+            const sourceId = 'raster-source';
+            const layerId = 'tile-layer';
 
-            // find first symbol layer (placenames)
-            const labelLayerId = map.getStyle()?.layers?.find(
-                layer => layer.type === 'symbol' && layer.layout?.['text-field']
-            )?.id
-
-            if (!labelLayerId) return
-
-            const referenceLayer = map.getStyle()?.layers?.find(
-                (layer) =>
-                    // Most Mapbox base layers are from 'composite' source
-                    layer.source === 'composite' &&
-                    (
-                        layer.type === 'line' || // borders, roads
-                        layer.type === 'symbol' // labels
-                    )
-            )?.id
-
-            const sourceId = 'raster-source'
-            const layerId = 'tile-layer'
-
+            // Clean up existing layer and source if present
             if (map.getLayer(layerId)) {
-                map.removeLayer(layerId)
+                map.removeLayer(layerId);
             }
 
             if (map.getSource(sourceId)) {
-                map.removeSource(sourceId)
+                map.removeSource(sourceId);
             }
 
-            // add raster layer below the labels
-            if (!map.getSource('raster-source')) {
-                const source = map.getSource('raster-source') as mapboxgl.RasterTileSource
-                if (source) {
-                    // Safely cast to RasterSource type and update tiles
-                    (map as any).getSource('raster-source').tiles = tileJson.tiles
-                    map.triggerRepaint()
-                } else {
-                    map.addSource('raster-source', {
-                        type: 'raster',
-                        tiles: tileJson.tiles,
-                        tileSize: tileJson.tileSize || 256
-                    })
-                }
+            // Add new raster source
+            map.addSource(sourceId, {
+                type: 'raster',
+                tiles: tileJson.tiles,
+                tileSize: tileJson.tileSize || 256
+            });
 
-            }
+            const style = map.getStyle();
+            const layers = style?.layers || [];
 
-            if (referenceLayer) {
-                map.addLayer(
-                    {
-                        id: layerId,
-                        type: 'raster',
-                        source: sourceId,
-                        paint: {
-                            'raster-opacity': RASTER_TILE_LAYER_OPACITY
-                        }
-                    },
-                    referenceLayer
-                )
-            } else {
-                // fallback: add layer on top if no reference found
-                map.addLayer({
+            // Find the first layer that is either a symbol or a road line
+            const referenceLayer = layers.find(
+                (layer) =>
+                    (layer.type === 'symbol') ||
+                    (layer.type === 'line' && layer.id.includes('road'))
+            )?.id;
+
+            // Insert raster layer directly below reference layer
+            map.addLayer(
+                {
                     id: layerId,
                     type: 'raster',
                     source: sourceId,
                     paint: {
                         'raster-opacity': RASTER_TILE_LAYER_OPACITY
                     }
-                })
-            }
+                },
+                referenceLayer
+            );
 
-            map.on('click', handleClick)
+            map.on('click', handleClick);
             return () => {
-                map.off('click', handleClick)
-            }
-        }, [mapLoaded, tileJson])
+                map.off('click', handleClick);
+            };
+
+        }, [mapLoaded, tileJson]);
 
         // Loading spinner
         if (!mounted) {
