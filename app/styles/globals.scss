@@ -82,6 +82,10 @@ a {
   opacity: 1;
 }
 
+.no-height {
+  height: 0 !important;
+}
+
 section {
   margin: 0;
   padding: 15vh 0;
@@ -99,4 +103,19 @@ section {
   &.blue {
     background-color: $primary;
   }
+}
+
+.embla {
+  overflow: hidden;
+  width: 100%;
+}
+
+.embla__container {
+  display: flex;
+  width: 100%;
+}
+
+.embla__slide {
+  flex: 0 0 80%;
+  margin-right: 20px;
 }

@@ -3,11 +3,13 @@
 import { useEffect } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-import { isMobile } from 'react-device-detect'
+import useMediaQuery from '@mui/material/useMediaQuery'
+
+import useEmblaCarousel from 'embla-carousel-react'
 
 import Typography from '@mui/material/Typography'
 
-import styles from './page.module.scss'
+import styles from '@/app/page.module.scss'
 import HeroMain from './components/Home/HeroMain'
 import HeroSecondary from './components/Home/HeroSecondary'
 import Card from './components/Home/Card'
@@ -33,11 +35,24 @@ export default function Home() {
     })
   }, [])
 
-  const carouselsStyle = isMobile ? 
-  {maxWidth: '90vw', display: 'flex', alignItems: 'center', flexDirection: 'column', textAlign: 'center'} : 
-  {display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}
+  const isMobile = useMediaQuery('(max-width:992px)')
 
+  const carouselsStyle = isMobile ?
+    { maxWidth: '90vw', display: 'flex', alignItems: 'center', flexDirection: 'column', textAlign: 'center' } :
+    { display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }
 
+  const cardsCarouselClass = isMobile ?
+    'hidden no-height' : `${styles.cards}`
+
+  const cardsMobileCarouselClass = isMobile ?
+    `${styles['cards-mobile']}` : 'hidden no-height'
+
+  const [emblaRef] = useEmblaCarousel({
+    align: 'start',
+    containScroll: 'trimSnaps',
+    skipSnaps: false,
+    loop: true // or true if you want infinite
+  })
   return (
     <ParallaxContext>
       <div className={styles.container}>
@@ -51,12 +66,7 @@ export default function Home() {
             The new Cal-Adapt has been revamped to offer a more modern and intuitive experience for exploring <nobr>peer-reviewed</nobr> CMIP6 climate data. Our platform provides interactive visualizations, downloadable datasets, the Analytics Engine and the Cal-Adapt API, helping you analyze how climate change may impact California at both state and local levels.
           </Typography>
           <div>
-            <div className="cards" style={{
-              display: 'flex',
-              gap: '30px',
-              marginTop: '65px',
-              justifyContent: 'center',
-            }}>
+            <div className={cardsCarouselClass}>
               <Card
                 description="Analyze extreme heat, precipitation, fire weather, and other emerging trends shaping California’s uncertain climate future."
                 title="tools"
@@ -76,9 +86,41 @@ export default function Home() {
                 img={cardImgThree.src}
               />
             </div>
+            <div className={cardsMobileCarouselClass}>
+              <div style={{ padding: '0 30px' }}>
+                <div className="embla" ref={emblaRef}>
+                  <div className="embla__container">
+                    <div className="embla__slide">
+                      <Card
+                        description="Analyze extreme heat, precipitation, fire weather, and other emerging trends shaping California’s uncertain climate future."
+                        title="tools"
+                        cta="#tools"
+                        img={cardImgOne.src}
+                      />
+                    </div>
+                    <div className="embla__slide">
+                      <Card
+                        description="Gain clarity on key concepts like uncertainty, Global Warming Levels, and other essential terms."
+                        title="guidance"
+                        cta=""
+                        img={cardImgTwo.src}
+                      />
+                    </div>
+                    <div className="embla__slide">
+                      <Card
+                        description="Learn about the data sources, methods, analyses, and how to access them."
+                        title="data"
+                        cta=""
+                        img={cardImgThree.src}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
-        <section className="blue carousels" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <section id="tools" className="blue carousels" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
           <div className="content" style={carouselsStyle}>
             <Typography variant="h2" style={{ marginBottom: '60px' }}>
               Cal-Adapt&#39;s Tool Array

@@ -2,7 +2,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import { useEffect, useRef, useCallback } from 'react'
-import { isMobile } from 'react-device-detect'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import Typography from '@mui/material/Typography'
 
@@ -16,6 +16,8 @@ import { ParallaxBanner, ParallaxBannerLayer } from 'react-scroll-parallax'
 function HeroMain() {
     const introTextRef = useRef<HTMLDivElement | null>(null)
     const secTextRef = useRef<HTMLDivElement | null>(null)
+
+    const isMobile = useMediaQuery('(max-width:992px)')
 
     const handleScroll = useCallback((e: Event): void => {
         const introNode = introTextRef.current

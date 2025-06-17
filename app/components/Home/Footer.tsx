@@ -2,7 +2,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 
-import { isMobile } from 'react-device-detect'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -25,7 +25,9 @@ import BerkeleyLabLogo from '@/public/img/logos/berkeley-lab.jpg'
 import cecLogo from '@/public/img/logos/cec.svg'
 
 function Footer() {
-    const [expanded, setExpanded] = React.useState(false);
+    const [expanded, setExpanded] = React.useState(false)
+
+    const isMobile = useMediaQuery('(max-width:992px)')
 
     const handleExpansion = () => {
         setExpanded((prevExpanded) => !prevExpanded);

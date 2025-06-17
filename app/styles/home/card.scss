@@ -1,3 +1,5 @@
+@import './../main.scss';
+
 .card {
   height: 450px;
   width: 400px;
@@ -14,6 +16,10 @@
   background-blend-mode: overlay;
   padding: 0 30px;
   cursor: pointer;
+
+  @include break-max($break-lg) {
+    width: auto;
+  }
 
   &:hover {
     background-color: rgba(0, 0, 0, 0.4);

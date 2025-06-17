@@ -6,6 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+import useMediaQuery from '@mui/material/useMediaQuery'
+
 import { SidepanelProvider } from '@/app/context/SidepanelContext';
 import { useLeftDrawer } from '../context/LeftDrawerContext'
 declare module '@mui/material/Alert' {
@@ -16,7 +18,7 @@ declare module '@mui/material/Alert' {
 }
 
 // Material elements 
-import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery } from '@mui/material'
+import { Box, CssBaseline, AppBar, Toolbar, Typography, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { styled } from '@mui/system'
 import { useTheme } from '@mui/material/styles'
 
@@ -91,7 +93,7 @@ export default function Layout({ children }: LayoutProps) {
     const pathname = usePathname()
     const selectedPage: string | null = extractSegment(pathname, 'dashboard/', '/')
     const theme = useTheme()
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+    const isMobile = useMediaQuery('(max-width:992px)')
 
     const renderCalDashToolBar = (): ReactNode => {
         switch (selectedPage) {

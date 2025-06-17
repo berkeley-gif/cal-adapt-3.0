@@ -1,7 +1,7 @@
 'use client'
 import * as React from 'react'
 
-import { isMobile } from 'react-device-detect'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -16,6 +16,8 @@ function HeroSecondary() {
         }
     }
 
+    const isMobile = useMediaQuery('(max-width:992px)')
+    
     return (
         <div className="secondary-hero">
             <div className="secondary-hero__bg">
