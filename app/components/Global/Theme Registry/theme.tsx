@@ -19,7 +19,7 @@ declare module '@mui/material/styles' {
     infoDark?: PaletteOptions['info'];
   }
 
-    interface TypographyVariants {
+  interface TypographyVariants {
     body3: React.CSSProperties;
   }
 
@@ -95,11 +95,13 @@ let theme = createTheme({
     fontWeightBold: 700,
     h1: {
       fontWeight: 600,
-      fontSize: '6rem'
+      fontSize: '2rem',
+      '@media (min-width: 992px)': { fontSize: '6rem' }
     },
     h2: {
       fontWeight: 700,
-      fontSize: '3.75rem'
+      fontSize: '3rem',
+      '@media (min-width: 992px)': { fontSize: '3.75rem' }
     },
     h3: {
       fontWeight: 700,
@@ -126,7 +128,7 @@ let theme = createTheme({
     },
     caption: {
       fontSize: '0.75rem',
-      textTransform: 'uppercase'  
+      textTransform: 'uppercase'
     }
   },
   shape: {

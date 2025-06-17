@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
+import { isMobile } from 'react-device-detect'
 
 import Typography from '@mui/material/Typography'
 
@@ -32,6 +33,11 @@ export default function Home() {
     })
   }, [])
 
+  const carouselsStyle = isMobile ? 
+  {maxWidth: '90vw', display: 'flex', alignItems: 'center', flexDirection: 'column', textAlign: 'center'} : 
+  {display: 'flex', alignItems: 'flex-start', flexDirection: 'column'}
+
+
   return (
     <ParallaxContext>
       <div className={styles.container}>
@@ -39,7 +45,7 @@ export default function Home() {
         <section>
           <Typography sx={{
             textAlign: 'center',
-            padding: '0 20vw',
+            padding: isMobile ? '0 4vw' : '0 20vw',
             margin: '0 auto'
           }} variant="body1">
             The new Cal-Adapt has been revamped to offer a more modern and intuitive experience for exploring <nobr>peer-reviewed</nobr> CMIP6 climate data. Our platform provides interactive visualizations, downloadable datasets, the Analytics Engine and the Cal-Adapt API, helping you analyze how climate change may impact California at both state and local levels.
@@ -73,9 +79,9 @@ export default function Home() {
           </div>
         </section>
         <section className="blue carousels" style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-          <div className="content" style={{ display: 'flex', alignItems: 'flex-start', flexDirection: 'column' }}>
+          <div className="content" style={carouselsStyle}>
             <Typography variant="h2" style={{ marginBottom: '60px' }}>
-              Cal-Adapt Tool Array
+              Cal-Adapt&#39;s Tool Array
             </Typography>
             <Typography variant="h4" style={{ marginBottom: '20px' }}>
               Climate Insights for Everyone

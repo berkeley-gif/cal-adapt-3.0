@@ -1,4 +1,4 @@
-@import "./main/_variables";
+@import "./main";
 
 .page_container :global(.page_container) {
   padding: 0;
@@ -86,6 +86,10 @@ section {
   margin: 0;
   padding: 15vh 0;
   display: flow-root;
+
+  @include break-max($break-lg) {
+    padding: 7vh 0;
+  }
 
   &.marginless {
     margin: 0;

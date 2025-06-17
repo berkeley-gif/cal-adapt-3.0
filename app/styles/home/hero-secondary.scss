@@ -1,8 +1,14 @@
+@import "./../main";
+
 .secondary-hero {
   position: relative;
   height: 500px;
   overflow: hidden;
   color: #fff !important;
+
+  @include break-max($break-lg) {
+    min-height: 600px;
+  }
 
   &__bg {
     video {
@@ -15,6 +21,10 @@
       object-position: 0 -200px;
       z-index: 0;
       transform: scaleX(-1);
+
+      @include break-max($break-lg) {
+        object-position: 50% 40%;
+      }
     }
   }
 
@@ -30,5 +40,14 @@
     flex-direction: column;
     text-align: left;
     padding: 0 90px;
+
+    @include break-max($break-lg) {
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 7vh;
+      padding: 0 60px;
+    }
   }
 }

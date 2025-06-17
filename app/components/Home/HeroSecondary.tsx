@@ -1,6 +1,8 @@
 'use client'
 import * as React from 'react'
 
+import { isMobile } from 'react-device-detect'
+
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 
@@ -36,7 +38,7 @@ function HeroSecondary() {
                 <Typography variant="body1">
                     The Data Explorer Tool provides an interactive map to visualize key climate indicators, including the Fosberg Fire Weather Index (FFWI), helping users explore wildfire weather across California.
                 </Typography>
-                <Button data-path="/dashboard/data-explorer?metric=extreme-heat" variant="contained" color="primary" onClick={handleClick}>See it in the Data Explorer</Button>
+                <Button className={isMobile ? 'hidden' : ''} data-path="/dashboard/data-explorer?metric=extreme-heat" variant="contained" color="primary" onClick={handleClick}>See it in the Data Explorer</Button>
             </div>
         </div>
     )
