@@ -1,3 +1,5 @@
+@import "./../main.scss";
+
 .footer {
   color: #fff;
   background-color: #000;
@@ -5,9 +7,20 @@
   padding: 90px 108px;
   display: flex;
 
+  @include break-max($break-lg) {
+    height: auto;
+    padding: 70px 20px;
+    flex-direction: column;
+    text-align: center;
+  }
+
   ul {
     list-style: none;
     padding-left: 15px;
+
+    @include break-max($break-lg) {
+      padding: 0;
+    }
   }
 
   &__left {
@@ -15,16 +28,24 @@
     padding-right: 100px;
     flex-basis: 50%;
     position: relative;
+    @include break-max($break-lg) {
+      flex-basis: none;
+      border-right: 0;
+      padding: 0;
+    }
 
     &::after {
       content: "";
       position: absolute;
       top: -90px; // stretch upward
       bottom: -90px; // stretch downward
-     left: 100%;
+      left: 100%;
       width: 1px;
       background-color: white;
       z-index: 1;
+      @include break-max($break-lg) {
+        display: none;
+      }
     }
 
     .logos {
@@ -32,6 +53,12 @@
       gap: 20px;
       padding: 20px 0;
       align-items: center;
+
+      @include break-max($break-lg) {
+        padding: 40px 0;
+        flex-flow: wrap;
+        justify-content: center;
+      }
     }
   }
 
@@ -42,5 +69,10 @@
     flex-direction: column;
     gap: 15px;
     font-size: 16px !important;
+
+    @include break-max($break-lg) {
+      flex-basis: none;
+      padding: 0;
+    }
   }
 }

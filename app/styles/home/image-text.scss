@@ -37,7 +37,7 @@
 
     @include break-max($break-lg) {
       align-items: center;
-      flex: 0;
+      flex: none;
       text-align: center;
       padding: 0;
     }

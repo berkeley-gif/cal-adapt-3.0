@@ -2,6 +2,8 @@
 import * as React from 'react'
 import Image from 'next/image'
 
+import { isMobile } from 'react-device-detect'
+
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Accordion, {
@@ -41,6 +43,7 @@ function Footer() {
             </div>
             <div className="footer__right">
                 <Accordion
+                    className={isMobile ? 'hidden' : ''}
                     elevation={0}
                     expanded={expanded}
                     onChange={handleExpansion}
