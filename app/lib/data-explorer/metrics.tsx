@@ -98,7 +98,7 @@ export const metricsList: Metric[] = [
             "short_desc": 'Change in how often the weather is conducive for fires in this area',
             "variable": 'ffwige50d',
             "rescale": '-2,2',
-            "colormap": 'PuOr',
+            "colormap": 'PuOr_r',
         },
 
     }

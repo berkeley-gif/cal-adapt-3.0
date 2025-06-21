@@ -24,7 +24,7 @@ export const MapLegend = ({
     colormap,
     min,
     max,
-    width = 520, // adjust this value to make more space for the legend label
+    width = 521, // adjust this value to make more space for the legend label
     height = 124,
     title,
 }: MapLegendProps) => {
@@ -51,28 +51,35 @@ export const MapLegend = ({
 
     if (colormapName == 'gist_heat') {
         colorScale = d3.scaleSequential<string>()
-        .domain([min, max])
-        .interpolator(gistHeatInterpolator)
+            .domain([min, max])
+            .interpolator(gistHeatInterpolator)
     } else {
         const interpolatorKey = `interpolate${colormapName}` as keyof typeof d3Chromatic
         let interpolator = (d3Chromatic[interpolatorKey] as (t: number) => string) || undefined
-    
+
         if (!interpolator) {
             console.error(`Interpolator for ${colormapName} not found in d3`)
             interpolator = d3.interpolateInferno // Fallback to a default interpolator
         }
-    
+
         // Reverse the interpolator manually if colormap ends with "_r"
         if (colormap.endsWith('_r')) {
             const originalInterpolator = interpolator
-            interpolator = (t: number) => {
-                return originalInterpolator(1 - t)
+
+            if (colormap == 'PuOr_r') {
+                interpolator = (t: number) => {
+                    return originalInterpolator(t)
+                }
+            } else {
+                interpolator = (t: number) => {
+                    return originalInterpolator(1 - t)
+                }
             }
         }
 
         colorScale = d3.scaleSequential<string>()
-        .domain([min, max])
-        .interpolator(interpolator)
+            .domain([min, max])
+            .interpolator(interpolator)
     }
 
 
