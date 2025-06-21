@@ -3,10 +3,10 @@
 import { useEffect } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 import useEmblaCarousel from 'embla-carousel-react'
 
+import useMediaQuery from '@mui/material/useMediaQuery'
 import Typography from '@mui/material/Typography'
 
 import styles from '@/app/page.module.scss'
