@@ -228,7 +228,7 @@ export default function SolarDroughtViz() {
                 const selectedFeature = features[0]
                 const maskAttribute = config === 'Utility Configuration' ? 'srdumask' : 'srddmask'
                 const gridValue = selectedFeature.properties?.[maskAttribute]
-                
+
                 const newStatus = gridValue === 1 ? 'data' : 'no-data'
                 setLocationStatus(newStatus)
 
@@ -279,11 +279,11 @@ export default function SolarDroughtViz() {
                 const selectedFeature = features[0]
                 const maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
                 const gridValue = selectedFeature.properties?.[maskAttribute]
-                
+
                 // Set status based on grid value
                 setLocationStatus(gridValue === 1 ? 'data' : 'no-data')
                 updateApiParams({ point })
-                
+
                 // Collapse accordion on selection
                 setAccordionExpanded(false)
             }
@@ -384,49 +384,6 @@ export default function SolarDroughtViz() {
             >
 
                 <Grid container xs={12} justifyContent="flex-end">
-                    {/* Colormap toggle for heatmap */}
-                    <Grid xs={locationStatus !== 'none' ? (accordionExpanded ? 12 : 8.5) : 0} sx={{ display: locationStatus !== 'none' ? 'block' : 'none', transition: 'all 0.3s ease' }}>
-                        {isPointValid && (
-                            <div className="color-scale-toggle">
-                                <div className="option-group option-group--vertical">
-                                    <div className="option-group__title">
-                                        <Typography variant="body2">Custom Color Ramp</Typography>
-                                    </div>
-
-                                    <FormControl>
-                                        <Select
-                                            value={currentColorMap}
-                                            onChange={(event: any) => {
-                                                setCurrentColorMap(event.target.value as string)
-                                            }}
-                                            MenuProps={MenuProps}
-                                            sx={{ mt: '15px', width: '220px' }}
-                                        >
-                                            {customColorMapList.map((colorRamp) => (
-                                                <MenuItem key={colorRamp} value={colorRamp}>
-                                                    <ListItemText primary={colorRamp} />
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </div>
-                                <div >
-                                    {/*                                     <FormGroup>
-                                        <FormControlLabel
-                                            control={<Switch onChange={handleColorChange} color="secondary" />}
-                                            label="Alternative color palette"
-                                        /> */}
-                                    <FormGroup>
-                                        <FormControlLabel
-                                            control={<Switch onChange={() => setIsColorRev(!isColorRev)} color="secondary" />}
-                                            label="Reverse color palette"
-                                        />
-                                    </FormGroup>
-                                </div>
-                            </div>
-                        )}
-                    </Grid>
-
                     {/* Locator map instruction section */}
                     <Grid xs={12} sx={{ display: 'flex', justifyContent: accordionExpanded ? 'flex-start' : 'flex-end' }}>
                         <Box sx={{ width: accordionExpanded ? '100%' : 'auto' }}>
@@ -469,7 +426,7 @@ export default function SolarDroughtViz() {
                         }}
                     >
                         {locationStatus === 'no-data' && (
-                            <Box sx={{ marginBottom: '30px' }}                                 
+                            <Box sx={{ marginBottom: '30px' }}
                                 style={{ display: accordionExpanded ? 'none' : 'block' }}
                             >
                                 <Alert variant="grey" severity="info">
@@ -529,10 +486,10 @@ export default function SolarDroughtViz() {
                         </AccordionDetails>
                     </Grid>
                 </Grid>
-            </Accordion>
+            </Accordion >
 
             {/** Sidepanel */}
-            <Box className="solar-drought-tool__sidepanel">
+            < Box className="solar-drought-tool__sidepanel" >
                 <SidePanel
                     anchor="right"
                     variant="temporary"
@@ -559,7 +516,7 @@ export default function SolarDroughtViz() {
                     >
                     </VizPrmsForm>
                 </SidePanel>
-            </Box>
+            </Box >
         </Box >
     )
 }
