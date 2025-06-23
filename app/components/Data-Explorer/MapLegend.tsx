@@ -39,11 +39,12 @@ export const MapLegend = ({
         .domain([min, max])
 
     const gistHeatInterpolator = d3.scaleSequential(d3.interpolateRgbBasis([
-        "#000000", // Black
-        "#800000", // Dark red
-        "#FF4000", // Orange-red
+        "#FFFFFF",  // White
         "#FFFF00", // Yellow
-        "#FFFFFF"  // White
+        "#FF4000", // Orange-red
+        "#800000", // Dark red
+        "#000000", // Black
+        
     ])).domain([0, 1]); // Normalize the input domain from 0 to 1
 
     let colorScale
