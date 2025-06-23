@@ -1,6 +1,7 @@
 'use client'
 import * as React from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import useMediaQuery from '@mui/material/useMediaQuery'
 
@@ -118,16 +119,24 @@ function Footer() {
                     </AccordionSummary>
                     <AccordionDetails>
                         <ul style={{ fontSize: '14px' }}>
-                            <li >Data Explorer</li>
-                            <li>Renewables Visualizer</li>
-                            <li>Data Download Tool</li>
-                            <li>Analytics Engine</li>
+                            <li><Link href="/dashboard/data-explorer" target="_blank" rel="noopener noreferrer">Data Explorer</Link></li>
+                            <li><Link href="/dashboard/solar-drought-visualizer" target="_blank" rel="noopener noreferrer">Renewables Visualizer</Link></li>
+                            <li><Link href="/dashboard/data-download-tool" target="_blank" rel="noopener noreferrer">Data Download Tool</Link></li>
                         </ul>
                     </AccordionDetails>
                 </Accordion>
-                <Typography variant="caption" sx={{ fontSize: '16px' }}>Legacy Cal-Adapt</Typography>
-                <Typography variant="caption" sx={{ fontSize: '16px' }}>Climate Guidance</Typography>
-                <Typography variant="caption" sx={{ fontSize: '16px' }}>Contact Us</Typography>
+                <Typography variant="caption" sx={{ fontSize: '16px' }}
+                    component="a"
+                    href="/"
+                >Legacy Cal-Adapt</Typography>
+                <Typography variant="caption" sx={{ fontSize: '16px' }}
+                    component="a"
+                    href="/guidance"
+                >Climate Guidance</Typography>
+                <Typography variant="caption" sx={{ fontSize: '16px' }}
+                    component="a"
+                    href="mailto:support@cal-adapt.org"
+                >Contact Us</Typography>
             </div>
         </div>
     )
