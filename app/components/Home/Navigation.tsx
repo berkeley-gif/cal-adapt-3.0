@@ -42,14 +42,14 @@ const leftMenuItems = [
     },
     {
         label: 'Data',
-        href: '/data'
+        href: 'https://analytics.cal-adapt.org/data/'
     }
 ]
 
 const rightMenuItems = [
     {
         label: 'Guidance',
-        href: '/guidance'
+        href: 'https://analytics.cal-adapt.org/guidance/'
     },
     {
         label: 'Legacy Cal-Adapt',

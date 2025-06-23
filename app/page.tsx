@@ -76,13 +76,13 @@ export default function Home() {
               <Card
                 description="Gain clarity on key concepts like uncertainty, Global Warming Levels, and other essential terms."
                 title="guidance"
-                cta=""
+                cta="https://analytics.cal-adapt.org/guidance/"
                 img={cardImgTwo.src}
               />
               <Card
                 description="Learn about the data sources, methods, analyses, and how to access them."
                 title="data"
-                cta=""
+                cta="https://analytics.cal-adapt.org/data/"
                 img={cardImgThree.src}
               />
             </div>
@@ -102,7 +102,7 @@ export default function Home() {
                       <Card
                         description="Gain clarity on key concepts like uncertainty, Global Warming Levels, and other essential terms."
                         title="guidance"
-                        cta=""
+                        cta="https://analytics.cal-adapt.org/guidance/"
                         img={cardImgTwo.src}
                       />
                     </div>
@@ -110,7 +110,7 @@ export default function Home() {
                       <Card
                         description="Learn about the data sources, methods, analyses, and how to access them."
                         title="data"
-                        cta=""
+                        cta="https://analytics.cal-adapt.org/data/"
                         img={cardImgThree.src}
                       />
                     </div>
