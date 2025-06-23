@@ -130,7 +130,7 @@ function Navigation() {
                                     return ''
                                 } else {
                                     return (
-                                        <MenuItem key={item.label} onClick={handleCloseNavMenu}>
+                                        <MenuItem key={item.label} onClick={handleCloseNavMenu} component={item.href ? 'a' : 'button'} href={item.href}>
                                             <Typography variant="overline" sx={{ textAlign: 'center' }}>{item.label}</Typography>
                                         </MenuItem>
                                     )
