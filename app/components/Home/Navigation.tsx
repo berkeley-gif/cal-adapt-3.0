@@ -40,12 +40,21 @@ const leftMenuItems = [
             },
         ]
     },
-    { label: 'Data' }
+    {
+        label: 'Data',
+        href: '/data'
+    }
 ]
 
 const rightMenuItems = [
-    { label: 'Guidance' },
-    { label: 'Legacy Cal-Adapt' }
+    {
+        label: 'Guidance',
+        href: '/guidance'
+    },
+    {
+        label: 'Legacy Cal-Adapt',
+        href: '/'
+    }
 ]
 
 function Navigation() {
@@ -138,17 +147,29 @@ function Navigation() {
                         gap: 2,
                         alignItems: 'center'
                     }}>
-                        {leftMenuItems.map(({ label, icon, submenu }) => (
+                        {leftMenuItems.map(({ label, icon, submenu, href }) => (
                             <React.Fragment key={label}>
-                                <Button
-                                    onClick={submenu ? handleOpenSubMenu(label) : () => { }}
-                                    sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
-                                >
-                                    {icon}
-                                    <Typography variant="overline">
-                                        {label}
-                                    </Typography>
-                                </Button>
+                                {submenu ? (
+                                    <Button
+                                        onClick={handleOpenSubMenu(label)}
+                                        sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
+                                    >
+                                        {icon}
+                                        <Typography variant="overline">
+                                            {label}
+                                        </Typography>
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        component="a"
+                                        href={href}
+                                        sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
+                                    >
+                                        {icon}
+                                        <Typography variant="overline">{label}</Typography>
+                                    </Button>
+                                )}
+
                                 {submenu && openSubmenuLabel === label && (
                                     <Menu
                                         anchorEl={subMenuAnchor}
@@ -189,12 +210,52 @@ function Navigation() {
                         alignItems: 'center',
                         gap: 2
                     }}>
-                        {rightMenuItems.map(({ label }) => (
-                            <Button key={label} sx={{ color: 'white', display: 'flex', alignItems: 'center' }}>
-                                <Typography variant="overline">
-                                    {label}
-                                </Typography>
-                            </Button>
+                        {rightMenuItems.map(({ label, icon, submenu, href }) => (
+                            <React.Fragment key={label}>
+                                {submenu ? (
+                                    <Button
+                                        onClick={handleOpenSubMenu(label)}
+                                        sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
+                                    >
+                                        {icon}
+                                        <Typography variant="overline">
+                                            {label}
+                                        </Typography>
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        component="a"
+                                        href={href}
+                                        sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
+                                    >
+                                        {icon}
+                                        <Typography variant="overline">{label}</Typography>
+                                    </Button>
+                                )}
+
+                                {submenu && openSubmenuLabel === label && (
+                                    <Menu
+                                        anchorEl={subMenuAnchor}
+                                        open={Boolean(subMenuAnchor)}
+                                        onClose={handleCloseSubmenu}
+                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                        disableScrollLock
+                                    >
+                                        {submenu.map((item) => (
+                                            <MenuItem key={item.label} component="a"
+                                                href={item.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                aria-label={`Go to ${label}`}
+                                                onClick={handleCloseSubmenu}
+                                            >
+                                                <Typography variant="body2">{item.label}</Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
+                                )}
+                            </React.Fragment>
                         ))}
                     </Box>
                 </Toolbar>

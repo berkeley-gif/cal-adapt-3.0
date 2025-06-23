@@ -7,7 +7,7 @@ export const analyticsCarouselData: CarouselData[] = [
         description: 'Our open-source Python code for exploring, analyzing, and exporting the full Fifth Assessment dataset (~2.5 pB)',
         image: '/img/homepage-carousels/cal-satellite.png',
         imageAlt: 'California seen from a satellite view',
-        link: '/dashboard/data-explorer?metric=extreme-heat'
+        link: 'https://github.com/cal-adapt/climakitae'
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ export const analyticsCarouselData: CarouselData[] = [
         description: 'Documentation explaining our code base, functions, methods, and approach to this work and analysis',
         image: '/img/homepage-carousels/fields-satellite.png',
         imageAlt: 'California agricultural fields seen from a satellite view',
-        link: '/dashboard/solar-drought-visualizer'
+        link: 'https://climakitae.readthedocs.io/en/latest/'
     },
     {
         id: 3,
@@ -23,7 +23,7 @@ export const analyticsCarouselData: CarouselData[] = [
         description: 'Multiple methods for gaining access to the data for users with different needs and technical proficiency',
         image: '/img/homepage-carousels/fire-satellite.png',
         imageAlt: 'A fire helicopter spraying an active wildfire, seen from satellite',
-        link: '/dashboard/data-explorer?metric=fire-weather'
+        link: 'https://analytics.cal-adapt.org/data/access/'
     },
     {
         id: 4,
@@ -31,6 +31,6 @@ export const analyticsCarouselData: CarouselData[] = [
         description: 'For users with access to the Cal-Adapt: Analytics Engine hub. (Limited availability due to computing costs for hub access)',
         image: '/img/homepage-carousels/rocks-ocean-satellite.png',
         imageAlt: 'A rock cliff and sea seen from a satellite perspective',
-        link: '/dashboard/data-explorer?metric=extreme-precipitation'
+        link: 'https://analytics.cal-adapt.org/sign-in/'
     },
 ]
