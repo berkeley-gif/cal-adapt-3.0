@@ -2,7 +2,7 @@ import React, { useMemo, useEffect } from 'react'
 import * as d3 from 'd3'
 import { InteractionData } from './Heatmap'
 
-import { ApiResponse } from '../Solar-Drought-Visualizer/DataType'
+import { ApiResponse } from '../DataType'
 import { filter } from 'jszip'
 
 const MARGIN = { top: 0, right: 15, bottom: 65, left: 115 }

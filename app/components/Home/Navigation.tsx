@@ -24,7 +24,21 @@ import logo from '@/public/img/logos/cal-adapt-logo-white.svg'
 const leftMenuItems = [
     {
         label: 'Tools',
-        icon: <SpaceDashboardIcon sx={{ mr: 1 }} />
+        icon: <SpaceDashboardIcon sx={{ mr: 1 }} />,
+        submenu: [
+            {
+                label: 'Data Download Tool',
+                href: '/dashboard/data-download-tool'
+            },
+            {
+                label: 'Renewables Visualizer',
+                href: '/dashboard/solar-drought-visualizer'
+            },
+            {
+                label: 'Data Explorer',
+                href: '/dashboard/data-explorer'
+            },
+        ]
     },
     { label: 'Data' }
 ]
@@ -36,6 +50,18 @@ const rightMenuItems = [
 
 function Navigation() {
     const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null)
+    const [subMenuAnchor, setSubMenuAnchor] = useState<null | HTMLElement>(null)
+    const [openSubmenuLabel, setOpenSubmenuLabel] = useState<string | null>(null)
+
+    const handleOpenSubMenu = (label: string) => (event: React.MouseEvent<HTMLElement>) => {
+        setSubMenuAnchor(event.currentTarget)
+        setOpenSubmenuLabel(label)
+    }
+
+    const handleCloseSubmenu = () => {
+        setSubMenuAnchor(null)
+        setOpenSubmenuLabel(null)
+    }
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget)
@@ -90,11 +116,17 @@ function Navigation() {
                             onClose={handleCloseNavMenu}
                             sx={{ display: { xs: 'block', md: 'none' } }}
                         >
-                            {[...leftMenuItems, ...rightMenuItems].map((item) => (
-                                <MenuItem key={item.label} onClick={handleCloseNavMenu}>
-                                    <Typography variant="overline" sx={{ textAlign: 'center' }}>{item.label}</Typography>
-                                </MenuItem>
-                            ))}
+                            {[...leftMenuItems, ...rightMenuItems].map((item) => {
+                                if (item.label === 'Tools') {
+                                    return ''
+                                } else {
+                                    return (
+                                        <MenuItem key={item.label} onClick={handleCloseNavMenu}>
+                                            <Typography variant="overline" sx={{ textAlign: 'center' }}>{item.label}</Typography>
+                                        </MenuItem>
+                                    )
+                                }
+                            })}
                         </Menu>
                     </Box>
 
@@ -106,14 +138,40 @@ function Navigation() {
                         gap: 2,
                         alignItems: 'center'
                     }}>
-                        {leftMenuItems.map(({ label, icon }) => (
-                            <Button onClick={handleCloseNavMenu} key={label} sx={{ color: 'white', display: 'flex', alignItems: 'center' }}>
-                                {icon}
-                                <Typography variant="overline">
-                                    {label}
-                                </Typography>
-
-                            </Button>
+                        {leftMenuItems.map(({ label, icon, submenu }) => (
+                            <React.Fragment key={label}>
+                                <Button
+                                    onClick={submenu ? handleOpenSubMenu(label) : () => { }}
+                                    sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
+                                >
+                                    {icon}
+                                    <Typography variant="overline">
+                                        {label}
+                                    </Typography>
+                                </Button>
+                                {submenu && openSubmenuLabel === label && (
+                                    <Menu
+                                        anchorEl={subMenuAnchor}
+                                        open={Boolean(subMenuAnchor)}
+                                        onClose={handleCloseSubmenu}
+                                        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                        disableScrollLock
+                                    >
+                                        {submenu.map((item) => (
+                                            <MenuItem key={item.label} component="a"
+                                                href={item.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                aria-label={`Go to ${label}`}
+                                                onClick={handleCloseSubmenu}
+                                            >
+                                                <Typography variant="body2">{item.label}</Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
+                                )}
+                            </React.Fragment>
                         ))}
                     </Box>
 

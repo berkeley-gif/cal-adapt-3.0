@@ -38,7 +38,7 @@ import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useDidMountEffect } from "@/app/utils/hooks"
 
 import MapboxMap from '@/app/components/Solar-Drought-Visualizer/MapboxMap'
-import Heatmap from '@/app/components/Heatmap/Heatmap'
+import Heatmap from '@/app/components/Solar-Drought-Visualizer/Heatmap/Heatmap'
 import VizPrmsForm from './VisualizationParamsForm'
 import { ApiResponse } from './DataType'
 import '@/app/styles/dashboard/solar-drought-visualizer.scss'

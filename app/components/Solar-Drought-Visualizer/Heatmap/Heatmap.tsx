@@ -4,10 +4,10 @@ import * as d3 from 'd3'
 import { ScaleSequential } from 'd3-scale';
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 
-import Renderer from '@/app/components/Heatmap/Rendererer'
-import MapTooltip from '@/app/components/Heatmap/MapTooltip'
+import Renderer from '@/app/components/Solar-Drought-Visualizer/Heatmap/Rendererer'
+import MapTooltip from '@/app/components/Solar-Drought-Visualizer/Heatmap/MapTooltip'
 
-import { ColorLegend } from "../Solar-Drought-Visualizer/ColorLegend"
+import { ColorLegend } from "../ColorLegend"
 import '@/app/styles/dashboard/heatmap.scss'
 
 const colorSwitchLabel = { inputProps: { 'aria-label': 'Color Palette switch' } };
