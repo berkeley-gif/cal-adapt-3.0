@@ -85,7 +85,7 @@ function ToolCarousel({ data }: ToolCarouselProps) {
                 <div className="embla" ref={emblaRef} style={{ padding: '30px 0' }}>
                     <div className="embla__container">
                         {data.map((item) => (
-                            <div className="embla__slide">
+                            <div key={item.title} className="embla__slide">
                                 <div className="right-panel">
                                     <div className="right-panel__image" style={{ position: "relative", width: '100%', height: '216px' }}>
                                         <Image
