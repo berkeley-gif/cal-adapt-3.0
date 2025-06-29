@@ -200,9 +200,8 @@ export default function SolarDroughtViz() {
             }
             const newData = await res.json()
             if (newData) {
-                console.log('newData', newData)
                 setQueriedData(newData)
-
+                console.log('queriedData', newData)
                 setIsPointValid(true)
             } else {
                 setQueriedData(null)
@@ -505,6 +504,7 @@ export default function SolarDroughtViz() {
                                         width={heatmapWidth}
                                         height={HEATMAP_HEIGHT}
                                         data={queriedData}
+                                        gwlSelected={gwlSelected}
                                         useAltColor={useAltColor}
                                         aria-label="Heatmap visualization"
                                         currentColorMap={currentColorMap}

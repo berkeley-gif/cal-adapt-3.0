@@ -13,11 +13,12 @@ type RendererProps = {
     width: number;
     height: number;
     data: any;
+    gwlSelected: number;
     setHoveredCell: (hoveredCell: InteractionData | null) => void;
     colorScale: d3.ScaleSequential<string>;
 }
 
-export default function Renderer({ width, height, data, setHoveredCell, colorScale }: RendererProps) {
+export default function Renderer({ width, height, data, setHoveredCell, colorScale, gwlSelected }: RendererProps) {
     // bounds = area inside the axis
     const boundsWidth = width - MARGIN.right - MARGIN.left
     const boundsHeight = height - MARGIN.top - MARGIN.bottom
@@ -25,20 +26,22 @@ export default function Renderer({ width, height, data, setHoveredCell, colorSca
     // groups
 
     // all x values
-    const allXGroups = useMemo(() => data[0].coords.year.data, [data])
+    const allXGroups = useMemo(() => data.coords.year.data, [data])
 
     // all y values
-    const allYGroups = useMemo(() => data[0].coords.month.data, [data])
+    const allYGroups = useMemo(() => data.coords.month.data, [data])
 
     // values for each square
     //const flatData: number[] = data.data.flat()
 
     // generate flat heatmap data
+    const dataArr = data.data[gwlSelected]
+  
     const heatmapData = allYGroups.flatMap((month: number, yIdx: number) =>
         allXGroups.map((year: number, xIdx: number) => ({
             x: year,
             y: month,
-            value: data.data[xIdx][yIdx]
+            value: dataArr[yIdx][xIdx]
         }))
     )
 

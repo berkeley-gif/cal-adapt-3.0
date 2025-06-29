@@ -21,6 +21,7 @@ type HeatmapProps = {
     useAltColor: boolean;
     currentColorMap: string;
     isColorRev: boolean;
+    gwlSelected: number;
 }
 
 export type InteractionData = {
@@ -31,13 +32,13 @@ export type InteractionData = {
     value: number;
 }
 
-export default function Heatmap({ width, height, data, useAltColor, currentColorMap, isColorRev }: HeatmapProps) {
+export default function Heatmap({ width, height, data, useAltColor, currentColorMap, isColorRev, gwlSelected }: HeatmapProps) {
     // cell that is being hovered, for tooltips
     const [hoveredCell, setHoveredCell] = useState<InteractionData | null>(null)
 
     // Flatten data and filter out undefined values
     //const flatData: number[] = data?.data?.flat().filter((d: number | undefined): d is number => d !== undefined)
-    const flatData: number[] = data?.data[1].flat().filter((d: number | undefined): d is number => d !== undefined)
+    const flatData: number[] = data?.data[gwlSelected].flat().filter((d: number | undefined): d is number => d !== undefined)
     const min = d3.min(flatData) as number | null ?? 0
     const max = d3.max(flatData) as number | null ?? 1
 
@@ -81,6 +82,7 @@ export default function Heatmap({ width, height, data, useAltColor, currentColor
                 width={width}
                 height={height}
                 data={data}
+                gwlSelected={gwlSelected}
                 setHoveredCell={setHoveredCell}
                 colorScale={colorScale}
             />
