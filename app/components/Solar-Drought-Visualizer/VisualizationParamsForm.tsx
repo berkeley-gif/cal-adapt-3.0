@@ -21,8 +21,6 @@ import { tooltipsList } from '@/app/lib/tooltips'
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
-
-
 const MenuProps: any = {
     PaperProps: {
         style: {
@@ -48,17 +46,17 @@ interface FormFieldErrorStates {
 }
 
 interface VizFormProps {
-    globalWarmingSelected: string,
-    setGlobalWarmingSelected: (val: string) => void,
-    globalWarmingList: string[],
+    gwlSelected: number,
+    setGwlSelected: (gwl: number) => void,
+    globalWarmingLevelsList: string[],
     onFormDataSubmit: () => unknown,
     toggleOpen: () => void
 }
 
 const VizPrmsForm: React.FC<VizFormProps> = ({
-    globalWarmingSelected,
-    setGlobalWarmingSelected,
-    globalWarmingList,
+    gwlSelected,
+    setGwlSelected,
+    globalWarmingLevelsList,
     onFormDataSubmit,
     toggleOpen
 }) => {
@@ -96,19 +94,21 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
 
                         <FormControl>
                             <Select
-                                value={globalWarmingSelected}
+                                value={gwlSelected}
                                 onChange={(event: any) => {
-                                    setGlobalWarmingSelected(event.target.value as string)
+                                    setGwlSelected(event.target.value as number)
                                 }}
                                 MenuProps={MenuProps}
                                 sx={{ mt: '15px', width: '380px' }}
-                                disabled
                             >
-                                {globalWarmingList.map((level) => (
-                                    <MenuItem key={level} value={level}>
-                                        <ListItemText primary={level + '°'} />
-                                    </MenuItem>
-                                ))}
+                                {globalWarmingLevelsList.map((gwl, i) => {
+                                    return (
+                                        <MenuItem key={gwl} value={i}>
+                                            <ListItemText primary={`${gwl}°`} />
+                                        </MenuItem>
+                                    )
+                                }
+                                )}
                             </Select>
                             {formErrorState.globalWarming && <div>One or more global warming levels must be selected to continue</div>}
                         </FormControl>

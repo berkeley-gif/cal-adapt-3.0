@@ -36,7 +36,8 @@ export default function Heatmap({ width, height, data, useAltColor, currentColor
     const [hoveredCell, setHoveredCell] = useState<InteractionData | null>(null)
 
     // Flatten data and filter out undefined values
-    const flatData: number[] = data?.data?.flat().filter((d: number | undefined): d is number => d !== undefined)
+    //const flatData: number[] = data?.data?.flat().filter((d: number | undefined): d is number => d !== undefined)
+    const flatData: number[] = data?.data[1].flat().filter((d: number | undefined): d is number => d !== undefined)
     const min = d3.min(flatData) as number | null ?? 0
     const max = d3.max(flatData) as number | null ?? 1
 

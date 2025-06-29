@@ -88,8 +88,6 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
         }
     }
 
-
-
     const handleHelpClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setHelpAnchorEl(event.currentTarget)
     }

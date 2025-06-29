@@ -25,10 +25,10 @@ export default function Renderer({ width, height, data, setHoveredCell, colorSca
     // groups
 
     // all x values
-    const allXGroups = useMemo(() => data.coords.year.data, [data])
+    const allXGroups = useMemo(() => data[0].coords.year.data, [data])
 
     // all y values
-    const allYGroups = useMemo(() => data.coords.month.data, [data])
+    const allYGroups = useMemo(() => data[0].coords.month.data, [data])
 
     // values for each square
     //const flatData: number[] = data.data.flat()

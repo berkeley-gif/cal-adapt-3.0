@@ -64,6 +64,10 @@ export default function DataExplorer({ data }: DataExplorerProps) {
         fetchGWL()
     }, [metricSelected, valueType])
 
+    useEffect(() => {
+        console.log('global warming list: ', globalWarmingLevelsList)
+    }, [globalWarmingLevelsList])
+
     return (
         <Grid container sx={{ height: '100%', flexDirection: "column", flexWrap: "nowrap", flexGrow: 1 }}>
             <MapUI

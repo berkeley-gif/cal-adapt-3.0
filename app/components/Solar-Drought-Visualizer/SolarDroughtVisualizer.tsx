@@ -91,8 +91,47 @@ export default function SolarDroughtViz() {
 
     // Parameters state
     const [isColorRev, setIsColorRev] = useState<boolean>(false)
-    const [globalWarmingSelected, setGlobalWarmingSelected] = useState('2')
-    const globalWarmingList = ['2']
+    //const [globalWarmingSelected, setGlobalWarmingSelected] = useState('2')
+    //const globalWarmingList = ['2']
+
+
+    const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+
+    // If you would want to change the default GWL, check the desired index in globalWarmingLevelsList
+    const DEF_GWL = 1 
+
+    const [gwlSelected, setGwlSelected] = useState<number>(0)
+    const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
+
+
+    // TO DO : FIGURE OUT THE RIGHT URL FOR THIS
+    async function fetchGWL() {
+        const params = {
+            url: 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/srdd/d03',
+        }
+
+        const queryString = Object.entries(params)
+            .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+            .join('&')
+
+        const url = `${BASE_URL}/info?${queryString}`
+
+        try {
+            const response = await fetch(url)
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} ${response.statusText}`)
+            }
+            const data = await response.json()
+            const gwlData = data.dimensions.gwl.data
+            if (Array.isArray(gwlData) && gwlData.length > 0) {
+                setGlobalWarmingLevelsList(gwlData)
+                const defaultGwlIndex = gwlData.indexOf(DEF_GWL)
+                setGwlSelected(defaultGwlIndex)
+            }
+        } catch (error) {
+            console.error('Failed to fetch GWL:', error)
+        }
+    }
 
     // Map & location state
     const mapRef = useRef<any>(null)
@@ -142,7 +181,8 @@ export default function SolarDroughtViz() {
         setIsLoading(true)
 
         const [long, lat] = apiParams.point
-        const s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/mon/${apiParams.configQueryStr}/d03`
+        //const s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/mon/${apiParams.configQueryStr}/d03`
+        const s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/${apiParams.configQueryStr}/d03`
         const apiUrl = `https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com/point/${long},${lat}`
         const queryParams = new URLSearchParams({
             url: s3Url,
@@ -160,7 +200,9 @@ export default function SolarDroughtViz() {
             }
             const newData = await res.json()
             if (newData) {
+                console.log('newData', newData)
                 setQueriedData(newData)
+
                 setIsPointValid(true)
             } else {
                 setQueriedData(null)
@@ -211,6 +253,12 @@ export default function SolarDroughtViz() {
             resizeObserver.disconnect()
         }
     }, [heatmapContainer])
+
+    useEffect(() => {
+        // TO DO: Figure out a way to automate this with fetchGWL
+        setGlobalWarmingLevelsList(['0.8', '1.5', '2.5', '3'])
+        setGwlSelected(1)
+    }, [])
 
     const checkLocationStatus = useCallback((point: Location | null, config: string) => {
         if (!point) {
@@ -328,7 +376,7 @@ export default function SolarDroughtViz() {
                         <Box className="flex-params">
                             <Box className="flex-params__item">
                                 <Typography className="option-group__title" variant="body2" aria-label="Global Warming Level">Global Warming Level</Typography>
-                                <Typography variant="body1" aria-label={`Selected Global Warming Level: ${globalWarmingSelected}`}>{globalWarmingSelected}°</Typography>
+                                <Typography variant="body1" aria-label={`Selected Global Warming Level: ${globalWarmingLevelsList[gwlSelected]}`}>{globalWarmingLevelsList[gwlSelected]}°</Typography>
                             </Box>
                             <Box className="flex-params__item">
                                 <Typography className="option-group__title" variant="body2" aria-label="Photovoltaic Configuration">Photovoltaic Configuration</Typography>
@@ -508,9 +556,9 @@ export default function SolarDroughtViz() {
                     </Tooltip>
                     <VizPrmsForm
                         onFormDataSubmit={onFormDataSubmit}
-                        globalWarmingList={globalWarmingList}
-                        globalWarmingSelected={globalWarmingSelected}
-                        setGlobalWarmingSelected={setGlobalWarmingSelected}
+                        globalWarmingLevelsList={globalWarmingLevelsList}
+                        gwlSelected={gwlSelected}
+                        setGwlSelected={setGwlSelected}
                         toggleOpen={toggleOpen}
                         aria-label="Visualization parameters form"
                     >
