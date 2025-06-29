@@ -128,7 +128,7 @@ function Footer() {
                 <Typography variant="caption" sx={{ fontSize: '16px' }}
                     component="a"
                     href="/"
-                >Legacy Cal-Adapt</Typography>
+                >4th Assessment Cal-Adapt</Typography>
                 <Typography variant="caption" sx={{ fontSize: '16px' }}
                     component="a"
                     href="https://analytics.cal-adapt.org/guidance/"

@@ -18,10 +18,28 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import AdbIcon from '@mui/icons-material/Adb'
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
 import logo from '@/public/img/logos/cal-adapt-logo-white.svg'
 
 const leftMenuItems = [
+    {
+        label: '4th Assessment Cal-Adapt',
+        icon: <ArrowBackIcon sx={{ mr: 1 }} />,
+        href: 'https://www.cal-adapt.org'
+    },
+
+]
+
+const rightMenuItems = [
+    {
+        label: 'Guidance',
+        href: 'https://analytics.cal-adapt.org/guidance/'
+    },
+    {
+        label: 'Data Docs',
+        href: 'https://analytics.cal-adapt.org/data/'
+    },
     {
         label: 'Tools',
         icon: <SpaceDashboardIcon sx={{ mr: 1 }} />,
@@ -40,21 +58,7 @@ const leftMenuItems = [
             },
         ]
     },
-    {
-        label: 'Data',
-        href: 'https://analytics.cal-adapt.org/data/'
-    }
-]
 
-const rightMenuItems = [
-    {
-        label: 'Guidance',
-        href: 'https://analytics.cal-adapt.org/guidance/'
-    },
-    {
-        label: 'Legacy Cal-Adapt',
-        href: '/'
-    }
 ]
 
 function Navigation() {
@@ -86,10 +90,12 @@ function Navigation() {
                     position: 'relative',
                     display: 'flex',
                     alignItems: 'center',
-                    // Desktop: center the three boxes, with a 32px gap between each
-                    justifyContent: { xs: 'center', md: 'center' },
-                    gap: { md: 16 },       // md: 4 * 8px = 32px gap
-                    height: 64
+                    mx: 'auto',
+                    justifyContent: 'space-between',
+                    gap: '149px',
+                    height: 64,
+                    maxWidth: '1000px',
+                    width: '100%',
                 }}>
                     <Box sx={{
                         display: { xs: 'flex', md: 'none' },
@@ -141,11 +147,14 @@ function Navigation() {
 
                     {/* Left menu items */}
                     <Box sx={{
+                        flex: 1,
                         display: {
                             xs: 'none', md: 'flex'
                         },
                         gap: 2,
-                        alignItems: 'center'
+                        alignItems: 'center',
+                        justifyContent: 'left',
+                        ml: '25px'
                     }}>
                         {leftMenuItems.map(({ label, icon, submenu, href }) => (
                             <React.Fragment key={label}>
@@ -163,6 +172,7 @@ function Navigation() {
                                     <Button
                                         component="a"
                                         href={href}
+                                        target="_blank"
                                         sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
                                     >
                                         {icon}
@@ -198,8 +208,14 @@ function Navigation() {
 
                     {/* Center logo */}
                     <Box sx={{
+                        position: 'absolute',
+                        left: '50%',
                         display: 'flex',
                         alignItems: 'center',
+                        height: '100%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 1,
                     }}>
                         <Image src={logo} alt="Cal Adapt California state logo" style={{ height: '40px' }} />
                     </Box>
@@ -207,8 +223,11 @@ function Navigation() {
                     {/* Right menu items */}
                     <Box sx={{
                         display: { xs: 'none', md: 'flex' },
+                        justifyContent: 'right',
                         alignItems: 'center',
-                        gap: 2
+                        gap: 2,
+                        flex: 1,
+
                     }}>
                         {rightMenuItems.map(({ label, icon, submenu, href }) => (
                             <React.Fragment key={label}>
@@ -226,6 +245,7 @@ function Navigation() {
                                     <Button
                                         component="a"
                                         href={href}
+                                        target="_blank"
                                         sx={{ color: 'white', display: 'flex', alignItems: 'center' }}
                                     >
                                         {icon}

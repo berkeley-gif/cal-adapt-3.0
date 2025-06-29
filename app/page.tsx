@@ -63,7 +63,7 @@ export default function Home() {
             padding: isMobile ? '0 30px' : '0 20vw',
             margin: '0 auto'
           }} variant="body1">
-            The new Cal-Adapt has been revamped to offer a more modern and intuitive experience for exploring <nobr>peer-reviewed</nobr> CMIP6 climate data. Our platform provides interactive visualizations, downloadable datasets, the Analytics Engine and the Cal-Adapt API, helping you analyze how climate change may impact California at both state and local levels.
+            The new Cal-Adapt has been revamped to offer a more modern and intuitive experience for exploring <nobr>peer-reviewed</nobr> <strong>5th Assessment</strong> climate data. Our platform provides interactive visualizations, downloadable datasets, the Analytics Engine and the Cal-Adapt API, helping you analyze how climate change may impact California at both state and local levels.
           </Typography>
           <div>
             <div className={cardsCarouselClass}>

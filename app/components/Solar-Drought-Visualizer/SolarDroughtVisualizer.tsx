@@ -201,7 +201,6 @@ export default function SolarDroughtViz() {
             const newData = await res.json()
             if (newData) {
                 setQueriedData(newData)
-                console.log('queriedData', newData)
                 setIsPointValid(true)
             } else {
                 setQueriedData(null)
