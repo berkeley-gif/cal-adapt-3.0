@@ -8,6 +8,7 @@ import useEmblaCarousel from 'embla-carousel-react'
 
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
 
 import styles from '@/app/page.module.scss'
 import HeroMain from './components/Home/HeroMain'
@@ -128,6 +129,11 @@ export default function Home() {
             <Typography variant="h4" style={{ marginBottom: '20px' }}>
               Climate Insights for Everyone
             </Typography>
+            <Alert className={isMobile ?
+              `alerts alerts-100` : 'hidden no-height'}
+              sx={{ mb: "26px" }} variant="filled" severity="info" color="infoYellow">
+              Cal-Adapt&#39;s Tools are available on desktop devices only
+            </Alert>
             <div style={{ alignSelf: 'center' }}>
               <ToolCarousel data={genCarouselData} />
             </div>
