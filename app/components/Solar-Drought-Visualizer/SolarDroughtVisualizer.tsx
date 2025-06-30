@@ -158,11 +158,6 @@ export default function SolarDroughtViz() {
     // TEMP: for color ramp options
     const [currentColorMap, setCurrentColorMap] = useState<string>('PuBuGn')
 
-    const customColorMapList: string[] = [
-        'Oranges', 'Purples', 'Reds', 'Turbo', 'Viridis', 'Inferno', 'Magma', 'Cividis', 'Warm', 'Cool', 'CubehelixDefault', 'BuGn',
-        'BuPu', 'GnBu', 'OrRd', 'PuBuGn', 'PuBu', 'PuRd', 'RdPu', 'YlGnBu', 'YlGn', 'YlOrBr', 'YlOrRd'
-    ]
-
     // Handlers
     const handleAccordionChange = () => {
         if (apiParams.point !== null) {
