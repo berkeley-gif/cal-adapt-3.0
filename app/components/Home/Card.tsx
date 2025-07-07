@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation'
 
 import Typography from '@mui/material/Typography'
@@ -20,14 +19,29 @@ export default function Card({ title, description, cta, img }: CardProps) {
     const router = useRouter()
     const [hovered, setHovered] = React.useState(false)
 
-    const handleClick = () => {
-        router.push(cta)
+    const handleClick = (newTab: boolean = true) => {
+        if (newTab) {
+            window.open(cta, '_blank')
+        } else {
+            router.push(cta)
+        }
     }
+
     return (
         <div className="card" style={{
             backgroundImage: `url(${img})`,
         }}
-            onClick={handleClick}
+            onClick={(e) => {
+                e.stopPropagation()
+
+                // If navigating to a page section, don't open in a different tab
+                if (cta.charAt(0) === "#") {
+                    handleClick(false) // open in same tab for this title path
+                } else {
+                    handleClick(true)
+                }
+
+            }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
