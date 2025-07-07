@@ -1,6 +1,12 @@
+// PackageForm
+// Form and download flow for the Cal-Adapt data tool.
+// Allows users to review, configure, and validate data packages before downloading them,
+// including selecting variables, models, scenarios, counties, and frequency.
 
+// --- React imports ---
 import React, { useState, useEffect } from 'react'
 
+// --- Material UI imports ---
 import Autocomplete from '@mui/material/Autocomplete'
 import Checkbox from '@mui/material/Checkbox'
 import Chip from '@mui/material/Chip'
@@ -19,6 +25,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import ListSubheader from '@mui/material/ListSubheader'
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined'
 
+// --- Local imports ---
 import { searchObject } from "@/app/utils/functions"
 import { useDidMountEffect } from "@/app/utils/hooks"
 import DataResultsTable from './DataResultsTable'
@@ -27,9 +34,11 @@ import { variablesLookupTable, scenariosLookupTable, lookupValue } from '@/app/u
 import LoadingSpinner from '../Global/LoadingSpinner'
 import { tooltipsList } from '@/app/lib/tooltips'
 
+// --- Config constants ---
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
+// --- Types and interfaces ---
 type varUrl = {
     name: string,
     href: string
@@ -40,26 +49,6 @@ type modelVarUrls = {
     countyname: string,
     scenario: string,
     vars: varUrl[]
-}
-
-// Configurations for Models Select field dropdown
-const MenuProps: any = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-    getContentAnchorEl: null,
-    anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "center"
-    },
-    transformOrigin: {
-        vertical: "top",
-        horizontal: "center"
-    },
-    variant: "menu"
 }
 
 interface FormFieldErrorStates {
@@ -83,7 +72,6 @@ interface ChildFormProps {
     sidebarState: string,
     localPackageSettings: any,
     dataResponse: modelVarUrls[]
-    isAllModelsSelected: any,
     isPackageStored: boolean,
     nextPageUrl: string,
     genUseModelsList: string[],
@@ -108,6 +96,27 @@ interface ChildFormProps {
     setIsBundling: (state: boolean) => void
 }
 
+// --- Custom dropdown style for Select components ---
+const MenuProps: any = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+    getContentAnchorEl: null,
+    anchorOrigin: {
+        vertical: "bottom",
+        horizontal: "center"
+    },
+    transformOrigin: {
+        vertical: "top",
+        horizontal: "center"
+    },
+    variant: "menu"
+}
+
+// --- Component function ---
 const PackageForm: React.FC<ChildFormProps> = ({
     genUseModelsList,
     downloadLinks,
@@ -122,7 +131,6 @@ const PackageForm: React.FC<ChildFormProps> = ({
     modelsList,
     sidebarState,
     selectedVars,
-    isAllModelsSelected,
     setSidebarState,
     setSelectedVars,
     varsList,
@@ -143,7 +151,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
     setIsLoading,
     isBundling,
     setIsBundling }) => {
-
+    // --- Form validation state ---
     const [formErrorState, setFormErrorState] = useState<FormFieldErrorStates>({
         models: false,
         vars: false,
@@ -152,37 +160,19 @@ const PackageForm: React.FC<ChildFormProps> = ({
     })
 
     const [isError, setIsError] = useState(false)
-
     let isFormInvalid: boolean = false
 
-    // MODELS
+    const isAllSelected = modelsSelected.length === modelsList.length
 
+    // --- Model field handlers ---
     const handleModelsChange = (event: SelectChangeEvent<string[]>) => {
-        const selectedValues = event.target.value as string[]
+        const selected = event.target.value as string[]
 
-        if (selectedValues.includes('all')) {
-            if (isAllModelsSelected.current) {
-                const newValuesArr: string[] = modelsSelected.filter(item => !event.target.value.includes(item))
-                // If "Select All" was previously selected, deselect the option clicked and Select all
-                setModelsSelected(newValuesArr)
-                isAllModelsSelected.current = false;
-            } else {
-                // If "Select All" is selected, select all options except "Select All"
-                setModelsSelected(modelsList)
-                isAllModelsSelected.current = true;
-            }
+        if (selected.includes('all')) {
+            const toggled = toggleSelectAll(modelsSelected, modelsList)
+            setModelsSelected(toggled)
         } else {
-            // Check if "Select All" was previously selected
-            if (selectedValues.length === modelsList.length - 1 && selectedValues.includes('all')) {
-                const filteredValues = selectedValues.filter(value => value !== 'all');
-                setModelsSelected(filteredValues)
-                isAllModelsSelected.current = false
-            } else {
-                // If "Select All" was not previously selected or no individual item is being deselected,
-                // update the selected items
-                setModelsSelected(selectedValues);
-                isAllModelsSelected.current = false;
-            }
+            setModelsSelected(selected)
         }
     }
 
@@ -196,7 +186,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
 
     }, [modelsSelected])
 
-    // VARIABLES 
+    // --- Variables field handling --- 
     useDidMountEffect(() => {
         if (selectedVars.length > 0) {
             let newFormState = formErrorState
@@ -207,7 +197,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
 
     }, [selectedVars])
 
-    // COUNTIES
+    // --- Counties field handling --- 
     useDidMountEffect(() => {
         if (selectedCounties.length > 0) {
             let newFormState = formErrorState
@@ -218,7 +208,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
 
     }, [selectedCounties])
 
-    // SCENARIOS
+    // --- Scenario field handling --- 
     useDidMountEffect(() => {
         if (selectedScenarios.length > 0) {
             let newFormState = formErrorState
@@ -229,7 +219,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
 
     }, [selectedScenarios])
 
-    // FORM HANDLING 
+    // --- Form validation logic ---
     function validateFormData() {
         let newFormState = formErrorState
 
@@ -265,8 +255,8 @@ const PackageForm: React.FC<ChildFormProps> = ({
         }
     }
 
+    // --- Form submission handler ---
     const handleSubmit = () => {
-
         validateFormData()
 
         if (!isFormInvalid) {
@@ -281,6 +271,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
         }
     }
 
+    // --- Set loading state on data response ---
     useEffect(() => {
         if (dataResponse.length > 0) {
             setIsLoading(false)
@@ -291,7 +282,7 @@ const PackageForm: React.FC<ChildFormProps> = ({
 
     }, [])
 
-
+    // --- Utility functions ---
     function genVarsLinks(variables: varUrl[]): string[] {
         let varsLinks: string[] = []
 
@@ -300,6 +291,11 @@ const PackageForm: React.FC<ChildFormProps> = ({
         }
 
         return varsLinks
+    }
+
+    function toggleSelectAll(current: string[], all: string[]): string[] {
+        const isAllSelected = current.length === all.length
+        return isAllSelected ? [] : all
     }
 
     return (
@@ -526,15 +522,15 @@ const PackageForm: React.FC<ChildFormProps> = ({
                                 <FormControl error={formErrorState.models}>
                                     <Select
                                         multiple
-                                        value={isAllModelsSelected.current ? ['all'] : modelsSelected}
+                                        value={isAllSelected ? ['all'] : modelsSelected}
                                         onChange={handleModelsChange}
-                                        renderValue={(selected) => (isAllModelsSelected.current ? 'All Available' : (selected as string[]).join(', '))}
+                                        renderValue={(selected) => (isAllSelected ? 'All Available' : (selected as string[]).join(', '))}
                                         MenuProps={MenuProps}
                                         sx={{ mt: '15px', width: '380px' }}
 
                                     >
                                         <MenuItem value="all">
-                                            <Checkbox checked={isAllModelsSelected.current} />
+                                            <Checkbox checked={isAllSelected} />
                                             Select All
                                         </MenuItem>
                                         <ListSubheader>General Use</ListSubheader>
@@ -724,4 +720,4 @@ const PackageForm: React.FC<ChildFormProps> = ({
     )
 }
 
-export default PackageForm
+export default React.memo(PackageForm)

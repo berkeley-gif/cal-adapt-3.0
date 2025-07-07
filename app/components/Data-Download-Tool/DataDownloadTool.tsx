@@ -1,11 +1,16 @@
+// DataDownload
+// Main component for the Cal-Adapt Data Download Tool.
+// Allows users to select a data package, customize options, and download climate datasets in bulk.
+
 'use client'
 
-// Importing necessary React hooks and utilities
-import React, { useState, useEffect, useRef } from 'react'
+// --- React imports ---
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 
+// --- External libraries ---
 import { downloadZip } from 'client-zip'
 
-// Importing Material-UI components
+// --- Material UI imports ---
 import Alert from '@mui/material/Alert'
 declare module '@mui/material/Alert' {
     interface AlertPropsVariantOverrides {
@@ -28,7 +33,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import UndoOutlinedIcon from '@mui/icons-material/UndoOutlined'
 
-// Importing custom components and utilities
+// --- Local imports ---
 import SidePanel from '@/app/components/Dashboard/RightSidepanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import PackageForm from '@/app/components/Data-Download-Tool/PackageForm'
@@ -38,17 +43,24 @@ import { createOrStatement, stringToArray, arrayToCommaSeparatedString, splitStr
 import { useDidMountEffect, useLocalStorageState } from "@/app/utils/hooks"
 import { variablesLookupTable, scenariosLookupTable, lookupValue, filterByFlag, modelsGenUseLookupTable } from '@/app/utils/lookupTables'
 
+// --- Types and interfaces ---
+
+// Props passed to the DataDownload component
 type DataDownloadProps = {
-    data: any // or a more specific type like `data: Array<any>` or `data: { [key: string]: any }`
+    data: any // TODO: Consider replacing with a more specific type for maintainability
 }
 
+// --- Component function ---
 export default function DataDownload({ data }: DataDownloadProps) {
     const { open, toggleOpen } = useSidepanel()
 
+    // --- Data and API response states ---
     const [dataResponse, setDataResponse] = useState<modelVarUrls[]>([])
+    const [downloadLinks, setDownloadLinks] = useState<string[]>([])
     const [totalDataSize, setTotalDataSize] = useState<number>(0)
+    const [nextPageUrl, setNextPageUrl] = useState<string>('')
 
-    // API PARAMS
+    // --- API parameter states ---
     const [apiParams, setApiParams] = useState<apiParamStrs>({
         countyQueryStr: '',
         scenariosQueryStr: '',
@@ -70,17 +82,18 @@ export default function DataDownload({ data }: DataDownloadProps) {
         }))
     }
 
-    const [downloadLinks, setDownloadLinks] = useState<string[]>([])
+    // --- UI and sidebar state ---
     const [sidebarState, setSidebarState] = useState<string>('')
-    const [nextPageUrl, setNextPageUrl] = useState<string>('')
     const [overwriteDialogOpen, openOverwriteDialog] = useState<boolean>(false)
     const [isDataDaily, setIsDataDaily] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [isBundling, setIsBundling] = useState(false)
-    const [isPackageStored, setIsPkgStored] = useLocalStorageState<boolean>('isPackageStored', false)
     const [tentativePackage, setTentativePackage] = useState<number>(-1)
 
+    // --- Local storage and package selection ---
+    const [isPackageStored, setIsPkgStored] = useLocalStorageState<boolean>('isPackageStored', false)
     const [selectedPackage, setSelectedPackage] = useState<number>(-1)
+    // TO DO: Memoize localpackagesettings
     const [localPackageSettings, setPackageSettings] = useLocalStorageState<any>('package', {
         id: -1,
         dataset: '',
@@ -96,6 +109,50 @@ export default function DataDownload({ data }: DataDownloadProps) {
         units: ''
     })
 
+
+    // --- Frequency selection ---
+    const frequenciesList: string[] = ['Daily', 'Monthly']
+
+    const [selectedFrequency, setSelectedFrequency] = useState<string>('')
+
+    const [collectionStr, setCollectionStr] = useState<string>('')
+
+    useEffect(() => {
+        setPackageSettings({
+            ...localPackageSettings,
+            frequency: selectedFrequency
+        })
+
+        if (selectedFrequency == 'Monthly') {
+            setIsDataDaily(false)
+            setCollectionStr('loca2-mon-county')
+        } else if (selectedFrequency == 'Daily') {
+            setIsDataDaily(true)
+            setCollectionStr('loca2-day-county')
+        }
+
+    }, [selectedFrequency])
+
+    // --- Variable selection ---
+    if (!Array.isArray(data?.summaries?.['cmip6:variable_id'])) {
+        console.warn("Unexpected data structure")
+    }
+
+    const varsList: string[] = (data.summaries['cmip6:variable_id']).map((obj: {}) => obj) ?? []
+
+    const [selectedVars, setSelectedVars] = useState<any>([])
+    useDidMountEffect(() => {
+        const selectedVarsStr = arrayToCommaSeparatedString(selectedVars)
+
+        setPackageSettings({
+            ...localPackageSettings,
+            vars: selectedVarsStr
+        })
+
+    }, [selectedVars])
+
+
+    // --- Data download functions ---
     const onFormDataSubmit = async () => {
         const apiUrl = 'https://d3pv76zq0ekj5q.cloudfront.net/search'
 
@@ -108,6 +165,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
         const fullUrl = `${apiUrl}?${queryParams.toString()}`;
 
         if (apiParamsChanged) {
+            // TODO: Remove state management from loop 
             try {
                 const res = await fetch(fullUrl)
                 const data = await res.json()
@@ -115,7 +173,6 @@ export default function DataDownload({ data }: DataDownloadProps) {
                 const apiResponseData: modelVarUrls[] = []
 
                 for (const modelIdx in data.features) {
-
                     // For each model in data response 
                     const assets = data.features[modelIdx].assets
 
@@ -161,165 +218,6 @@ export default function DataDownload({ data }: DataDownloadProps) {
                 console.log(err)
             }
             setApiParamsChanged(false)
-        }
-    }
-
-    function resetStateToSettings(): void {
-        setSidebarState('settings')
-    }
-
-    function bytesToGBOrMB(bytes: number): string {
-        const fileSizeInGB = bytes / (1024 * 1024 * 1024)
-        const fileSizeInMB = bytes / (1024 * 1024)
-
-        if (fileSizeInGB >= 1) {
-            return fileSizeInGB.toFixed(2) + ' GB'
-        } else {
-            return fileSizeInMB.toFixed(2) + ' MB'
-        }
-    }
-
-    async function createZip(links: string[], extraFilenameStr: string): Promise<void> {
-        showLoadingIndicator()
-
-        const urlResponses = await Promise.all(links.map(url => fetch(url)))
-
-        const files = await Promise.all(urlResponses.map(async (response) => {
-            const fileData = await response.blob()
-            const fileName = extractFilenameFromURL(response.url)
-            return { name: fileName, input: fileData }
-        }))
-
-        const blob = await downloadZip(files).blob()
-        const todaysDateAsString: string = getTodaysDateAsString()
-
-        const outputPath = 'data-download-bundle-' + `${todaysDateAsString}` + '-' + selectedFrequency + (extraFilenameStr ? '-' + extraFilenameStr : '') + '.zip';
-
-        hideLoadingIndicator()
-
-        const a = document.createElement('a')
-        a.href = URL.createObjectURL(blob)
-        a.download = outputPath
-        a.click()
-        a.remove()
-    }
-
-    function showLoadingIndicator() {
-        setIsLoading(true)
-        setIsBundling(true)
-    }
-
-    function hideLoadingIndicator() {
-        setIsLoading(false)
-        setIsBundling(false)
-    }
-
-    // FREQUENCY 
-
-    const frequenciesList: string[] = ['Daily', 'Monthly']
-
-    const [selectedFrequency, setSelectedFrequency] = useState<string>('')
-
-    const [collectionStr, setCollectionStr] = useState<string>('')
-
-    useEffect(() => {
-        setPackageSettings({
-            ...localPackageSettings,
-            frequency: selectedFrequency
-        })
-
-        if (selectedFrequency == 'Monthly') {
-            setIsDataDaily(false)
-            setCollectionStr('loca2-mon-county')
-        } else if (selectedFrequency == 'Daily') {
-            setIsDataDaily(true)
-            setCollectionStr('loca2-day-county')
-        }
-
-    }, [selectedFrequency])
-
-    // VARIABLES
-
-    const varsList: string[] = (data.summaries['cmip6:variable_id']).map((obj: {}) => obj)
-
-    const [selectedVars, setSelectedVars] = useState<any>([])
-    useDidMountEffect(() => {
-        const selectedVarsStr = arrayToCommaSeparatedString(selectedVars)
-
-        setPackageSettings({
-            ...localPackageSettings,
-            vars: selectedVarsStr
-        })
-
-    }, [selectedVars])
-
-    // COUNTIES
-
-    const countiesList: string[] = (data.summaries['countyname']).map((obj: {}) => obj)
-
-    const [selectedCounties, setSelectedCounties] = useState<string[]>([])
-    useEffect(() => {
-        let selectedCountiesStr: string = ''
-
-        if (selectedCounties.length > 0) {
-            selectedCountiesStr = arrayToCommaSeparatedString(selectedCounties)
-        }
-
-        setPackageSettings({
-            ...localPackageSettings,
-            boundaries: selectedCountiesStr
-        })
-    }, [selectedCounties])
-
-    // MODELS
-
-    const modelsList: string[] = (data.summaries['cmip6:source_id']).map((obj: {}) => obj)
-    const genUseModelsList: string[] = filterByFlag(modelsGenUseLookupTable)
-
-    const [modelsSelected, setModelsSelected] = useState<string[]>([])
-
-    useEffect(() => {
-        let selectedModelsStr: string = ''
-
-        if (modelsSelected.length > 0) {
-            selectedModelsStr = arrayToCommaSeparatedString(modelsSelected)
-        }
-
-        setPackageSettings({
-            ...localPackageSettings,
-            models: selectedModelsStr
-        })
-    }, [modelsSelected])
-
-    const isAllModelsSelected = useRef(false)
-
-    isAllModelsSelected.current = (modelsSelected.length == modelsList.length)
-
-    // SCENARIOS
-    const scenariosList: string[] = (data.summaries['cmip6:experiment_id']).map((obj: {}) => obj)
-
-    const [selectedScenarios, setSelectedScenarios] = useState<string[]>([])
-    useDidMountEffect(() => {
-        let selectedScenariosStr: string = ''
-
-        if (selectedScenarios.length > 0) {
-            selectedScenariosStr = arrayToCommaSeparatedString(selectedScenarios)
-        }
-
-        setPackageSettings({
-            ...localPackageSettings,
-            scenarios: selectedScenariosStr
-        })
-    }, [selectedScenarios])
-
-    function selectPackageToSave(id: number) {
-        setTentativePackage(id)
-
-        if (isPackageStored) {
-            openOverwriteDialog(true)
-        } else {
-            setSelectedPackage(id)
-            savePackageToLocal()
         }
     }
 
@@ -371,6 +269,126 @@ export default function DataDownload({ data }: DataDownloadProps) {
         }
     }
 
+    // --- Utility functions ---
+    function bytesToGBOrMB(bytes: number): string {
+        const fileSizeInGB = bytes / (1024 * 1024 * 1024)
+        const fileSizeInMB = bytes / (1024 * 1024)
+
+        if (fileSizeInGB >= 1) {
+            return fileSizeInGB.toFixed(2) + ' GB'
+        } else {
+            return fileSizeInMB.toFixed(2) + ' MB'
+        }
+    }
+
+    const createZip = useCallback(async (links: string[], name: string) => {
+        showLoadingIndicator()
+
+        const urlResponses = await Promise.all(links.map(url => fetch(url)))
+
+        const files = await Promise.all(urlResponses.map(async (response) => {
+            const fileData = await response.blob()
+            const fileName = extractFilenameFromURL(response.url)
+            return { name: fileName, input: fileData }
+        }))
+
+        const blob = await downloadZip(files).blob()
+        const todaysDateAsString: string = getTodaysDateAsString()
+
+        const outputPath = 'data-download-bundle-' + `${todaysDateAsString}` + '-' + selectedFrequency + (name ? '-' + name : '') + '.zip';
+
+        hideLoadingIndicator()
+
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = outputPath
+        a.click()
+        a.remove()
+    }, [selectedFrequency]) // include deps here
+
+    function showLoadingIndicator() {
+        setIsLoading(true)
+        setIsBundling(true)
+    }
+
+    function hideLoadingIndicator() {
+        setIsLoading(false)
+        setIsBundling(false)
+    }
+
+
+    function resetStateToSettings(): void {
+        setSidebarState('settings')
+    }
+
+
+    // --- County selection ---
+
+    const countiesList: string[] = (data.summaries['countyname']).map((obj: {}) => obj)
+
+    const [selectedCounties, setSelectedCounties] = useState<string[]>([])
+    useEffect(() => {
+        let selectedCountiesStr: string = ''
+
+        if (selectedCounties.length > 0) {
+            selectedCountiesStr = arrayToCommaSeparatedString(selectedCounties)
+        }
+
+        setPackageSettings({
+            ...localPackageSettings,
+            boundaries: selectedCountiesStr
+        })
+    }, [selectedCounties])
+
+    // --- Model selection ---
+
+    const modelsList: string[] = (data.summaries['cmip6:source_id']).map((obj: {}) => obj)
+    const genUseModelsList: string[] = filterByFlag(modelsGenUseLookupTable)
+
+    const [modelsSelected, setModelsSelected] = useState<string[]>([])
+
+    useEffect(() => {
+        let selectedModelsStr: string = ''
+
+        if (modelsSelected.length > 0) {
+            selectedModelsStr = arrayToCommaSeparatedString(modelsSelected)
+        }
+
+        setPackageSettings({
+            ...localPackageSettings,
+            models: selectedModelsStr
+        })
+    }, [modelsSelected])
+
+    // --- Scenario selection ---
+    const scenariosList: string[] = (data.summaries['cmip6:experiment_id']).map((obj: {}) => obj)
+
+    const [selectedScenarios, setSelectedScenarios] = useState<string[]>([])
+    useDidMountEffect(() => {
+        let selectedScenariosStr: string = ''
+
+        if (selectedScenarios.length > 0) {
+            selectedScenariosStr = arrayToCommaSeparatedString(selectedScenarios)
+        }
+
+        setPackageSettings({
+            ...localPackageSettings,
+            scenarios: selectedScenariosStr
+        })
+    }, [selectedScenarios])
+
+    function selectPackageToSave(id: number) {
+        setTentativePackage(id)
+
+        if (isPackageStored) {
+            openOverwriteDialog(true)
+        } else {
+            setSelectedPackage(id)
+            savePackageToLocal()
+        }
+    }
+
+    // --- Effects ---
     useEffect(() => {
 
         // Update apiParams whenever selectedCounties, selectedScenarios, or modelsSelected change
@@ -383,8 +401,6 @@ export default function DataDownload({ data }: DataDownloadProps) {
         })
 
     }, [selectedCounties, selectedScenarios, modelsSelected, collectionStr])
-
-
 
     useEffect(() => {
         setSelectedPackage(parseInt(localPackageSettings.id) >= 0 ? parseInt(localPackageSettings.id) : -1)
@@ -507,7 +523,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
                 </DialogContent>
                 <DialogActions>
                     <Button variant="contained" color="secondary" onClick={() => handleOverwriteDialog(false)}>Cancel</Button>
-                    <Button variant="contained"color="secondary" onClick={() => handleOverwriteDialog(true)} autoFocus>
+                    <Button variant="contained" color="secondary" onClick={() => handleOverwriteDialog(true)} autoFocus>
                         Confirm
                     </Button>
                 </DialogActions>
@@ -563,7 +579,6 @@ export default function DataDownload({ data }: DataDownloadProps) {
                         setPackageSettings={setPackageSettings}
                         modelsSelected={modelsSelected}
                         setModelsSelected={setModelsSelected}
-                        isAllModelsSelected={isAllModelsSelected}
                         frequenciesList={frequenciesList}
                         selectedFrequency={selectedFrequency}
                         setSelectedFrequency={setSelectedFrequency}
