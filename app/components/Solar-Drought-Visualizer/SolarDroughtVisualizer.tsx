@@ -34,6 +34,7 @@ import Typography from '@mui/material/Typography'
 import SidePanel from '@/app/components/Dashboard/RightSidepanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useRes } from '@/app/context/ResContext'
 
 import { useDidMountEffect } from "@/app/utils/hooks"
 
@@ -81,8 +82,8 @@ const MenuProps: any = {
 export default function SolarDroughtViz() {
     // Context
     const { open, toggleOpen } = useSidepanel()
+    const { resSelected, resList } = useRes()
     const { photoConfigSelected, photoConfigList } = usePhotoConfig()
-    const [apiParams, setApiParams] = useState<apiParams>({ point: null, configQueryStr: 'srdu' })
 
     // Derived state
     const derivedConfigStr = useMemo(() => {
@@ -90,19 +91,17 @@ export default function SolarDroughtViz() {
     }, [photoConfigSelected])
 
     // Parameters state
+    const [apiParams, setApiParams] = useState<apiParams>({ point: null, configQueryStr: 'srdu' })
     const [isColorRev, setIsColorRev] = useState<boolean>(false)
-    //const [globalWarmingSelected, setGlobalWarmingSelected] = useState('2')
-    //const globalWarmingList = ['2']
 
 
     const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
 
     // If you would want to change the default GWL, check the desired index in globalWarmingLevelsList
-    const DEF_GWL = 1 
+    const DEF_GWL = 1
 
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
-
 
     // TO DO : FIGURE OUT THE RIGHT URL FOR THIS
     async function fetchGWL() {
@@ -367,6 +366,10 @@ export default function SolarDroughtViz() {
                 <Grid xs={12}>
                     <Box>
                         <Box className="flex-params">
+                            <Box className="flex-params__item">
+                                <Typography className="option-group__title" variant="body2" aria-label="Resource of interest">Resource</Typography>
+                                <Typography variant="body1" aria-label={`Selected Resource: ${resList[resSelected]}`}>{resList[resSelected]}</Typography>
+                            </Box>
                             <Box className="flex-params__item">
                                 <Typography className="option-group__title" variant="body2" aria-label="Global Warming Level">Global Warming Level</Typography>
                                 <Typography variant="body1" aria-label={`Selected Global Warming Level: ${globalWarmingLevelsList[gwlSelected]}`}>{globalWarmingLevelsList[gwlSelected]}°</Typography>

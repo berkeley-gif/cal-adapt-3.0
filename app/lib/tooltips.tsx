@@ -10,5 +10,11 @@ export const tooltipsList = [
         "title": 'Metric',
         "long_text": "A specific, quantifiable measure used to assess and understand different aspects of climate change.",
         "short_text": 'A specific, quantifiable measure used to assess and understand different aspects of climate change.'
+    },
+        {
+        "id": 2,
+        "title": 'Resource',
+        "long_text": "The resource of interest. Either Solar / Wind",
+        "short_text": 'The resource of interest. Either Solar / Wind'
     }
 ]

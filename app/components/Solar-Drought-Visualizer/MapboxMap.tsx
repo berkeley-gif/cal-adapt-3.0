@@ -30,7 +30,7 @@ type MapboxMapProps = {
     mapMarker: [number, number] | null;
     setMapMarker: (marker: [number, number] | null) => void;
     width?: number;
-    height: number;
+    height: number; 
 }
 
 const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
@@ -96,10 +96,10 @@ const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
             handleLocationUpdate([e.lngLat.lng, e.lngLat.lat])
         }
 
-        // Update grid layer nodata cells based on photoConfigSelected
+        // Update grid layer nodata cells based on photoConfigSelected and resource
         useEffect(() => {
             if (mapRef.current && mapLoaded) {
-                const map = mapRef.current as unknown as mapboxgl.Map; // Type assertion to Mapbox GL JS Map
+                const map = mapRef.current as unknown as mapboxgl.Map // Type assertion to Mapbox GL JS Map
                 const maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
 
                 if (map) {

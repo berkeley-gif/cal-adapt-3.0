@@ -29,7 +29,7 @@ export const PhotoConfigProvider: React.FC<{ children: ReactNode }> = ({ childre
 export const usePhotoConfig = () => {
     const context = useContext(PhotoConfigContext);
     if (!context) {
-        throw new Error('usePhotoConfig must be used within a PhotoConfigProvider');
+        throw new Error('usePhotoConfig must be used within a PhotoConfigProvider')
     }
-    return context;
+    return context
 }; 

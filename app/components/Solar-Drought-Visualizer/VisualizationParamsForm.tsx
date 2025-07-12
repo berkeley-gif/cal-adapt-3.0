@@ -15,6 +15,7 @@ import FormLabel from '@mui/material/FormLabel'
 import HtmlTooltip from '../Global/HtmlTooltip'
 
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useRes } from '@/app/context/ResContext'
 import { tooltipsList } from '@/app/lib/tooltips'
 
 
@@ -43,6 +44,7 @@ const MenuProps: any = {
 interface FormFieldErrorStates {
     globalWarming: boolean;
     photoConfig: boolean;
+    resSelected: boolean;
 }
 
 interface VizFormProps {
@@ -50,7 +52,7 @@ interface VizFormProps {
     setGwlSelected: (gwl: number) => void,
     globalWarmingLevelsList: string[],
     onFormDataSubmit: () => unknown,
-    toggleOpen: () => void
+    toggleOpen: () => void,
 }
 
 const VizPrmsForm: React.FC<VizFormProps> = ({
@@ -58,12 +60,14 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
     setGwlSelected,
     globalWarmingLevelsList,
     onFormDataSubmit,
-    toggleOpen
+    toggleOpen,
 }) => {
     const { photoConfigSelected, setPhotoConfigSelected, photoConfigList } = usePhotoConfig()
+    const { resSelected, setResSelected, resList } = useRes()
     const [formErrorState, setFormErrorState] = useState<FormFieldErrorStates>({
         globalWarming: false,
-        photoConfig: false
+        photoConfig: false,
+        resSelected: false,
     })
 
     const handleSubmit = () => {
@@ -75,6 +79,46 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
         <div className="viz-prms-form">
             <div className="package-contents">
                 <Typography className="inline" variant="h5">Visualization Parameters</Typography>
+                <div className="container container--white">
+                    <div className="option-group">
+                        <div className="option-group__title">
+                            <Typography variant="body2">Resource</Typography>
+                            <HtmlTooltip
+                                textFragment={
+                                    <React.Fragment>
+                                        <p>{tooltipsList[2].long_text}</p>
+                                    </React.Fragment>
+                                }
+                                iconFragment={<InfoOutlinedIcon />}
+                                TransitionComponent={Fade}
+                                TransitionProps={{ timeout: 600 }}
+                                placement="right-end"
+                            />
+                        </div>
+
+                        <FormControl>
+                            <Select
+                                value={resSelected}
+                                onChange={(event: any) => {
+                                    setResSelected(event.target.value as number)
+                                }}
+                                MenuProps={MenuProps}
+                                sx={{ mt: '15px', width: '380px' }}
+                            >
+                                {resList.map((res, i) => {
+                                    return (
+                                        <MenuItem key={res} value={i}>
+                                            <ListItemText primary={`${res}`} />
+                                        </MenuItem>
+                                    )
+                                }
+                                )}
+                            </Select>
+                            {formErrorState.resSelected && <div>One or more resources must be selected to continue</div>}
+                        </FormControl>
+
+                    </div>
+                </div>
                 <div className="container container--white">
                     <div className="option-group">
                         <div className="option-group__title">
