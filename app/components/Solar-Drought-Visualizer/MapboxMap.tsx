@@ -12,6 +12,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 import HtmlTooltip from '../Global/HtmlTooltip'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useRes } from '@/app/context/ResContext'
 import '@/app/styles/dashboard/mapbox-map.scss'
 
 const INITIAL_VIEW_STATE = {
@@ -30,12 +31,13 @@ type MapboxMapProps = {
     mapMarker: [number, number] | null;
     setMapMarker: (marker: [number, number] | null) => void;
     width?: number;
-    height: number; 
+    height: number;
 }
 
 const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
     ({ locationSelected, setLocationSelected, mapMarker, setMapMarker, height }, ref) => {
         const { photoConfigSelected } = usePhotoConfig()
+        const { resSelected } = useRes()
 
         const mapRef = useRef<MapRef | null>(null)
         const [mapLoaded, setMapLoaded] = useState(false)
@@ -100,18 +102,28 @@ const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
         useEffect(() => {
             if (mapRef.current && mapLoaded) {
                 const map = mapRef.current as unknown as mapboxgl.Map // Type assertion to Mapbox GL JS Map
-                const maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
+                let maskAttribute: string
+                if (resSelected == 0) { // Solar resource selected 
+                    maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
+                } else if (resSelected == 1) { // Wind resource selected
+                    maskAttribute = 'wrdfmask' // Test mask for wind. TODO: add check for configuration 
+                } else {
+                    maskAttribute = ''
+                }
 
                 if (map) {
                     map.setPaintProperty('grid', 'fill-color', [
                         'case',
-                        ['==', ['get', maskAttribute], 0],
+                        ['any',
+                            ['==', ['get', maskAttribute], 0],
+                            ['==', ['get', maskAttribute], false]
+                        ],
                         GRID_FILL_COLOR,
                         'rgba(0, 0, 0, 0)'
                     ])
                 }
             }
-        }, [photoConfigSelected, mapLoaded])
+        }, [photoConfigSelected, resSelected, mapLoaded])
 
         return (
             <div className="map-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
