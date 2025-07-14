@@ -1,33 +1,48 @@
+// DataExplorer
+// Main wrapper for the interactive data explorer map tool.
+// Manages metric selection, GWL (Global Warming Level) selection, and value type (absolute or delta).
+// Loads appropriate data from the API and passes it to MapUI and MapboxMap components.
+
 'use client'
 
+// --- React imports ---
 import React, { useState, useEffect } from 'react'
 
+// --- Material UI imports ---
 import MapboxMap from './Map'
 import Grid from '@mui/material/Unstable_Grid2'
 import MapUI from './MapUI'
 
+// --- Local component imports ---
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
-//import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
-import { metricsList } from '@/app/lib/data-explorer/metrics'
-import { globalWarmingLevelsList } from '@/app/lib/data-explorer/global-warming-levels'
 
+// --- Static data imports ---
+import { metricsList } from '@/app/lib/data-explorer/metrics'
+
+// --- Types and interfaces ---
 export type ValueType = 'abs' | 'del'
 
-
+// TODO: Add the correct data information here. Avoid any
 type DataExplorerProps = {
     data: any;
 }
 
+// --- Constants ---
 const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
 const DEF_GWL = 1.5
 
+// --- Component function ---
 export default function DataExplorer({ data }: DataExplorerProps) {
+    // --- Drawer: only run this when you're adding leftDrawer functionality ---
     const { toggleLeftDrawer } = useLeftDrawer()
+
+    // --- State management ---
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [metricSelected, setMetricSelected] = useState<number>(0)
     const [valueType, setValueType] = useState<'abs' | 'del'>('abs')
     const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
 
+    // --- Fetch GWL data when metric or value type changes ---
     async function fetchGWL() {
         if (metricSelected >= 0) {
             const variableConfig = metricsList[metricSelected][valueType]
@@ -60,6 +75,7 @@ export default function DataExplorer({ data }: DataExplorerProps) {
         }
     }
 
+    // --- Effects ---
     useEffect(() => {
         fetchGWL()
     }, [metricSelected, valueType])

@@ -1,8 +1,14 @@
+// MapUI
+// UI controls for the Data Explorer map interface.
+// Includes GWL and metric selectors, value type tabs, tooltip help, and info popover.
+
 'use client'
 
+// --- React / Next imports ---
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+// --- Material UI imports ---
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -16,19 +22,20 @@ import MenuItem from '@mui/material/MenuItem'
 import Fade from '@mui/material/Fade'
 import Fab from '@mui/material/Fab'
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined'
-import Switch from '@mui/material/Switch'
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
-
+// --- Local imports ---
 import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { useLeftDrawer } from '../../context/LeftDrawerContext'
 import { tooltipsList } from '@/app/lib/tooltips'
 import type { ValueType } from './DataExplorer'
 
+// --- Constants ---
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
+// --- Types and interfaces ---
 type MapUIProps = {
     metricSelected: number;
     gwlSelected: number;
@@ -59,7 +66,7 @@ const MenuProps: any = {
     variant: "menu"
 }
 
-
+// --- Component function ---
 export default function MapUI({ valueType, setValueType, metricSelected, gwlSelected, setMetricSelected, setGwlSelected, globalWarmingLevels, metrics }: MapUIProps) {
     const { open, drawerWidth } = useLeftDrawer()
     const [helpAnchorEl, setHelpAnchorEl] = React.useState<HTMLButtonElement | null>(null)
@@ -97,13 +104,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
     }
 
     const helpOpen = Boolean(helpAnchorEl);
-    const id = helpOpen ? 'simple-popover' : undefined
+    const id = 'help-popover'
+    const labelledBy = 'help-popover-title'
 
+    // --- Drawer re-render ---
     useEffect(() => {
         setRenderKey((prev) => prev + 1);
     }, [open])
 
     useEffect(() => {
+        // --- Auto-open help popover on load ---
         const timeout = setTimeout(() => {
             if (helpButtonRef.current) {
                 setHelpAnchorEl(helpButtonRef.current);
@@ -113,6 +123,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
         return () => clearTimeout(timeout); // cleanup on unmount
     }, [])
 
+    // --- Load query params into state ---
     useEffect(() => {
         const params = new URLSearchParams(window.location.search)
 
@@ -252,7 +263,10 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                 className="map-ui__help-button"
                                 color="secondary"
                                 sx={{ float: 'right', mr: '50px' }}
-                                aria-label="Help toggle"
+                                aria-label="Open help dialog"
+                                aria-controls={helpOpen ? id : undefined}
+                                aria-expanded={helpOpen}
+                                aria-haspopup="dialog"
                                 size="medium"
                                 onClick={handleHelpClick}
                                 ref={helpButtonRef}>
@@ -261,6 +275,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                             <Popover
                                 id={id}
                                 className="help-popover"
+                                aria-labelledby={labelledBy}
                                 open={helpOpen}
                                 anchorEl={helpAnchorEl}
                                 onClose={handleClose}
@@ -280,16 +295,16 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                     },
                                 }}
                             >
-                                <Typography variant="h5">
+                                <Typography variant="h5" id={labelledBy}>
                                     About the Data Explorer Tool
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography variant="body1" id={labelledBy}>
                                     <p>Showing the absolute and change in extreme weather across heat, precipitation, and fire weather over the potential futures in California allows individuals, planners, researchers, and interested parties to examine the general shape of climate projections.
                                     </p>
                                 </Typography>
 
-                                <Typography variant="h6" style={{ marginTop: '15px' }}>Projections Type</Typography>
-                                <Typography variant="body1">
+                                <Typography variant="h6" style={{ marginTop: '15px' }} id={labelledBy}>Projections Type</Typography>
+                                <Typography variant="body1" id={labelledBy}>
                                     <p>
                                         <strong>Absolute</strong>: show the average expected value for the chosen metric and at the selected Global Warming Level (GWL).
 
@@ -299,7 +314,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                     </p>
                                 </Typography>
 
-                                <Typography variant="h6" style={{ marginTop: '15px' }}>Global Warming Level</Typography>
+                                <Typography variant="h6" id={labelledBy} style={{ marginTop: '15px' }}>Global Warming Level</Typography>
                                 <Typography variant="body1">
                                     <p>
                                         Show what different parts of California will look like when the world, as a whole, has increased average temperature compared to pre-industrial by the chosen amount.
@@ -308,25 +323,25 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                         For additional information go to: <a href="https://cal-adapt.org/blog/understanding-warming-levels" target='_blank'><span className="underline">Understanding Climate Futures through the lens of global Warming Levels</span></a>
                                     </p>
                                 </Typography>
-                                <Typography variant="body1" style={{ marginTop: '15px' }}>
+                                <Typography id={labelledBy} variant="body1" style={{ marginTop: '15px' }}>
                                     Use the dropdown menu to select a global warming scenario (e.g., 1.5°C, 2.0°C).
                                     This will adjust the data overlays to reflect projected changes under the selected warming level.
                                     (<a href="https://climate.gov" target='_blank'><span className="underline">Climate.gov</span></a>  has more information)
                                 </Typography>
 
 
-                                <Typography variant="h6" sx={{ mt: '15px' }}>
+                                <Typography id={labelledBy} variant="h6" sx={{ mt: '15px' }}>
                                     Metric
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography id={labelledBy} variant="body1">
                                     <p>Choose a climate metric to display on the map (e.g., extreme temperature, extreme precipitation, fire weather index)
                                         Each metric provides a unique perspective on how climate change impacts various regions.</p>
                                     (A plain language description of metrics can be found <a href='https://docs.google.com/document/d/19UB672X38z21QlEkieWEwWLwZQWU_L7wMW5zq9bo7tc/edit?usp=sharing' target='_blank'><span className="underline">here</span></a>)
                                 </Typography>
-                                <Typography variant="h6" sx={{ mt: '15px' }}>
+                                <Typography id={labelledBy} variant="h6" sx={{ mt: '15px' }}>
                                     Interactive Map Features
                                 </Typography>
-                                <Typography variant="body1">
+                                <Typography id={labelledBy} variant="body1">
                                     <p><strong>Pan and Zoom:</strong> Click and drag to move the map, and use the scroll wheel or zoom buttons to focus on specific areas.</p>
                                     <p><strong>Region Highlighting:</strong> Click on a region to view localized climate data and projections.</p>
                                     <p><strong>Legend:</strong> The color scale on the map legend indicates the range of values for the selected metric.</p>

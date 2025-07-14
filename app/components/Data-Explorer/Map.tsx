@@ -1,10 +1,15 @@
+// MapboxMap
+// Interactive map component using Mapbox GL for the Cal-Adapt Data Explorer.
+// Displays raster climate tiles, supports point click interaction with popup values (min, max, mean),
+// and includes responsive resizing, throttled point querying, and error suppression for tile issues.
+
 'use client'
 
+// --- Mapbox imports ---
 import 'mapbox-gl/dist/mapbox-gl.css'
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
-import '@/app/styles/dashboard/data-explorer.scss'
-import '@/app/styles/dashboard/mapbox-map.scss'
 
+// --- React imports ---
 import React, {
     useState,
     useEffect,
@@ -12,6 +17,8 @@ import React, {
     forwardRef,
     useImperativeHandle
 } from 'react'
+
+// --- Mapbox and utility imports ---
 import {
     Map,
     MapRef,
@@ -24,20 +31,22 @@ import {
     ErrorEvent
 } from 'react-map-gl'
 import { throttle } from 'lodash'
+
+// --- MUI imports ---
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Unstable_Grid2'
-//import Fab from '@mui/material/Fab'
-//import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 
+// --- Component and local static imports ---
+import '@/app/styles/dashboard/data-explorer.scss'
+import '@/app/styles/dashboard/mapbox-map.scss'
 import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
 import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
 import type { ValueType } from './DataExplorer'
-import { ManOutlined } from '@mui/icons-material'
 
-// Constants 
+// --- Constants ---
 const INITIAL_VIEW_STATE = {
     longitude: -120,
     latitude: 37.4,
@@ -54,7 +63,7 @@ const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as con
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
 
-// Types 
+// --- Types and interfaces ---
 type MapProps = {
     metricSelected: number
     gwlSelected: number
@@ -76,7 +85,7 @@ type GeocoderResult = {
     }
 }
 
-// Throttled function to fetch point data
+// --- Throttled function to fetch value at point ---
 const throttledFetchPoint = throttle(async (
     lng: number,
     lat: number,
@@ -110,30 +119,16 @@ const throttledFetchPoint = throttle(async (
     // Retrieve value at point
     try {
         const valueRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
-        //console.log(`Fetching mean res for lng: ${lng}, lat: ${lat} at ${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(path)}&variable=${variable}`)
         results.value = valueRes.data[gwlIndex]
-
-        //console.log('mean valueRes', valueRes)
-        //console.log('valueres.data', valueRes.data)
-        //console.log('gwlIndex', gwlIndex)
-        //console.log('results.mean', results.value)
 
         if (min_path) {
             const minRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(min_path)}&variable=${variable}`)
             results.min = minRes.data[gwlIndex]
-            //console.log('minRes', minRes)
-            //console.log('results.min', results.min)
         }
         if (max_path) {
             const maxRes = await fetchData(`${BASE_URL}/point/${lng},${lat}?url=${encodeURIComponent(max_path)}&variable=${variable}`)
             results.max = maxRes.data[gwlIndex]
-            //console.log('maxRes', maxRes)
-            //console.log('results.max', results.max)
         }
-
-        /*  if (results && (results.max && results.min) && (results.max < results.min)) {
-             console.log(`max is smaller than min at point: ${lng}, ${lat}`);
-         } */
 
     } catch (err) {
         console.error('Error fetching point data:', err)
@@ -146,15 +141,15 @@ const throttledFetchPoint = throttle(async (
     trailing: true  // Execute on the trailing edge (final call)
 })
 
+// --- Component function ---
 const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
     ({ metricSelected, gwlSelected, globalWarmingLevels, metrics, valueType }, ref) => {
-        // Refs
+        // --- Refs ---
         const mapRef = useRef<MapRef | null>(null)
         useImperativeHandle(ref, () => mapRef.current || undefined)
-
         const mapInstanceRef = useRef<mapboxgl.Map | null>(null)
 
-        // State
+        // --- State ---
         const [mounted, setMounted] = useState(false)
         const [isDragging, setIsDragging] = useState(false)
         const [mapLoaded, setMapLoaded] = useState(false)
@@ -170,7 +165,8 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
         const [isPopupLoading, setIsPopupLoading] = useState(false)
         const [isDataValid, setIsDataValid] = useState(false)
         const [showPopup, setShowPopup] = useState(false)
-        // Derived state variables 
+
+        // --- Derived state ---
         const currentVariableData: Metric = metrics[metricSelected]
         const paths = currentVariableData[`${valueType}`] as { colormap: string, mean: string; min_path?: string; max_path?: string; description: string; short_desc: string; variable: string, rescale: string }
 
@@ -184,7 +180,7 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
         const isLoading = !mounted || !tileJson
 
-        // Fetch tiles function
+        // --- Fetch tile JSON configuration from API ---
         const fetchTileJson = async () => {
             let colormap = paths.colormap.toLowerCase()
             const params = {
@@ -202,11 +198,6 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
 
             const url = `${BASE_URL}/WebMercatorQuad/tilejson.json?${queryString}`
 
-
-            // debug: log the request url
-            // console.log('fetchTileJson called with params', params)
-            // console.log('Fetching TileJSON with url:', url)
-
             try {
                 const response = await fetch(url)
                 if (!response.ok) {
@@ -220,18 +211,19 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }
 
-        // Effects
-
+        // --- Effects ---
         useEffect(() => {
             setMounted(true)
         }, [])
 
+        // Cleanup throttledFetchPoint
+        useEffect(() => {
+            return () => {
+                throttledFetchPoint.cancel()
+            }
+        }, [])
 
         useEffect(() => {
-            /*             if (initialLoadRef.current) {
-                            initialLoadRef.current = false
-                            return // Skip the first execution
-                        } */
             fetchTileJson()
         }, [metricSelected, gwlSelected, currentVariable, currentVariableData, currentGwl])
 
@@ -264,94 +256,21 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
             }
         }, [mapRef])
 
-        // Map functions 
-        const handleClick = (e: MapMouseEvent) => {
-            const { lng, lat } = e.lngLat
-            // Step 1: Hide current popup to trigger cleanup
-            setShowPopup(false)
-            setPopupInfo(null)
-
-            const newClick = { lng, lat, key: Date.now() }; // Add a key to ensure state update
-
-            setClickCoords(newClick)
-            setIsPopupLoading(true)
-
-            setShowPopup(true)
-            throttledFetchPoint(
-                lng,
-                lat,
-                paths.min_path || '',
-                paths.max_path || '',
-                paths.mean,
-                currentVariable,
-                currentGwl,
-                globalWarmingLevels,
-                info => {
-                    const isValid = info.value !== null || info.min !== null || info.max !== null
-
-                    if (isValid) {
-                        setIsDataValid(true)
-                        setPopupInfo({ longitude: lng, latitude: lat, ...info })
-                    } else {
-                        setIsDataValid(false)
-                    }
-
-                    setIsPopupLoading(false)
-                }
-            )
-
-        }
-
-
-        // Cleanup throttledFetchPoint
+        // --- Raster layer setup ---
         useEffect(() => {
-            return () => {
-                throttledFetchPoint.cancel()
-            }
-        }, [])
+            if (!mapLoaded || !tileJson || !mapInstanceRef.current) return
 
-
-        const handleMapError = (e: ErrorEvent) => {
-            const error = e.error as { status?: number; url?: string }
-            if (error.status === 404 && error.url?.includes('WebMercatorQuad')) {
-                return
-            }
-            console.error('Map error:', error)
-        }
-
-        const handleMapLoad = (e: { target: import('mapbox-gl').Map }) => {
-            if (!e.target) return
-            mapInstanceRef.current = e.target
-            setMapLoaded(true)
-
-
-            mapInstanceRef.current.getCanvas().style.cursor = 'pointer'
-
-            const mapContainer = document.getElementById('map')
-
-            if (mapContainer) {
-                const resizeObserver = new ResizeObserver(() => {
-                    if (mapRef.current) {
-                        mapRef.current.resize() // Resize the map when the container changes
-                    }
-                })
-                resizeObserver.observe(mapContainer)
-            }
-        }
-        useEffect(() => {
-            if (!mapLoaded || !tileJson || !mapInstanceRef.current) return;
-
-            const map = mapInstanceRef.current;
-            const sourceId = 'raster-source';
-            const layerId = 'tile-layer';
+            const map = mapInstanceRef.current
+            const sourceId = 'raster-source'
+            const layerId = 'tile-layer'
 
             // Clean up existing layer and source if present
             if (map.getLayer(layerId)) {
-                map.removeLayer(layerId);
+                map.removeLayer(layerId)
             }
 
             if (map.getSource(sourceId)) {
-                map.removeSource(sourceId);
+                map.removeSource(sourceId)
             }
 
             // Add new raster source
@@ -384,14 +303,81 @@ const MapboxMap = forwardRef<MapRef | undefined, MapProps>(
                 referenceLayer
             );
 
-            map.on('click', handleClick);
+            map.on('click', handleClick)
             return () => {
-                map.off('click', handleClick);
+                map.off('click', handleClick)
             };
 
-        }, [mapLoaded, tileJson]);
+        }, [mapLoaded, tileJson])
 
-        // Loading spinner
+        // --- Map click handler ---
+        const handleClick = (e: MapMouseEvent) => {
+            const { lng, lat } = e.lngLat
+            setShowPopup(false)
+            setPopupInfo(null)
+
+            const newClick = { lng, lat, key: Date.now() }
+
+            setClickCoords(newClick)
+            setIsPopupLoading(true)
+
+            setShowPopup(true)
+            throttledFetchPoint(
+                lng,
+                lat,
+                paths.min_path || '',
+                paths.max_path || '',
+                paths.mean,
+                currentVariable,
+                currentGwl,
+                globalWarmingLevels,
+                info => {
+                    const isValid = info.value !== null || info.min !== null || info.max !== null
+
+                    if (isValid) {
+                        setIsDataValid(true)
+                        setPopupInfo({ longitude: lng, latitude: lat, ...info })
+                    } else {
+                        setIsDataValid(false)
+                    }
+
+                    setIsPopupLoading(false)
+                }
+            )
+
+        }
+
+
+        // --- Map load callback ---
+        const handleMapLoad = (e: { target: import('mapbox-gl').Map }) => {
+            if (!e.target) return
+            mapInstanceRef.current = e.target
+            setMapLoaded(true)
+
+
+            mapInstanceRef.current.getCanvas().style.cursor = 'pointer'
+
+            const mapContainer = document.getElementById('map')
+
+            if (mapContainer) {
+                const resizeObserver = new ResizeObserver(() => {
+                    if (mapRef.current) {
+                        mapRef.current.resize() // Resize the map when the container changes
+                    }
+                })
+                resizeObserver.observe(mapContainer)
+            }
+        }
+
+        const handleMapError = (e: ErrorEvent) => {
+            const error = e.error as { status?: number; url?: string }
+            if (error.status === 404 && error.url?.includes('WebMercatorQuad')) {
+                return
+            }
+            console.error('Map error:', error)
+        }
+
+        // --- Conditional loading fallback ---
         if (!mounted) {
             return (
                 <Grid container sx={{ height: '100%', flexDirection: "column", flexWrap: "nowrap", flexGrow: 1 }}>

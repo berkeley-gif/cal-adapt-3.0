@@ -1,14 +1,23 @@
+// MapPopup
+// A styled popup component displayed on the Mapbox map.
+// Shows mean/min/max climate data values at the clicked point, or a loading spinner / no-data alert based on state.
 'use client'
 
+// --- React / Next imports ---
+import { useMemo } from 'react'
 import { Popup } from 'react-map-gl'
+
+// --- MUI Imports ---
 import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import IconButton from '@mui/material/IconButton'
 import Alert from '@mui/material/Alert'
-import LoadingSpinner from '../Global/LoadingSpinner'
 
+// --- Local Imports ---
+import LoadingSpinner from '../Global/LoadingSpinner'
 import '@/app/styles/dashboard/mapbox-map.scss'
 
+// --- Types and interfaces ---
 type MapPopupProps = {
     longitude: number
     latitude: number
@@ -21,7 +30,12 @@ type MapPopupProps = {
     isDataValid: boolean
 }
 
+// --- Component function ---
 export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupLoading, onClose, isDataValid }: MapPopupProps) => {
+    const formattedMin = useMemo(() => min?.toFixed(2), [min])
+    const formattedValue = useMemo(() => value.toFixed(2), [value])
+    const formattedMax = useMemo(() => max?.toFixed(2), [max])
+
     return (
         <Popup
             longitude={longitude}
@@ -29,6 +43,7 @@ export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupL
             closeButton={false}
             anchor="bottom"
             className="map-popup"
+            aria-label={`Popup with information for [${longitude},${latitude}`}
         >
             <div className="map-popup_container">
                 {isPopupLoading &&
@@ -50,26 +65,30 @@ export const MapPopup = ({ longitude, latitude, value, min, max, title, isPopupL
                             </IconButton>
                         </div>
                         <div className="values">
-                            <div className="value">
-                                <Typography variant="h5">
-                                    {min?.toFixed(2)}
-                                </Typography>
-                                <Typography variant="body2">
-                                    Min*
-                                </Typography>
-                            </div>
-                            <div className="value">
-                                <Typography variant="h4">
-                                    {value.toFixed(2)}
-                                </Typography>
-                                <Typography variant="body2">
-                                    Mean*
-                                </Typography>
-                            </div>
-                            {max &&
+                            {min != null &&
                                 <div className="value">
                                     <Typography variant="h5">
-                                        {max.toFixed(2)}
+                                        {formattedMin}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Min*
+                                    </Typography>
+                                </div>
+                            }
+                            {min != null &&
+                                <div className="value">
+                                    <Typography variant="h4">
+                                        {formattedValue}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Mean*
+                                    </Typography>
+                                </div>
+                            }
+                            {max != null &&
+                                <div className="value">
+                                    <Typography variant="h5">
+                                        {formattedMax}
                                     </Typography>
                                     <Typography variant="body2">
                                         Max*
