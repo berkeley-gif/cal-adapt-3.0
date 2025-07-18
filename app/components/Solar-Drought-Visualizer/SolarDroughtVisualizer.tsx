@@ -364,11 +364,11 @@ export default function SolarDroughtViz() {
     }, [])
 
     return (
-        <Box className="solar-drought-tool tool-container tool-container--padded" aria-label="Solar Drought Visualizer" role="region">
+        <Box className="solar-drought-tool tool-container tool-container--padded" aria-label="Renewables Visualizer" role="region">
 
             {/* Intro section */}
             <Box className="solar-drought-tool__intro" style={{ 'maxWidth': '860px' }}>
-                <Typography variant="h4" aria-label="Solar Drought Visualizer Title">Renewables Visualizer</Typography>
+                <Typography variant="h4" aria-label="Renewables Visualizer Title">Renewables Visualizer</Typography>
                 <Typography variant="body1" aria-label="Description of the tool">This tool shows when there are likely to be significant reductions in solar or wind energy availability in the future. To be more specific, it shows the number of wind or solar resource drought days (less than 40% average generation) per month throughout a representative 30-year period. </Typography>
                 <Typography variant="body1">
                     <a style={{ 'textDecoration': 'underline', 'display': 'inline-block' }} href="https://docs.google.com/document/d/1HRISAkRb0TafiCSCOq773iqt2TtT2A9adZqDTAShvhE/edit?usp=sharing" target="_blank" aria-label="Read more in the documentation">Read more in the documentation</a>

@@ -15,7 +15,7 @@ export const genCarouselData: CarouselData [] = [
         description: 'For wind and solar energy generation, explore what future availability looks like',
         image: '/img/homepage-carousels/renewables.png',
         imageAlt: 'Wind turbines to represent renewable data visualization',
-        link: '/dashboard/solar-drought-visualizer'
+        link: '/dashboard/renewables-visualizer'
     },
     {
         id: 3,

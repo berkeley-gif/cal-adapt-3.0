@@ -80,7 +80,7 @@ const ResponsiveSidebar = styled('div')(({ theme, open }: { theme: any; open: bo
 
 const menuItems = [
     { text: 'Data Download Tool', icon: <DatasetOutlinedIcon />, path: '/dashboard/data-download-tool' },
-    { text: 'Solar Drought Visualizer', icon: <WbSunnyOutlinedIcon />, path: '/dashboard/solar-drought-visualizer' },
+    { text: 'Renewables Visualizer', icon: <WbSunnyOutlinedIcon />, path: '/dashboard/renewables-visualizer' },
     { text: 'Data Explorer', icon: <MapOutlinedIcon />, path: '/dashboard/data-explorer' }
 ]
 
@@ -99,8 +99,8 @@ export default function Layout({ children }: LayoutProps) {
         switch (selectedPage) {
             case 'data-download-tool':
                 return <CalDashToolbar drawerWidth={drawerWidth} sidebarOpen={open} toolName='Data Download Tool' tooltipTitle='Review your selected package' iconSrc={packageIcon} iconAlt='Package icon that you can click on to see your current data package' />
-            case 'solar-drought-visualizer':
-                return <CalDashToolbar drawerWidth={drawerWidth} sidebarOpen={open} toolName='Solar Drought Visualizer' tooltipTitle='Change your visualization parameters' iconSrc={settingsIcon} iconAlt='Settings icon that you can click on to change your visualization' />
+            case 'renewables-visualizer':
+                return <CalDashToolbar drawerWidth={drawerWidth} sidebarOpen={open} toolName='Renewables Visualizer' tooltipTitle='Change your visualization parameters' iconSrc={settingsIcon} iconAlt='Settings icon that you can click on to change your visualization' />
             case 'data-explorer':
                 return <CalDashToolbar drawerWidth={drawerWidth} sidebarOpen={open} toolName='Data Explorer' />
             default:

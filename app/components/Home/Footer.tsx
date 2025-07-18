@@ -120,7 +120,7 @@ function Footer() {
                     <AccordionDetails>
                         <ul style={{ fontSize: '14px' }}>
                             <li><Link href="/dashboard/data-explorer" target="_blank" rel="noopener noreferrer">Data Explorer</Link></li>
-                            <li><Link href="/dashboard/solar-drought-visualizer" target="_blank" rel="noopener noreferrer">Renewables Visualizer</Link></li>
+                            <li><Link href="/dashboard/renewables-visualizer" target="_blank" rel="noopener noreferrer">Renewables Visualizer</Link></li>
                             <li><Link href="/dashboard/data-download-tool" target="_blank" rel="noopener noreferrer">Data Download Tool</Link></li>
                         </ul>
                     </AccordionDetails>

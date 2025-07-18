@@ -50,7 +50,7 @@ const rightMenuItems = [
             },
             {
                 label: 'Renewables Visualizer',
-                href: '/dashboard/solar-drought-visualizer'
+                href: '/dashboard/renewables-visualizer'
             },
             {
                 label: 'Data Explorer',
