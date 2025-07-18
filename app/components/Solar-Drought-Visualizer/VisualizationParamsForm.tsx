@@ -210,7 +210,7 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
                                 <HtmlTooltip
                                     textFragment={
                                         <React.Fragment>
-                                            <p>Turbine power curves from <a href="https://github.com/NREL/reV" target="_blank">NREL's Renewable Energy Potential (ReV) GitHub repo</a> were utilized.
+                                            <p>Turbine power curves from <a href="https://github.com/NREL/reV" target="_blank">NREL&apos;s Renewable Energy Potential (ReV) GitHub repo</a> were utilized.
                                             </p>
                                         </React.Fragment>
                                     }
