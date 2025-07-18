@@ -33,7 +33,7 @@ export default function MapTooltip({ interactionData, width, height }: TooltipPr
             <div className="map-tooltip" style={{ position: 'absolute', left: interactionData.xPos, top: interactionData.yPos }}>
                 {renderTooltipRow('Year', interactionData.xLabel)}
                 {renderTooltipRow('Month', interactionData.yLabel)}
-                {renderTooltipRow('Solar Drought days', interactionData.value)}
+                {renderTooltipRow('Selected resource drought days', interactionData.value)}
             </div>
         </div>
     )

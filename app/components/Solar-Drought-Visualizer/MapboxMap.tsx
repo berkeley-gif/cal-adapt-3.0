@@ -12,13 +12,14 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 
 import HtmlTooltip from '../Global/HtmlTooltip'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
 import '@/app/styles/dashboard/mapbox-map.scss'
 
 const INITIAL_VIEW_STATE = {
     longitude: -120.4542,
     latitude: 37.4,
-    zoom: 6
+    zoom: 7
 }
 
 const GRID_FILL_COLOR = 'rgba(118, 150, 190, 0.8)'
@@ -26,17 +27,20 @@ const GRID_FILL_COLOR = 'rgba(118, 150, 190, 0.8)'
 type Location = [number, number]
 
 type MapboxMapProps = {
-    locationSelected: Location | null;
-    setLocationSelected: (locationSelected: Location | null) => void;
-    mapMarker: [number, number] | null;
-    setMapMarker: (marker: [number, number] | null) => void;
-    width?: number;
-    height: number;
+    locationSelected: Location | null
+    setLocationSelected: (locationSelected: Location | null) => void
+    mapMarker: [number, number] | null
+    setMapMarker: (marker: [number, number] | null) => void
+    width?: number
+    height: number
+    maskStr: string
 }
 
 const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
-    ({ locationSelected, setLocationSelected, mapMarker, setMapMarker, height }, ref) => {
+    ({ locationSelected, setLocationSelected, mapMarker, setMapMarker, height, maskStr }, ref) => {
         const { photoConfigSelected } = usePhotoConfig()
+        const { installationSelected } = useInstallationPrms()
+
         const { resSelected } = useRes()
 
         const mapRef = useRef<MapRef | null>(null)
@@ -85,7 +89,7 @@ const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
                     setMapMarker([centroid[0], centroid[1]])
                     setLocationSelected(centroid as [number, number])
                 } else {
-                    console.log('No features found at the clicked location.')
+                    console.error('No features found at the clicked location.')
                 }
             }
         }
@@ -102,28 +106,18 @@ const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
         useEffect(() => {
             if (mapRef.current && mapLoaded) {
                 const map = mapRef.current as unknown as mapboxgl.Map // Type assertion to Mapbox GL JS Map
-                let maskAttribute: string
-                if (resSelected == 0) { // Solar resource selected 
-                    maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
-                } else if (resSelected == 1) { // Wind resource selected
-                    maskAttribute = 'wrdfmask' // Test mask for wind. TODO: add check for configuration 
-                } else {
-                    maskAttribute = ''
-                }
+                const maskAttribute = maskStr
 
                 if (map) {
                     map.setPaintProperty('grid', 'fill-color', [
                         'case',
-                        ['any',
-                            ['==', ['get', maskAttribute], 0],
-                            ['==', ['get', maskAttribute], false]
-                        ],
+                        ['==', ['get', maskAttribute], false],
                         GRID_FILL_COLOR,
                         'rgba(0, 0, 0, 0)'
                     ])
                 }
             }
-        }, [photoConfigSelected, resSelected, mapLoaded])
+        }, [photoConfigSelected, installationSelected, resSelected, mapLoaded])
 
         return (
             <div className="map-container" style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -138,7 +132,7 @@ const MapboxMap = forwardRef<MapRef | null, MapboxMapProps>(
                         onClick={handleMapClick}
                         scrollZoom={false}
                         attributionControl={false}
-                        minZoom={5}
+                        minZoom={7}
                     >
                         {mapMarker && (
                             <Marker

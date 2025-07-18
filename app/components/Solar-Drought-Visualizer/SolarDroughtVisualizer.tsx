@@ -34,6 +34,7 @@ import Typography from '@mui/material/Typography'
 import SidePanel from '@/app/components/Dashboard/RightSidepanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
 
 import { useDidMountEffect } from "@/app/utils/hooks"
@@ -44,6 +45,7 @@ import VizPrmsForm from './VisualizationParamsForm'
 import { ApiResponse } from './DataType'
 import '@/app/styles/dashboard/solar-drought-visualizer.scss'
 import LoadingSpinner from '../Global/LoadingSpinner'
+import { mask } from '@turf/turf'
 
 const MAP_HEIGHT = 550
 const HEATMAP_HEIGHT = 500
@@ -52,8 +54,10 @@ const ITEM_PADDING_TOP = 8
 
 type Location = [number, number]
 type apiParams = {
+    res: number,
     point: Location | null,
     configQueryStr: string,
+    installation: string
 }
 type LocationStatus = 'none' | 'data' | 'no-data'
 
@@ -83,54 +87,36 @@ export default function SolarDroughtViz() {
     // Context
     const { open, toggleOpen } = useSidepanel()
     const { resSelected, resList } = useRes()
-    const { photoConfigSelected, photoConfigList } = usePhotoConfig()
+    const { photoConfigSelected } = usePhotoConfig()
+    const { installationSelected, installationList } = useInstallationPrms()
 
     // Derived state
     const derivedConfigStr = useMemo(() => {
         return photoConfigSelected === 'Utility Configuration' ? 'srdu' : 'srdd'
     }, [photoConfigSelected])
 
-    // Parameters state
-    const [apiParams, setApiParams] = useState<apiParams>({ point: null, configQueryStr: 'srdu' })
-    const [isColorRev, setIsColorRev] = useState<boolean>(false)
+    const derivedInstallationStr = useMemo(() => {
+        return installationSelected == 0 ? 'wrdn' : 'wrdf'
+    }, [installationSelected])
 
+    const maskStr = useMemo(() => {
+        if (resSelected == 0) { // solar
+            return photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
+        } else if (resSelected == 1) { // wind
+            return installationSelected == 0 ? 'wrdnmask' : 'wrdfmask'
+        }
+
+    }, [resSelected, photoConfigSelected, installationSelected])
+
+
+    // Parameters state
+    const [apiParams, setApiParams] = useState<apiParams>({ res: resSelected, point: null, configQueryStr: derivedConfigStr, installation: derivedInstallationStr })
+    const [isColorRev] = useState<boolean>(false)
 
     const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
 
-    // If you would want to change the default GWL, check the desired index in globalWarmingLevelsList
-    const DEF_GWL = 1
-
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
-
-    // TO DO : FIGURE OUT THE RIGHT URL FOR THIS
-    async function fetchGWL() {
-        const params = {
-            url: 's3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/srdd/d03',
-        }
-
-        const queryString = Object.entries(params)
-            .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-            .join('&')
-
-        const url = `${BASE_URL}/info?${queryString}`
-
-        try {
-            const response = await fetch(url)
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status} ${response.statusText}`)
-            }
-            const data = await response.json()
-            const gwlData = data.dimensions.gwl.data
-            if (Array.isArray(gwlData) && gwlData.length > 0) {
-                setGlobalWarmingLevelsList(gwlData)
-                const defaultGwlIndex = gwlData.indexOf(DEF_GWL)
-                setGwlSelected(defaultGwlIndex)
-            }
-        } catch (error) {
-            console.error('Failed to fetch GWL:', error)
-        }
-    }
 
     // Map & location state
     const mapRef = useRef<any>(null)
@@ -149,22 +135,18 @@ export default function SolarDroughtViz() {
     const [isPointValid, setIsPointValid] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [useAltColor, setUseAltColor] = useState(false)
-    const [reverseColorMap, setReverseColorMap] = useState(false)
+    // TEMP: for color ramp options
+    const [currentColorMap] = useState<string>('PuBuGn')
 
     // UI state
     const [accordionExpanded, setAccordionExpanded] = useState(true)
 
-    // TEMP: for color ramp options
-    const [currentColorMap, setCurrentColorMap] = useState<string>('PuBuGn')
-
-    // Handlers
     const handleAccordionChange = () => {
         if (apiParams.point !== null) {
             setAccordionExpanded(!accordionExpanded)
         }
     }
-
-    // API PARAMS
+    
     const prevApiParams = useRef<apiParams>(apiParams)
 
     const onFormDataSubmit = useCallback(async () => {
@@ -175,39 +157,54 @@ export default function SolarDroughtViz() {
         setIsLoading(true)
 
         const [long, lat] = apiParams.point
-        //const s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/mon/${apiParams.configQueryStr}/d03`
-        const s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/${apiParams.configQueryStr}/d03`
-        const apiUrl = `https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com/point/${long},${lat}`
-        const queryParams = new URLSearchParams({
-            url: s3Url,
-            variable: apiParams.configQueryStr
-        })
-        const fullUrl = `${apiUrl}?${queryParams.toString()}`
 
-        try {
-            const res = await fetch(fullUrl)
-            if (!res.ok) {
-                console.error('Failed with status:', res.status)
-                setQueriedData(null)
-                setIsPointValid(false)
-                return
-            }
-            const newData = await res.json()
-            if (newData) {
-                setQueriedData(newData)
-                setIsPointValid(true)
-            } else {
-                setQueriedData(null)
-                setIsPointValid(false)
-            }
-        } catch (err) {
-            console.error('Fetch error:', err)
-            setQueriedData(null)
-            setIsPointValid(false)
-        } finally {
-            setIsLoading(false)
+        let s3Url = ''
+        let queryVar = ''
+        if (apiParams.res == 0) { // Solar
+            s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/${apiParams.configQueryStr}/d03`
+            queryVar = apiParams.configQueryStr
+        } else if (apiParams.res == 1) { // Wind 
+            s3Url = `s3://cadcat/tmp/era/wrf/cae/mm4mean/ssp370/gwl/${apiParams.installation}/d03`
+            queryVar = apiParams.installation
         }
-    }, [apiParams.point, apiParams.configQueryStr, locationStatus])
+
+        if (s3Url && queryVar) {
+            const apiUrl = `${BASE_URL}/point/${long},${lat}`
+            const queryParams = new URLSearchParams({
+                url: s3Url,
+                variable: queryVar
+            })
+
+            const fullUrl = `${apiUrl}?${queryParams.toString()}`
+
+            try {
+                const res = await fetch(fullUrl)
+                if (!res.ok) {
+                    console.error('Failed with status:', res.status)
+                    setQueriedData(null)
+                    setIsPointValid(false)
+                    return
+                }
+                const newData = await res.json()
+                if (newData) {
+                    setQueriedData(newData)
+                    setIsPointValid(true)
+                } else {
+                    setQueriedData(null)
+                    setIsPointValid(false)
+                }
+            } catch (err) {
+                console.error('Fetch error:', err)
+                setQueriedData(null)
+                setIsPointValid(false)
+            } finally {
+                setIsLoading(false)
+            }
+        } else {
+            console.error('No S3 Url or variable has been defined')
+        }
+
+    }, [apiParams, locationStatus])
 
     useEffect(() => {
         if (JSON.stringify(prevApiParams.current) !== JSON.stringify(apiParams)) {
@@ -246,37 +243,37 @@ export default function SolarDroughtViz() {
         }
     }, [heatmapContainer])
 
-    useEffect(() => {
-        // TO DO: Figure out a way to automate this with fetchGWL
-        setGlobalWarmingLevelsList(['0.8', '1.5', '2.5', '3'])
-        setGwlSelected(1)
-    }, [])
-
-    const checkLocationStatus = useCallback((point: Location | null, config: string) => {
+    const checkLocationStatus = useCallback((point: Location | null) => {
         if (!point) {
             setLocationStatus('none')
             return
         }
 
         if (mapRef.current) {
-            const mapboxPoint = mapRef.current.project(point)
-            const features = mapRef.current.queryRenderedFeatures(mapboxPoint, {
+            const lngLat = { lng: point[0], lat: point[1] }
+            const screenPoint = mapRef.current.project(lngLat)
+            const features = mapRef.current.queryRenderedFeatures(screenPoint, {
                 layers: ['grid']
             })
 
             if (features && features.length > 0) {
                 const selectedFeature = features[0]
-                const maskAttribute = config === 'Utility Configuration' ? 'srdumask' : 'srddmask'
-                const gridValue = selectedFeature.properties?.[maskAttribute]
+                const maskAttribute = maskStr
 
-                const newStatus = gridValue === 1 ? 'data' : 'no-data'
-                setLocationStatus(newStatus)
+                if (maskAttribute) {
+                    const gridValue = selectedFeature.properties?.[maskAttribute]
 
-                if (newStatus === 'data') {
-                    onFormDataSubmit()
+                    const newStatus = gridValue ? 'data' : 'no-data'
+                    setLocationStatus(newStatus)
+
+                    if (newStatus === 'data') {
+                        onFormDataSubmit()
+                    } else {
+                        setQueriedData(null)
+                        setIsPointValid(false)
+                    }
                 } else {
-                    setQueriedData(null)
-                    setIsPointValid(false)
+                    console.error('no mask attribute has been set')
                 }
             } else {
                 setLocationStatus('no-data')
@@ -289,17 +286,27 @@ export default function SolarDroughtViz() {
     // Check location status when photoConfigSelected or point changes
     useEffect(() => {
         if (apiParams.point) {
-            checkLocationStatus(apiParams.point, photoConfigSelected)
+            checkLocationStatus(apiParams.point)
         }
-    }, [photoConfigSelected, apiParams.point, checkLocationStatus])
+    }, [apiParams, checkLocationStatus])
+
+    useEffect(() => {
+        updateApiParams({ res: resSelected })
+    }, [resSelected])
 
     // Update apiParams when configStr changes (including when photoConfigSelected changes)
     useEffect(() => {
-        setApiParams(prevParams => ({
-            ...prevParams,
+        updateApiParams({
             configQueryStr: derivedConfigStr
-        }))
+        })
     }, [derivedConfigStr])
+
+    // Update apiParams when installation changes (including when installationSelected changes)
+    useEffect(() => {
+        updateApiParams({
+            installation: derivedInstallationStr
+        })
+    }, [derivedInstallationStr])
 
     function setLocationSelected(point: Location | null) {
         if (!point) {
@@ -317,15 +324,21 @@ export default function SolarDroughtViz() {
 
             if (features && features.length > 0) {
                 const selectedFeature = features[0]
-                const maskAttribute = photoConfigSelected === 'Utility Configuration' ? 'srdumask' : 'srddmask'
-                const gridValue = selectedFeature.properties?.[maskAttribute]
+                const maskAttribute = maskStr
 
-                // Set status based on grid value
-                setLocationStatus(gridValue === 1 ? 'data' : 'no-data')
-                updateApiParams({ point })
+                if (maskAttribute) {
+                    const gridValue = selectedFeature.properties?.[maskAttribute]
 
-                // Collapse accordion on selection
-                setAccordionExpanded(false)
+                    // Set status based on grid value
+                    setLocationStatus(gridValue ? 'data' : 'no-data')
+                    updateApiParams({ point })
+
+                    // Collapse accordion on selection
+                    setAccordionExpanded(false)
+                } else {
+                    console.error('no mask attribute has been set')
+                }
+
             }
         }
     }
@@ -337,10 +350,6 @@ export default function SolarDroughtViz() {
         }))
     }
 
-    const handleColorChange = () => {
-        setUseAltColor((prev) => !prev)
-    }
-
     const handleSummaryClick = (event: React.MouseEvent) => {
         if (apiParams.point === null) {
             event.preventDefault()
@@ -348,13 +357,19 @@ export default function SolarDroughtViz() {
         }
     }
 
+    useEffect(() => {
+        // TO DO: Figure out a way to automate this with fetchGWL
+        setGlobalWarmingLevelsList(['0.8', '1.5', '2.5', '3'])
+        setGwlSelected(1)
+    }, [])
+
     return (
         <Box className="solar-drought-tool tool-container tool-container--padded" aria-label="Solar Drought Visualizer" role="region">
 
             {/* Intro section */}
             <Box className="solar-drought-tool__intro" style={{ 'maxWidth': '860px' }}>
-                <Typography variant="h4" aria-label="Solar Drought Visualizer Title">Solar Drought Visualizer</Typography>
-                <Typography variant="body1" aria-label="Description of the tool">This tool shows when there are likely to be significant reductions in solar energy availability in the future. To be more specific, it shows the number of solar resource drought days (less than 40% average generation) per month throughout a representative 30-year period. </Typography>
+                <Typography variant="h4" aria-label="Solar Drought Visualizer Title">Renewables Visualizer</Typography>
+                <Typography variant="body1" aria-label="Description of the tool">This tool shows when there are likely to be significant reductions in solar or wind energy availability in the future. To be more specific, it shows the number of wind or solar resource drought days (less than 40% average generation) per month throughout a representative 30-year period. </Typography>
                 <Typography variant="body1">
                     <a style={{ 'textDecoration': 'underline', 'display': 'inline-block' }} href="https://docs.google.com/document/d/1HRISAkRb0TafiCSCOq773iqt2TtT2A9adZqDTAShvhE/edit?usp=sharing" target="_blank" aria-label="Read more in the documentation">Read more in the documentation</a>
                 </Typography>
@@ -374,10 +389,19 @@ export default function SolarDroughtViz() {
                                 <Typography className="option-group__title" variant="body2" aria-label="Global Warming Level">Global Warming Level</Typography>
                                 <Typography variant="body1" aria-label={`Selected Global Warming Level: ${globalWarmingLevelsList[gwlSelected]}`}>{globalWarmingLevelsList[gwlSelected]}°</Typography>
                             </Box>
-                            <Box className="flex-params__item">
-                                <Typography className="option-group__title" variant="body2" aria-label="Photovoltaic Configuration">Photovoltaic Configuration</Typography>
-                                <Typography variant="body1" aria-label={`Selected Photovoltaic Configuration: ${photoConfigSelected}`}>{photoConfigSelected}</Typography>
-                            </Box>
+                            {resSelected == 0 && // Solar configuration
+                                <Box className="flex-params__item">
+                                    <Typography className="option-group__title" variant="body2" aria-label="Photovoltaic Configuration">Photovoltaic Configuration</Typography>
+                                    <Typography variant="body1" aria-label={`Selected Photovoltaic Configuration: ${photoConfigSelected}`}>{photoConfigSelected}</Typography>
+                                </Box>
+                            }
+                            {resSelected == 1 && // Wind installation
+                                <Box className="flex-params__item">
+                                    <Typography className="option-group__title" variant="body2" aria-label="Installation type">Installation Design Parameters</Typography>
+                                    <Typography variant="body1" aria-label={`Selected Installation Design: ${installationList[installationSelected]}`}>{installationList[installationSelected]}</Typography>
+                                </Box>
+                            }
+
                             <Box className="flex-params__item">
                                 <Typography className='inline' variant="subtitle1" aria-label="Edit parameters">Edit parameters</Typography>
                                 <IconButton className='inline' onClick={toggleOpen} aria-label="Open settings">
@@ -526,6 +550,7 @@ export default function SolarDroughtViz() {
                                     setLocationSelected={setLocationSelected}
                                     height={MAP_HEIGHT}
                                     aria-label="Map for selecting location of heatmap data"
+                                    maskStr={maskStr}
                                 />
                             </Box>
                         </AccordionDetails>

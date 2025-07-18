@@ -7,7 +7,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react'
 import Renderer from '@/app/components/Solar-Drought-Visualizer/Heatmap/Rendererer'
 import MapTooltip from '@/app/components/Solar-Drought-Visualizer/Heatmap/MapTooltip'
 
-import { ColorLegend } from "../ColorLegend"
+import { ColorLegend } from "./ColorLegend"
 import '@/app/styles/dashboard/heatmap.scss'
 
 const colorSwitchLabel = { inputProps: { 'aria-label': 'Color Palette switch' } };
@@ -88,7 +88,7 @@ export default function Heatmap({ width, height, data, useAltColor, currentColor
             />
             <MapTooltip interactionData={hoveredCell} width={width} height={height} />
             <div className="color-legend" style={{ width: width }}>
-                <ColorLegend width={400} height={100} colorScale={colorScale} min={min} max={max} />
+                <ColorLegend width={405} height={100} colorScale={colorScale} min={min} max={max} />
 
             </div>
         </div>

@@ -90,7 +90,7 @@ export const ColorLegend = ({
                     {allTicks}
                 </svg>
             </div>
-            <Typography style={{ marginLeft: '12px' }} variant="subtitle1">Average number of solar resource drought days</Typography>
+            <Typography variant="subtitle1">Average number of selected resource drought days</Typography>
         </div>
     )
 }

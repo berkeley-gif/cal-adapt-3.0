@@ -3,10 +3,10 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type PhotoConfigContextType = {
-    photoConfigSelected: string;
-    setPhotoConfigSelected: (value: string) => void;
-    photoConfigList: string[];
-};
+    photoConfigSelected: string
+    setPhotoConfigSelected: (value: string) => void
+    photoConfigList: string[]
+}
 
 const defaultPhotoConfigList = ['Utility Configuration', 'Distributed Configuration']
 

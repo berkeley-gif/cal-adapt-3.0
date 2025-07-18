@@ -15,6 +15,7 @@ import FormLabel from '@mui/material/FormLabel'
 import HtmlTooltip from '../Global/HtmlTooltip'
 
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
+import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
 import { tooltipsList } from '@/app/lib/tooltips'
 
@@ -42,9 +43,10 @@ const MenuProps: any = {
 }
 
 interface FormFieldErrorStates {
-    globalWarming: boolean;
-    photoConfig: boolean;
-    resSelected: boolean;
+    globalWarming: boolean
+    photoConfig: boolean
+    installation: boolean
+    resSelected: boolean
 }
 
 interface VizFormProps {
@@ -63,11 +65,13 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
     toggleOpen,
 }) => {
     const { photoConfigSelected, setPhotoConfigSelected, photoConfigList } = usePhotoConfig()
+    const { installationSelected, setInstallationSelected, installationList } = useInstallationPrms()
     const { resSelected, setResSelected, resList } = useRes()
     const [formErrorState, setFormErrorState] = useState<FormFieldErrorStates>({
         globalWarming: false,
         photoConfig: false,
         resSelected: false,
+        installation: false
     })
 
     const handleSubmit = () => {
@@ -159,43 +163,84 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
 
                     </div>
                 </div>
-                <div className="container container--white">
-                    <div className="option-group">
-                        <div className="option-group__title">
-                            <Typography className="option-group__title" variant="body2">Photovoltaic Configuration</Typography>
-                            <HtmlTooltip
-                                textFragment={
-                                    <React.Fragment>
-                                        <p>The set of photovoltaic system design parameters. &quot;Utility&quot; is based on typical installations maintained by utility companies, while &quot;Distributed&quot; corresponds to a residential rooftop installation.
-                                        </p>
-                                    </React.Fragment>
-                                }
-                                iconFragment={<InfoOutlinedIcon />}
-                                TransitionComponent={Fade}
-                                TransitionProps={{ timeout: 600 }}
-                                placement="right-end"
-                            />
+                {(resSelected === 0) && // Solar resource - display configuration options
+                    (<div className="container container--white">
+                        <div className="option-group">
+                            <div className="option-group__title">
+                                <Typography className="option-group__title" variant="body2">Photovoltaic Configuration</Typography>
+                                <HtmlTooltip
+                                    textFragment={
+                                        <React.Fragment>
+                                            <p>The set of photovoltaic system design parameters. &quot;Utility&quot; is based on typical installations maintained by utility companies, while &quot;Distributed&quot; corresponds to a residential rooftop installation.
+                                            </p>
+                                        </React.Fragment>
+                                    }
+                                    iconFragment={<InfoOutlinedIcon />}
+                                    TransitionComponent={Fade}
+                                    TransitionProps={{ timeout: 600 }}
+                                    placement="right-end"
+                                />
+                            </div>
+
+                            <FormControl>
+                                <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
+                                <RadioGroup
+                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                    name="controlled-radio-buttons-group"
+                                    value={photoConfigSelected}
+                                    onChange={(event: any) => {
+                                        setPhotoConfigSelected(event.target.value as string)
+                                    }}
+                                >
+                                    {photoConfigList.map((photoConfig) => (
+                                        <FormControlLabel value={photoConfig} key={photoConfig} control={<Radio />} label={photoConfig} />
+                                    ))}
+
+                                </RadioGroup>
+                            </FormControl>
+
                         </div>
+                    </div>)
+                }
+                {(resSelected === 1) && // Wind resource - display installation options
+                    (<div className="container container--white">
+                        <div className="option-group">
+                            <div className="option-group__title">
+                                <Typography className="option-group__title" variant="body2">Installation Design Parameters</Typography>
+                                <HtmlTooltip
+                                    textFragment={
+                                        <React.Fragment>
+                                            <p>Turbine power curves from <a href="https://github.com/NREL/reV" target="_blank">NREL's Renewable Energy Potential (ReV) GitHub repo</a> were utilized.
+                                            </p>
+                                        </React.Fragment>
+                                    }
+                                    iconFragment={<InfoOutlinedIcon />}
+                                    TransitionComponent={Fade}
+                                    TransitionProps={{ timeout: 600 }}
+                                    placement="right-end"
+                                />
+                            </div>
 
-                        <FormControl>
-                            <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
-                            <RadioGroup
-                                aria-labelledby="demo-controlled-radio-buttons-group"
-                                name="controlled-radio-buttons-group"
-                                value={photoConfigSelected}
-                                onChange={(event: any) => {
-                                    setPhotoConfigSelected(event.target.value as string)
-                                }}
-                            >
-                                {photoConfigList.map((photoConfig) => (
-                                    <FormControlLabel value={photoConfig} key={photoConfig} control={<Radio />} label={photoConfig} />
-                                ))}
+                            <FormControl>
+                                <FormLabel id="demo-controlled-radio-buttons-group"></FormLabel>
+                                <RadioGroup
+                                    aria-labelledby="demo-controlled-radio-buttons-group"
+                                    name="controlled-radio-buttons-group"
+                                    value={installationSelected}
+                                    onChange={(event: any) => {
+                                        setInstallationSelected(event.target.value as number)
+                                    }}
+                                >
+                                    {installationList.map((installationOpt, idx) => (
+                                        <FormControlLabel value={idx} key={idx} control={<Radio />} label={installationOpt} />
+                                    ))}
 
-                            </RadioGroup>
-                        </FormControl>
+                                </RadioGroup>
+                            </FormControl>
 
-                    </div>
-                </div>
+                        </div>
+                    </div>)
+                }
 
                 {/**                <div className="cta">
                     <Button onClick={() => {
