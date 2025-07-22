@@ -31,21 +31,19 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Unstable_Grid2'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+
 import SidePanel from '@/app/components/Dashboard/RightSidepanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
 
-import { useDidMountEffect } from "@/app/utils/hooks"
-
 import MapboxMap from '@/app/components/Solar-Drought-Visualizer/MapboxMap'
 import Heatmap from '@/app/components/Solar-Drought-Visualizer/Heatmap/Heatmap'
 import VizPrmsForm from './VisualizationParamsForm'
-import { ApiResponse } from './DataType'
 import '@/app/styles/dashboard/solar-drought-visualizer.scss'
 import LoadingSpinner from '../Global/LoadingSpinner'
-import { mask } from '@turf/turf'
+import { gwlYearEstimateData } from '@/app/lib/renewables-visualizer/gwl-year-estimates'
 
 const MAP_HEIGHT = 550
 const HEATMAP_HEIGHT = 500
@@ -146,7 +144,7 @@ export default function SolarDroughtViz() {
             setAccordionExpanded(!accordionExpanded)
         }
     }
-    
+
     const prevApiParams = useRef<apiParams>(apiParams)
 
     const onFormDataSubmit = useCallback(async () => {
@@ -186,6 +184,7 @@ export default function SolarDroughtViz() {
                     return
                 }
                 const newData = await res.json()
+                console.log('newData', newData)
                 if (newData) {
                     setQueriedData(newData)
                     setIsPointValid(true)
@@ -358,9 +357,8 @@ export default function SolarDroughtViz() {
     }
 
     useEffect(() => {
-        // TO DO: Figure out a way to automate this with fetchGWL
-        setGlobalWarmingLevelsList(['0.8', '1.5', '2.5', '3'])
-        setGwlSelected(1)
+        setGlobalWarmingLevelsList(gwlYearEstimateData.map(gwl => gwl.name))
+        setGwlSelected(1) // 1.5°
     }, [])
 
     return (
@@ -412,7 +410,7 @@ export default function SolarDroughtViz() {
                         {/* Global warming level information */}
                         {queriedData && !isLoading && isPointValid &&
                             <Box className="alerts" sx={{ maxWidth: '100%' }}>
-                                <Alert variant="filled" severity="info" color="info" aria-label="Global models estimate information">Global models estimate that 2° global warming levels (GWL) will be reached between <strong>2037</strong> and <strong>2061</strong>
+                                <Alert variant="filled" severity="info" color="info" aria-label="Global models estimate information">Global models estimate that {gwlYearEstimateData[gwlSelected].name}° global warming levels (GWL) will be reached between <strong>{gwlYearEstimateData[gwlSelected].estimatedStartYear}</strong> and <strong>{gwlYearEstimateData[gwlSelected].estimatedEndYear}</strong>
                                     <Box className="cta">
                                         <Button variant="contained" target="_blank" href="https://cal-adapt.org/blog/understanding-warming-levels" aria-label="Learn more about GWL">Learn more about GWL</Button>
                                     </Box>
