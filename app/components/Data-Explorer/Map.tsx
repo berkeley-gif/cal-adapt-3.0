@@ -43,7 +43,7 @@ import type { Metric } from '@/app/lib/data-explorer/metrics'
 import { MapLegend } from './MapLegend'
 import { MapPopup } from './MapPopup'
 import LoadingSpinner from '../Global/LoadingSpinner'
-import GeocoderControl from '../Solar-Drought-Visualizer/geocoder-control'
+import GeocoderControl from '../Renewables-Visualizer/geocoder-control'
 import type { ValueType } from './DataExplorer'
 
 // --- Constants ---

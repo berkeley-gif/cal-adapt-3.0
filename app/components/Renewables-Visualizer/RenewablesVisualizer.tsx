@@ -38,10 +38,10 @@ import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
 
-import MapboxMap from '@/app/components/Solar-Drought-Visualizer/MapboxMap'
-import Heatmap from '@/app/components/Solar-Drought-Visualizer/Heatmap/Heatmap'
+import MapboxMap from '@/app/components/Renewables-Visualizer/MapboxMap'
+import Heatmap from '@/app/components/Renewables-Visualizer/Heatmap/Heatmap'
 import VizPrmsForm from './VisualizationParamsForm'
-import '@/app/styles/dashboard/solar-drought-visualizer.scss'
+import '@/app/styles/dashboard/renewables-visualizer.scss'
 import LoadingSpinner from '../Global/LoadingSpinner'
 import { gwlYearEstimateData } from '@/app/lib/renewables-visualizer/gwl-year-estimates'
 
@@ -81,7 +81,7 @@ const MenuProps: any = {
     variant: "menu"
 }
 
-export default function SolarDroughtViz() {
+export default function renewablesViz() {
     // Context
     const { open, toggleOpen } = useSidepanel()
     const { resSelected, resList } = useRes()
@@ -184,7 +184,6 @@ export default function SolarDroughtViz() {
                     return
                 }
                 const newData = await res.json()
-                console.log('newData', newData)
                 if (newData) {
                     setQueriedData(newData)
                     setIsPointValid(true)
@@ -362,10 +361,10 @@ export default function SolarDroughtViz() {
     }, [])
 
     return (
-        <Box className="solar-drought-tool tool-container tool-container--padded" aria-label="Renewables Visualizer" role="region">
+        <Box className="renewables-tool tool-container tool-container--padded" aria-label="Renewables Visualizer" role="region">
 
             {/* Intro section */}
-            <Box className="solar-drought-tool__intro" style={{ 'maxWidth': '860px' }}>
+            <Box className="renewables-tool__intro" style={{ 'maxWidth': '860px' }}>
                 <Typography variant="h4" aria-label="Renewables Visualizer Title">Renewables Visualizer</Typography>
                 <Typography variant="body1" aria-label="Description of the tool">This tool shows when there are likely to be significant reductions in solar or wind energy availability in the future. To be more specific, it shows the number of wind or solar resource drought days (less than 40% average generation) per month throughout a representative 30-year period. </Typography>
                 <Typography variant="body1">
@@ -510,7 +509,7 @@ export default function SolarDroughtViz() {
                         {locationStatus === 'data' && (
                             <Box
                                 ref={heatmapContainerRef}
-                                className={'solar-drought-tool__heatmap' + (isLoading ? ' loading-screen' : '')}
+                                className={'renewables-tool__heatmap' + (isLoading ? ' loading-screen' : '')}
                                 style={{ display: accordionExpanded ? 'none' : 'block' }}
                             >
                                 {isLoading && (
@@ -539,7 +538,7 @@ export default function SolarDroughtViz() {
                         <AccordionDetails
                             className="custom-accordion-details"
                         >
-                            <Box className="solar-drought-tool__map">
+                            <Box className="renewables-tool__map">
                                 <MapboxMap
                                     mapMarker={mapMarker}
                                     setMapMarker={setMapMarker}
@@ -557,7 +556,7 @@ export default function SolarDroughtViz() {
             </Accordion >
 
             {/** Sidepanel */}
-            < Box className="solar-drought-tool__sidepanel" >
+            < Box className="renewables-tool__sidepanel" >
                 <SidePanel
                     anchor="right"
                     variant="temporary"

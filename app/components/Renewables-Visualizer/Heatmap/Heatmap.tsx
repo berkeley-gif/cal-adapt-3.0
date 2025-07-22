@@ -4,8 +4,8 @@ import * as d3 from 'd3'
 import { ScaleSequential } from 'd3-scale';
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 
-import Renderer from '@/app/components/Solar-Drought-Visualizer/Heatmap/Rendererer'
-import MapTooltip from '@/app/components/Solar-Drought-Visualizer/Heatmap/MapTooltip'
+import Renderer from '@/app/components/Renewables-Visualizer/Heatmap/Rendererer'
+import MapTooltip from '@/app/components/Renewables-Visualizer/Heatmap/MapTooltip'
 
 import { ColorLegend } from "./ColorLegend"
 import '@/app/styles/dashboard/heatmap.scss'
