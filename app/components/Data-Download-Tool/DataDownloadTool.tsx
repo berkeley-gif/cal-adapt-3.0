@@ -154,7 +154,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
 
     // --- Data download functions ---
     const onFormDataSubmit = async () => {
-        const apiUrl = 'https://d3pv76zq0ekj5q.cloudfront.net/search'
+        const apiUrl = 'https://stac.cal-adapt.org/search'
 
         const queryParams = new URLSearchParams({
             limit: '3480',

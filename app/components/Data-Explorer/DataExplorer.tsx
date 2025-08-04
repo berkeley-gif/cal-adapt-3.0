@@ -22,17 +22,12 @@ import { metricsList } from '@/app/lib/data-explorer/metrics'
 // --- Types and interfaces ---
 export type ValueType = 'abs' | 'del'
 
-// TODO: Add the correct data information here. Avoid any
-type DataExplorerProps = {
-    data: any;
-}
-
 // --- Constants ---
-const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+const BASE_URL = 'https://map.cal-adapt.org' as const
 const DEF_GWL = 1.5
 
 // --- Component function ---
-export default function DataExplorer({ data }: DataExplorerProps) {
+export default function DataExplorer() {
     // --- Drawer: only run this when you're adding leftDrawer functionality ---
     const { toggleLeftDrawer } = useLeftDrawer()
 

@@ -59,7 +59,7 @@ const MAP_BOUNDS: LngLatBoundsLike = [
 ]
 
 const THROTTLE_DELAY = 100 as const
-const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+const BASE_URL = 'https://map.cal-adapt.org' as const
 const RASTER_TILE_LAYER_OPACITY = 0.8 as const
 
 

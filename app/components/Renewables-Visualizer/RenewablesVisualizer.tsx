@@ -118,7 +118,7 @@ export default function RenewablesViz() {
     const [apiParams, setApiParams] = useState<apiParams>({ res: resSelected, point: null, configQueryStr: derivedConfigStr, installation: derivedInstallationStr })
     const [isColorRev] = useState<boolean>(false)
 
-    const BASE_URL = 'https://2fxwkf3nc6.execute-api.us-west-2.amazonaws.com' as const
+    const BASE_URL = 'https://map.cal-adapt.org' as const
 
     const [gwlSelected, setGwlSelected] = useState<number>(0)
     const [globalWarmingLevelsList, setGlobalWarmingLevelsList] = useState<string[]>([])
