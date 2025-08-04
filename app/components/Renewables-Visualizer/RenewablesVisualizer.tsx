@@ -1,7 +1,11 @@
+// RenewablesVisualizer:
+// This is the main component for the Renewables Visualizer tool. It displays a map for selecting a location, and once a location is selected, shows a heatmap of future resource droughts (solar or wind). It integrates Mapbox for location selection, a collapsible accordion, heatmap rendering, and a sidepanel with parameters.
+
 'use client'
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 
+// --- Material UI imports ---
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
@@ -13,13 +17,6 @@ import Fade from '@mui/material/Fade'
 import CloseIcon from '@mui/icons-material/Close'
 import EditLocationOutlinedIcon from '@mui/icons-material/EditLocationOutlined'
 import Alert from '@mui/material/Alert'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import { FormControl } from '@mui/material'
-import ListItemText from '@mui/material/ListItemText'
-import MenuItem from '@mui/material/MenuItem'
 
 declare module '@mui/material/Alert' {
     interface AlertPropsVariantOverrides {
@@ -32,24 +29,31 @@ import Grid from '@mui/material/Unstable_Grid2'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
+// --- Local component imports ---
 import SidePanel from '@/app/components/Dashboard/RightSidepanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
-
 import MapboxMap from '@/app/components/Renewables-Visualizer/MapboxMap'
 import Heatmap from '@/app/components/Renewables-Visualizer/Heatmap/Heatmap'
 import VizPrmsForm from './VisualizationParamsForm'
 import '@/app/styles/dashboard/renewables-visualizer.scss'
 import LoadingSpinner from '../Global/LoadingSpinner'
+
+// --- Static data imports ---
 import { gwlYearEstimateData } from '@/app/lib/renewables-visualizer/gwl-year-estimates'
 
+// --- Constants ---
 const MAP_HEIGHT = 550
 const HEATMAP_HEIGHT = 500
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
 
+// --- Types and interfaces ---
+
+// Type alias for coordinates
+// Format: [longitude, latitude]
 type Location = [number, number]
 type apiParams = {
     res: number,
@@ -59,10 +63,12 @@ type apiParams = {
 }
 type LocationStatus = 'none' | 'data' | 'no-data'
 
+// Format of returned data from API
 interface QueriedData {
     data: number[][]
 }
 
+// Dropdown menu behavior
 const MenuProps: any = {
     PaperProps: {
         style: {
@@ -81,7 +87,8 @@ const MenuProps: any = {
     variant: "menu"
 }
 
-export default function renewablesViz() {
+// --- Component function ---
+export default function RenewablesViz() {
     // Context
     const { open, toggleOpen } = useSidepanel()
     const { resSelected, resList } = useRes()
@@ -132,7 +139,7 @@ export default function renewablesViz() {
     const [queriedData, setQueriedData] = useState<QueriedData | null>(null)
     const [isPointValid, setIsPointValid] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [useAltColor, setUseAltColor] = useState(false)
+
     // TEMP: for color ramp options
     const [currentColorMap] = useState<string>('PuBuGn')
 
@@ -147,6 +154,7 @@ export default function renewablesViz() {
 
     const prevApiParams = useRef<apiParams>(apiParams)
 
+    // Retrieve heatmap data
     const onFormDataSubmit = useCallback(async () => {
         if (!apiParams.point || locationStatus !== 'data') {
             return
@@ -523,7 +531,6 @@ export default function renewablesViz() {
                                         height={HEATMAP_HEIGHT}
                                         data={queriedData}
                                         gwlSelected={gwlSelected}
-                                        useAltColor={useAltColor}
                                         aria-label="Heatmap visualization"
                                         currentColorMap={currentColorMap}
                                         isColorRev={isColorRev}

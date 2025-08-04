@@ -6,7 +6,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 This project uses Node 20.9.0
 
-Run ```nvm use 20.9.0``` 
+Run ```nvm use 20``` 
 
 First, run the development server:
 
@@ -22,11 +22,13 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You can start editing the homepage by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Tool management
+
+The tools are stored in their specific folders under ```components/```
 
 ### Tool Carousel
 
@@ -34,6 +36,16 @@ Located in ```components/home/ToolCarousel.tsx```
 
 Whenever a new metric within a tool or a tool is added, this component needs to be updated accordingly. Check for the data from where the instance of the tool is retrieving its data, and add the values accordingly. 
 
+## Context management
+All context code is stored under ```context/```
+
+## Global components
+
+### HTML Tooltip
+Can be used for more complex tooltips beyond MUI's default. Links, images and any HTML content can be added
+
+### LoadingSpinner
+This component was written to create an optimized version of thea loading spinner
 
 ## Learn More
 

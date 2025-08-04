@@ -18,7 +18,6 @@ type HeatmapProps = {
     width: number;
     height: number;
     data: any;
-    useAltColor: boolean;
     currentColorMap: string;
     isColorRev: boolean;
     gwlSelected: number;
@@ -32,35 +31,14 @@ export type InteractionData = {
     value: number;
 }
 
-export default function Heatmap({ width, height, data, useAltColor, currentColorMap, isColorRev, gwlSelected }: HeatmapProps) {
+export default function Heatmap({ width, height, data, currentColorMap, isColorRev, gwlSelected }: HeatmapProps) {
     // cell that is being hovered, for tooltips
     const [hoveredCell, setHoveredCell] = useState<InteractionData | null>(null)
 
     // Flatten data and filter out undefined values
-    //const flatData: number[] = data?.data?.flat().filter((d: number | undefined): d is number => d !== undefined)
     const flatData: number[] = data?.data[gwlSelected].flat().filter((d: number | undefined): d is number => d !== undefined)
     const min = d3.min(flatData) as number | null ?? 0
     const max = d3.max(flatData) as number | null ?? 1
-
-    /*     const defColorScale = useMemo(() => {
-            return d3
-                .scaleSequential<string>()
-                .interpolator(d3.interpolateRgbBasis(['#FD6A55', '#FEAB7D', '#EEE8DA']))
-                .domain([min ?? 0, max ?? 1]);
-        }, [min, max])
-    
-        const altColorScale = useMemo(() => {
-            return d3
-                .scaleSequential<string>()
-                .interpolator(d3.interpolateRgbBasis(['#e6550d', '#fdae6b', '#fee6ce']))
-                .domain([min ?? 0, max ?? 1]);
-        }, [min, max])
-    
-        // Dynamically select color scale
-        const colorScale = useMemo(() => (useAltColor ? altColorScale : defColorScale), [useAltColor, defColorScale, altColorScale]);
-     */
-
-    // Temp: for color scale selection
 
     // TEMP: To try out different color maps
 

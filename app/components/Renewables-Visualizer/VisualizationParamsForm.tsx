@@ -1,5 +1,12 @@
+// VizPrmsForm
+// Component for selecting parameters that define the visualization in the Renewables Visualizer.
+// Allows user to select the resource type (solar or wind), global warming level (GWL), and either photovoltaic configuration (for solar)
+// or wind installation design parameters (for wind).
+// Uses contexts for shared state across the app.
+
 import React, { useState, useEffect } from 'react'
 
+// --- MUI Imports ---
 import Typography from '@mui/material/Typography'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Fade from '@mui/material/Fade'
@@ -12,14 +19,19 @@ import RadioGroup from '@mui/material/RadioGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
 
+// --- Local Components ---
 import HtmlTooltip from '../Global/HtmlTooltip'
 
+// --- Context ---
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
 import { useRes } from '@/app/context/ResContext'
+
+
+// --- Static Data ---
 import { tooltipsList } from '@/app/lib/tooltips'
 
-
+// --- Constants for Menu dropdown behavior ---
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
@@ -30,7 +42,7 @@ const MenuProps: any = {
             width: 250,
         },
     },
-    getContentAnchorEl: null,
+    getContentAnchorEl: null, // disables default anchoring for MUI v4 compatibility
     anchorOrigin: {
         vertical: "bottom",
         horizontal: "center"
@@ -42,6 +54,7 @@ const MenuProps: any = {
     variant: "menu"
 }
 
+// --- Interface for managing validation errors on form fields ---
 interface FormFieldErrorStates {
     globalWarming: boolean
     photoConfig: boolean
@@ -49,6 +62,7 @@ interface FormFieldErrorStates {
     resSelected: boolean
 }
 
+// --- Props interface for parent-controlled state ---
 interface VizFormProps {
     gwlSelected: number,
     setGwlSelected: (gwl: number) => void,
@@ -57,6 +71,7 @@ interface VizFormProps {
     toggleOpen: () => void,
 }
 
+// --- Main Component ---
 const VizPrmsForm: React.FC<VizFormProps> = ({
     gwlSelected,
     setGwlSelected,
@@ -64,9 +79,12 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
     onFormDataSubmit,
     toggleOpen,
 }) => {
+     // Context hooks
     const { photoConfigSelected, setPhotoConfigSelected, photoConfigList } = usePhotoConfig()
     const { installationSelected, setInstallationSelected, installationList } = useInstallationPrms()
     const { resSelected, setResSelected, resList } = useRes()
+    
+    // Track field validation state (not currently used but can support inline errors)
     const [formErrorState, setFormErrorState] = useState<FormFieldErrorStates>({
         globalWarming: false,
         photoConfig: false,
@@ -74,6 +92,7 @@ const VizPrmsForm: React.FC<VizFormProps> = ({
         installation: false
     })
 
+    // Called when user submits and closes the form
     const handleSubmit = () => {
         toggleOpen()
         onFormDataSubmit()
