@@ -26,7 +26,7 @@ const leftMenuItems = [
     {
         label: '4th Assessment Cal-Adapt',
         icon: <ArrowBackIcon sx={{ mr: 1 }} />,
-        href: 'https://www.cal-adapt.org'
+        href: 'https://cmip5.cal-adapt.org'
     },
 
 ]

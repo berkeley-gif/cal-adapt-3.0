@@ -73,18 +73,21 @@ export default function Home() {
                 title="tools"
                 cta="#tools"
                 img={cardImgOne.src}
+                isNewTab={false}
               />
               <Card
                 description="Gain clarity on key concepts like uncertainty, Global Warming Levels, and other essential terms."
                 title="guidance"
                 cta="https://analytics.cal-adapt.org/guidance/"
                 img={cardImgTwo.src}
+                isNewTab={true}
               />
               <Card
                 description="Learn about the data sources, methods, analyses, and how to access them."
                 title="data"
                 cta="https://analytics.cal-adapt.org/data/"
                 img={cardImgThree.src}
+                isNewTab={true}
               />
             </div>
             <div className={cardsMobileCarouselClass}>
@@ -97,6 +100,7 @@ export default function Home() {
                         title="tools"
                         cta="#tools"
                         img={cardImgOne.src}
+                        isNewTab={false}
                       />
                     </div>
                     <div className="embla__slide">
@@ -105,6 +109,7 @@ export default function Home() {
                         title="guidance"
                         cta="https://analytics.cal-adapt.org/guidance/"
                         img={cardImgTwo.src}
+                        isNewTab={true}
                       />
                     </div>
                     <div className="embla__slide">
@@ -113,6 +118,7 @@ export default function Home() {
                         title="data"
                         cta="https://analytics.cal-adapt.org/data/"
                         img={cardImgThree.src}
+                        isNewTab={true}
                       />
                     </div>
                   </div>

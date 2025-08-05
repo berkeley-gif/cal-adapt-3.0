@@ -127,7 +127,7 @@ function Footer() {
                 </Accordion>
                 <Typography variant="caption" sx={{ fontSize: '16px' }}
                     component="a"
-                    href="/"
+                    href="https://cmip5.cal-adapt.org"
                 >4th Assessment Cal-Adapt</Typography>
                 <Typography variant="caption" sx={{ fontSize: '16px' }}
                     component="a"

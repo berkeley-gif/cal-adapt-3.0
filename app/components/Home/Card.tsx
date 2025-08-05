@@ -13,14 +13,15 @@ type CardProps = {
     description: string
     cta: string
     img: string
+    isNewTab: boolean
 }
 
-export default function Card({ title, description, cta, img }: CardProps) {
+export default function Card({ title, description, cta, img, isNewTab }: CardProps) {
     const router = useRouter()
     const [hovered, setHovered] = React.useState(false)
 
-    const handleClick = (newTab: boolean = true) => {
-        if (newTab) {
+    const handleClick = () => {
+        if (isNewTab) {
             window.open(cta, '_blank')
         } else {
             router.push(cta)
@@ -33,14 +34,7 @@ export default function Card({ title, description, cta, img }: CardProps) {
         }}
             onClick={(e) => {
                 e.stopPropagation()
-
-                // If navigating to a page section, don't open in a different tab
-                if (cta.charAt(0) === "#") {
-                    handleClick(false) // open in same tab for this title path
-                } else {
-                    handleClick(true)
-                }
-
+                handleClick()
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
