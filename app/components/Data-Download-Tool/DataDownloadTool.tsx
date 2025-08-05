@@ -34,7 +34,7 @@ import Typography from '@mui/material/Typography'
 import UndoOutlinedIcon from '@mui/icons-material/UndoOutlined'
 
 // --- Local imports ---
-import SidePanel from '@/app/components/Dashboard/RightSidepanel'
+import SidePanel from '@/app/components/Dashboard/RightSidePanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import PackageForm from '@/app/components/Data-Download-Tool/PackageForm'
 import { apiParamStrs, varUrl, modelVarUrls } from '@/app/lib/data-download/types'

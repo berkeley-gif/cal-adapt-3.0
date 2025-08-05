@@ -30,7 +30,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
 // --- Local component imports ---
-import SidePanel from '@/app/components/Dashboard/RightSidepanel'
+import SidePanel from '@/app/components/Dashboard/RightSidePanel'
 import { useSidepanel } from '@/app/context/SidepanelContext'
 import { usePhotoConfig } from '@/app/context/PhotoConfigContext'
 import { useInstallationPrms } from '@/app/context/InstallationParamsContext'
