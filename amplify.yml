@@ -3,9 +3,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - export NVM_DIR=$HOME/.nvm
-        - source $NVM_DIR/nvm.sh # load nvm
-        - nvm install 20.9.0
         - nvm use 20.9.0
         - node -v   
         - npm ci
