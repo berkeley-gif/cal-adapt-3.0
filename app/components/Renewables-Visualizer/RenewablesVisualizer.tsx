@@ -419,7 +419,7 @@ export default function RenewablesViz() {
                             <Box className="alerts" sx={{ maxWidth: '100%' }}>
                                 <Alert variant="filled" severity="info" color="info" aria-label="Global models estimate information">Global models estimate that {gwlYearEstimateData[gwlSelected].name}° global warming levels (GWL) will be reached between <strong>{gwlYearEstimateData[gwlSelected].estimatedStartYear}</strong> and <strong>{gwlYearEstimateData[gwlSelected].estimatedEndYear}</strong>
                                     <Box className="cta">
-                                        <Button variant="contained" target="_blank" href="https://cal-adapt.org/blog/understanding-warming-levels" aria-label="Learn more about GWL">Learn more about GWL</Button>
+                                        <Button variant="contained" target="_blank" href="https://cmip5.cal-adapt.org/blog/understanding-warming-levels" aria-label="Learn more about GWL">Learn more about GWL</Button>
                                     </Box>
                                 </Alert>
                             </Box>
