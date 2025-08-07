@@ -135,7 +135,7 @@ function Footer() {
                 >Climate Guidance</Typography>
                 <Typography variant="caption" sx={{ fontSize: '16px' }}
                     component="a"
-                    href="mailto:support@cal-adapt.org"
+                    href="mailto:analytics@cal-adapt.org"
                 >Contact Us</Typography>
             </div>
         </div>

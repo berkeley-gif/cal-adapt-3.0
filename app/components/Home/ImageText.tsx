@@ -31,7 +31,7 @@ function ImageText() {
             <div className="image-text__content">
                 <Typography variant="h2">Fueling Innovation</Typography>
                 <Typography style={{ paddingLeft: '10px'}} variant="body1">The California Energy Commission supports research projects that advance climate data development and enhance Cal-Adapt for improved climate planning in California.</Typography>
-                <Button data-path="https://cal-adapt.org/grants" variant="contained" color="secondary" onClick={handleClick}>Learn About Our Grants</Button>
+                <Button data-path="https://cmip5.cal-adapt.org/grants" variant="contained" color="secondary" onClick={handleClick}>Learn About Our Grants</Button>
             </div>
         </div>
     )
