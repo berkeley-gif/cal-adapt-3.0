@@ -4,12 +4,13 @@ import Image from 'next/image'
 import { useEffect, useRef, useCallback } from 'react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 
+
 import Typography from '@mui/material/Typography'
 
 import '@/app/styles/home/hero-main.scss'
-import sky from '@/public/img/homepage-hero/sky.png'
-import rocks from '@/public/img/homepage-hero/rocks.png'
-import mouse from '@/public/img/homepage-hero/mouse.png'
+import sky from '@/public/img/homepage-hero/sky.webp'
+import rocks from '@/public/img/homepage-hero/rocks.webp'
+import mouse from '@/public/img/homepage-hero/mouse.webp'
 
 import { ParallaxBanner, ParallaxBannerLayer } from 'react-scroll-parallax'
 
@@ -27,7 +28,6 @@ function HeroMain() {
         if (!secNode) return
 
         const scrollY = window.scrollY
-        console.log(scrollY)
 
         if (scrollY > 119.5) {
             introNode.classList.add('hidden')
@@ -48,11 +48,11 @@ function HeroMain() {
         <div className="homepage-hero">
             <ParallaxBanner style={{ height: '100vh' }}>
                 <ParallaxBannerLayer speed={isMobile ? 20 : -10} >
-                    <img src={sky.src} className="layer joshua-hero" alt="sky hero" />
+                    <img width={2560} height={1440} src={sky.src} className="layer joshua-hero" alt="sky hero" />
                 </ParallaxBannerLayer>
                 <ParallaxBannerLayer expanded={false} speed={isMobile ? 7 : 30}>
                     <div className="rocks-container">
-                        <img src={rocks.src} className="layer rocks" alt="joshua tree hero" />
+                        <img width={2560} height={1440} src={rocks.src} className="layer rocks" alt="joshua tree hero" />
                     </div>
                 </ParallaxBannerLayer>
                 <ParallaxBannerLayer >

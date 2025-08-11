@@ -1,9 +1,12 @@
+import dynamic from 'next/dynamic'
+
 import './styles/globals.scss'
 import { Inter } from 'next/font/google'
-import ThemeRegistry from './components/Global/Theme Registry/ThemeRegistry'
-import { LeftDrawerProvider } from './context/LeftDrawerContext'
-import Navigation from '@/app/components/Home/Navigation'
 
+import { LeftDrawerProvider } from './context/LeftDrawerContext'
+
+const ThemeRegistry = dynamic(() => import('./components/Global/Theme Registry/ThemeRegistry'), { ssr: false })
+const Navigation = dynamic(() => import('@/app/components/Home/Navigation'), { ssr: false })
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,11 +25,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        
-          <Navigation />
-          <LeftDrawerProvider>
-            <ThemeRegistry options={{ key: 'mui-theme' }}>{children}</ThemeRegistry>
-          </LeftDrawerProvider>
+
+        <Navigation />
+        <LeftDrawerProvider>
+          <ThemeRegistry options={{ key: 'mui-theme' }}>{children}</ThemeRegistry>
+        </LeftDrawerProvider>
 
       </body>
     </html>
