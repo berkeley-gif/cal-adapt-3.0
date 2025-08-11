@@ -43,8 +43,8 @@ export default function CalDashToolbar({ toolName, tooltipTitle, iconSrc, iconAl
          // Adjust left margin based on whether sidebar is open
         <Toolbar className="toolbar-main" sx={{ ml: sidebarOpen ? 0 : `72px`, justifyContent: `space-between` }}>
             <Breadcrumbs aria-label="breadcrumb">
-                <Link underline="hover" color="inherit" href="/dashboard">
-                    Cal-Adapt Dashboard
+                <Link underline="hover" color="inherit" href="/">
+                    Cal-Adapt
                 </Link>
                 <Typography color="text.primary">{toolName}</Typography>
             </Breadcrumbs>
