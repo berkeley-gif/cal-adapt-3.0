@@ -285,8 +285,15 @@ theme = createTheme(theme, {
     },
     MuiAlert: {
       styleOverrides: {
+        filledPrimaryBlue: {
+          backgroundColor: theme.palette.primaryBlue.dark,
+          color: theme.palette.primaryBlue.contrastText ?? theme.palette.getContrastText(theme.palette.primaryBlue.dark),
+          '& .MuiAlert-icon': {
+            color: theme.palette.primaryBlue.contrastText ?? theme.palette.getContrastText(theme.palette.primaryBlue.dark),
+          },
+        },
         filledInfo: {
-          backgroundColor: theme.palette.info.main,
+          backgroundColor: theme.palette.info.dark,
           color: theme.palette.info.contrastText, // ✅ force contrast color
           '& .MuiAlert-icon': {
             color: theme.palette.info.contrastText, // ✅ icon contrast too

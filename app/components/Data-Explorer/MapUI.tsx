@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 // --- Material UI imports ---
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
+import InputLabel from '@mui/material/InputLabel'
 import Typography from '@mui/material/Typography'
 import HtmlTooltip from '../Global/HtmlTooltip'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -178,7 +179,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
-                                            <Typography variant="body2">Global Warming Level</Typography>
+                                            <Typography variant="body2" id="gwl-label">Global Warming Level</Typography>
                                             <HtmlTooltip
                                                 textFragment={
                                                     <React.Fragment>
@@ -194,6 +195,9 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
 
                                         <FormControl>
                                             <Select
+                                                aria-label="GWL"
+                                                id="gwl-select"
+                                                labelId="gwl-label"
                                                 value={gwlSelected}
                                                 onChange={(event: any) => {
                                                     setGwlSelected(event.target.value as number)
@@ -216,7 +220,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                 <div className="container container--transparent">
                                     <div className="option-group option-group--vertical">
                                         <div className="option-group__title">
-                                            <Typography variant="body2">Metric</Typography>
+                                            <Typography id="metric-label" variant="body2">Metric</Typography>
                                             <HtmlTooltip
                                                 textFragment={
                                                     <React.Fragment>
@@ -232,6 +236,9 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
 
                                         <FormControl>
                                             <Select
+                                                aria-label="Metric"
+                                                id="metric-select"
+                                                labelId="metric-label"
                                                 value={metricSelected}
                                                 onChange={handleMetricChange}
                                                 MenuProps={MenuProps}
@@ -320,7 +327,7 @@ export default function MapUI({ valueType, setValueType, metricSelected, gwlSele
                                         Show what different parts of California will look like when the world, as a whole, has increased average temperature compared to pre-industrial by the chosen amount.
                                     </p>
                                     <p>
-                                        For additional information go to: <a href="https://cal-adapt.org/blog/understanding-warming-levels" target='_blank'><span className="underline">Understanding Climate Futures through the lens of global Warming Levels</span></a>
+                                        For additional information go to: <a href="https://cmip5.cal-adapt.org/blog/understanding-warming-levels" target='_blank'><span className="underline">Understanding Climate Futures through the lens of global Warming Levels</span></a>
                                     </p>
                                 </Typography>
                                 <Typography id={labelledBy} variant="body1" style={{ marginTop: '15px' }}>
