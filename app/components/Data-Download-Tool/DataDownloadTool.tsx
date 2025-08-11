@@ -426,7 +426,7 @@ export default function DataDownload({ data }: DataDownloadProps) {
                         <Tooltip
                             TransitionComponent={Fade}
                             TransitionProps={{ timeout: 600 }}
-                            title="Email support@cal-adapt.org"
+                            title="Email analytics@cal-adapt.org"
                             placement="right-end"
                         >
                             <Button variant="contained" color="primary" href="mailto:support@cal-adapt.org">Contact Us</Button>
